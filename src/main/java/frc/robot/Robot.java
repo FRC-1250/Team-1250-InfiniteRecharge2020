@@ -15,11 +15,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj.util.Color;
 
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorSensorV3.RawColor;
+
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the TimedRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
@@ -28,23 +33,41 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  
 
   /**
-   * A Rev Color Sensor V3 object is constructed with an I2C port as a 
-   * parameter. The device will be automatically initialized with default 
-   * parameters.
+   * A Rev Color Sensor V3 object is constructed with an I2C port as a parameter.
+   * The device will be automatically initialized with default parameters.
    */
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 
   /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
+   * A Rev Color Match object is used to register and detect known colors. This
+   * can be calibrated ahead of time or during operation.
+   * 
+   * This object uses a simple euclidian distance to estimate the closest match
+   * with given confidence range.
    */
+  private final ColorMatch m_colorMatcher = new ColorMatch();
+
+  /**
+   * Note: Any example colors should be calibrated as the user needs, these are
+   * here as a basic example.
+   */
+  private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
+  private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
+  private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
+  private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+
   @Override
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_colorMatcher.addColorMatch(kBlueTarget);
+    m_colorMatcher.addColorMatch(kGreenTarget);
+    m_colorMatcher.addColorMatch(kRedTarget);
+    m_colorMatcher.addColorMatch(kYellowTarget);
   }
 
   /**
@@ -72,12 +95,21 @@ public class Robot extends TimedRobot {
      * measurements and make it difficult to accurately determine its color.
      */
     Color detectedColor = m_colorSensor.getColor();
-    SmartDashboard.putBoolean("isBlue", detectedColor.equals(Color.kBlue));
-    
-    /**
-     * The sensor returns a raw IR value of the infrared light detected.
-     */
-    double IR = m_colorSensor.getIR();
+
+    String colorString;
+    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+
+    if (match.color == kBlueTarget) {
+      colorString = "Blue";
+    } else if (match.color == kRedTarget) {
+      colorString = "Red";
+    } else if (match.color == kGreenTarget) {
+      colorString = "Green";
+    } else if (match.color == kYellowTarget) {
+      colorString = "Yellow";
+    } else {
+      colorString = "Unknown";
+    }
 
     /**
      * Open Smart Dashboard or Shuffleboard to see the color detected by the 
@@ -86,7 +118,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
-    SmartDashboard.putNumber("IR", IR);
+    SmartDashboard.putNumber("Confidence", match.confidence);
+    SmartDashboard.putString("Detected Color", colorString);
 
     /**
      * In addition to RGB IR values, the color sensor can also return an 
