@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import javax.swing.JCheckBox;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -35,7 +33,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Configure the button bindings
-    configureButtonBindings();
+    configureButtonBindings();        
   }
 
   /**
@@ -45,10 +43,10 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    Joystick stick = new Joystick(1);
-    JoystickButton motor_button = new JoystickButton(stick, 0);
+    Joystick Gamepad = new Joystick(1);
+    JoystickButton x = new JoystickButton(Gamepad, 1);
 
-    motor_button.whenPressed(new Cmd_SpinMotor(s_drivetrain));
+    x.whenPressed(new Cmd_SpinMotor(s_drivetrain));
   }
 
 

@@ -24,7 +24,7 @@ public class Cmd_SpinMotor extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_drivetrain.spinMotor();
+    s_drivetrain.turnGo();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
