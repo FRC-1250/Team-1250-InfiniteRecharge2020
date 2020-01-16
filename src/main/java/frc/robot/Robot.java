@@ -59,6 +59,23 @@ public class Robot extends TimedRobot {
   private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
   private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
+  // Our colors vvv
+  /*
+  // Without LED
+  private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.47, 0.34);
+  private final Color kGreenTarget = ColorMatch.makeColor(0.23, 0.57, 0.19);
+  private final Color kRedTarget = ColorMatch.makeColor(0.59, 0.08, 0.32);
+  private final Color kYellowTarget = ColorMatch.makeColor(0.40, 0.51, 0.08);
+*/
+/*
+  // With LED
+  private final Color kBlueTarget = ColorMatch.makeColor(0.17, 0.45, 0.34);
+  private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.55, 0.24);
+  private final Color kRedTarget = ColorMatch.makeColor(0.42, 0.39, 0.16);
+  private final Color kYellowTarget = ColorMatch.makeColor(0.33, 0.53, 0.13);
+
+  */
+
   @Override
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -115,9 +132,7 @@ public class Robot extends TimedRobot {
      * Open Smart Dashboard or Shuffleboard to see the color detected by the 
      * sensor.
      */
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
+    
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", colorString);
 
