@@ -17,30 +17,13 @@ import frc.robot.Constants;
 
 public class Sub_Drivetrain extends SubsystemBase {
 
-  CANSparkMax spark = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
   /**
    * Creates a new Sub_Drivetrain.
    */
-  public CANPIDController pid = new CANPIDController(spark);
-  public double turnSetpoint = 0;
-
   public Sub_Drivetrain() {
-    pid.setP(1);
-    pid.setI(0);
-    pid.setD(0);
+    
   }
 
-  public void turnGo() {
-    pid.setReference(128, ControlType.kPosition);
-  }
-
-  public void spinMotor() {
-    spark.set(1);
-  }
-
-  public void stopMotor() {
-    spark.set(0);
-  }
 
   @Override
   public void periodic() {

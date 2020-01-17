@@ -8,39 +8,51 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Panel;
 
-public class Cmd_SpinMotor extends CommandBase {
-  private final Sub_Panel s_panel;
+public class Cmd_SpinThrice extends CommandBase {
   /**
-   * Creates a new Cmd_SpinMotor.
+   * Creates a new Cmd_SpinThrice.
    */
-  public Cmd_SpinMotor(Sub_Panel subsystem) {
+  private final Sub_Panel s_panel;
+  String desiredColor;
+  int i = 0;
+  String pastColor = "";
+  public Cmd_SpinThrice(Sub_Panel subsystem, String stopColor) {
     s_panel = subsystem;
     addRequirements(subsystem);
+    desiredColor = stopColor;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    s_panel.spinMotor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    s_panel.spinMotor();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    s_panel.stopMotor();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    String currentColor = s_panel.getSensorColor();
+    if (currentColor == desiredColor && currentColor != pastColor) {
+      i++;
+      pastColor = currentColor;
+    }
+    if (i == 2) {
+      return true;
+    }
     return false;
   }
 }

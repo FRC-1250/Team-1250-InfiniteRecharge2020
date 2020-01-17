@@ -7,16 +7,15 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Sub_Drivetrain;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Sub_Panel;
 
-public class Cmd_SpinMotor extends CommandBase {
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// information, see:
+// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
+public class CmdI_StopMotor extends InstantCommand {
   private final Sub_Panel s_panel;
-  /**
-   * Creates a new Cmd_SpinMotor.
-   */
-  public Cmd_SpinMotor(Sub_Panel subsystem) {
+  public CmdI_StopMotor(Sub_Panel subsystem) {
     s_panel = subsystem;
     addRequirements(subsystem);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -25,22 +24,6 @@ public class Cmd_SpinMotor extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    s_panel.spinMotor();
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
+    s_panel.stopMotor();
   }
 }

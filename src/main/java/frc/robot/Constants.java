@@ -17,6 +17,6 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static final int PANEL_MOTOR = 10;
+    public static final int PANEL_MOTOR = 13;
 
 }
