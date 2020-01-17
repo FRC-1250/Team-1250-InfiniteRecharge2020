@@ -48,11 +48,11 @@ public class Cmd_SpinThrice extends CommandBase {
     String currentColor = s_panel.getSensorColor();
     if (currentColor == desiredColor && currentColor != pastColor) {
       i++;
-      pastColor = currentColor;
     }
     if (i == 2) {
       return true;
     }
+    pastColor = currentColor;
     return false;
   }
 }
