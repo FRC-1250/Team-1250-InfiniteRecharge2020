@@ -5,22 +5,23 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.panel;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Panel;
 
-public class Cmd_StopOnColor extends CommandBase {
+public class Cmd_SpinThrice extends CommandBase {
   /**
-   * Creates a new Cmd_StopOnColor.
+   * Creates a new Cmd_SpinThrice.
    */
   private final Sub_Panel s_panel;
-  String color;
-  public Cmd_StopOnColor(Sub_Panel subsystem, String stopColor) {
+  String desiredColor;
+  int i = 0;
+  String pastColor = "";
+  public Cmd_SpinThrice(Sub_Panel subsystem, String stopColor) {
     s_panel = subsystem;
     addRequirements(subsystem);
-    color = stopColor;
-    
+    desiredColor = stopColor;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -44,6 +45,14 @@ public class Cmd_StopOnColor extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return s_panel.stopOnColor(color);
+    String currentColor = s_panel.getSensorColor();
+    if (currentColor == desiredColor && currentColor != pastColor) {
+      i++;
+    }
+    if (i == 2) {
+      return true;
+    }
+    pastColor = currentColor;
+    return false;
   }
 }
