@@ -13,8 +13,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_SpinMotor;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
+import frc.robot.subsystems.Sub_Intake;
+import frc.robot.subsystems.Sub_Limelight;
 import frc.robot.subsystems.Sub_Panel;
+import frc.robot.subsystems.Sub_Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -28,6 +32,10 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Sub_Drivetrain s_drivetrain = new Sub_Drivetrain();
   private final Sub_Panel s_panel = new Sub_Panel();
+  private final Sub_Climber s_climber = new Sub_Climber();
+  private final Sub_Intake s_intake = new Sub_Intake();
+  private final Sub_Limelight s_limelight = new Sub_Limelight();
+  private final Sub_Shooter s_shooter = new Sub_Shooter();
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -56,7 +64,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command m_autoCommand;
+  
     // An ExampleCommand will run in autonomous
     return m_autoCommand;
   }
