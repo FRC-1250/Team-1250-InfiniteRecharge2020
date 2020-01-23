@@ -22,11 +22,9 @@ public final class Constants {
     //Robot Devices----------------------------------------
     //Sub_Drivetrain
     public static final int DRV_RIGHT_FRONT = 10;
-    public static final int DRV_RIGHT_MID = 11;
-    public static final int DRV_RIGHT_BACK = 12;
-    public static final int DRV_LEFT_FRONT = 13;
-    public static final int DRV_LEFT_MID = 14;
-    public static final int DRV_LEFT_BACK = 15;
+    public static final int DRV_RIGHT_BACK = 11;
+    public static final int DRV_LEFT_FRONT = 12;
+    public static final int DRV_LEFT_BACK = 13;
     public static final int DRV_PIGEON = 40;
 
     //Sub_Shooter

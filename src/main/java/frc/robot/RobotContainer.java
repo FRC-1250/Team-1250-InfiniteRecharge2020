@@ -40,7 +40,8 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Configure the button bindings
+    // Configure the button bindin
+ 
     configureButtonBindings();        
   }
 
@@ -51,10 +52,10 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    Joystick Gamepad = new Joystick(1);
+    Joystick Gamepad = new Joystick(0);
     JoystickButton x = new JoystickButton(Gamepad, 1);
-
     x.whenPressed(new Cmd_SpinThrice(s_panel, "Blue"));
+    
   }
 
 
@@ -64,7 +65,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-  
+    Command m_autoCommand;
     // An ExampleCommand will run in autonomous
     return m_autoCommand;
   }
