@@ -10,9 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.panel.Cmd_SpinMotor;
 import frc.robot.commands.panel.Cmd_SpinThrice;
-import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Intake;
@@ -65,8 +63,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command m_autoCommand;
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return Cmd_SpinMotor();
+  }
+
+  private Command Cmd_SpinMotor() {
+    return null;
   }
 }

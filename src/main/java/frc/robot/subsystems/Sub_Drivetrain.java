@@ -8,9 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -37,10 +35,10 @@ public class Sub_Drivetrain extends SubsystemBase {
   Joystick Gamepad = new Joystick(0);
 
   public static double accumError = 0;
-	private final double AUTO_TURN_RATE = 0.3;
+	//private final double AUTO_TURN_RATE = 0.3;
 	private final double KP_SIMPLE_STRAIT = 0.01;
 	private final double KP_SIMPLE = 0.05;
-  private final double KI_SIMPLE = 0.03;
+  //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
 
   public Sub_Drivetrain(){
@@ -50,7 +48,7 @@ public class Sub_Drivetrain extends SubsystemBase {
     fLeftMotor.setOpenLoopRampRate(0.2);
     bLeftMotor.setOpenLoopRampRate(0.2);  
   }
-
+         
   public void idleMode(IdleMode idleMode){
     //Idle Mode config
     fRightMotor.setIdleMode(idleMode);
@@ -102,51 +100,58 @@ public class Sub_Drivetrain extends SubsystemBase {
     int linearCorrect = (-4 * (int)currentTemp) + 220;
   
     if (currentTemp < 80){
-      fRightMotor.setSmartCurrentLimit(100);
+      motorCurrentConfig(100);
     }
     else if (currentTemp > 100){
-      fRightMotor.setSmartCurrentLimit(20);
+      motorCurrentConfig(20);    
     }
     else if (currentTemp >= 80){
-      fRightMotor.setSmartCurrentLimit(linearCorrect);
+      motorCurrentConfig(linearCorrect);
     }
+  }
+
+  public void motorCurrentConfig(int limit){
+    fRightMotor.setSmartCurrentLimit(limit);
+    bRightMotor.setSmartCurrentLimit(limit);
+    fLeftMotor.setSmartCurrentLimit(limit);
+    bLeftMotor.setSmartCurrentLimit(limit);
   }
 
   public void setSetpointPos(double distance){
-   driveSetpoint = (Constants.DRV_TICKS_TO_INCH * distance);
+    driveSetpoint = (Constants.DRV_TICKS_TO_INCH * distance);
   }   
 
   public boolean isDoneDriving(){    
-  double currVal = this.getPosition(fLeftMotor);
-  double distToPos = currVal - driveSetpoint;
-  SmartDashboard.putNumber("DistToPos", distToPos);
-  return (distToPos >= 0);
+    double currVal = this.getPosition(fLeftMotor);
+    double distToPos = currVal - driveSetpoint;
+    SmartDashboard.putNumber("DistToPos", distToPos);
+    return (distToPos >= 0);
   }
 
   public boolean isDoneDrivingBack(){   
-  double currVal = this.getPosition(fLeftMotor);
-  double distToPos = currVal - driveSetpoint;
-  SmartDashboard.putNumber("DistToPosBack", distToPos);
-  return (distToPos <= 0);
+    double currVal = this.getPosition(fLeftMotor);
+    double distToPos = currVal - driveSetpoint;
+    SmartDashboard.putNumber("DistToPosBack", distToPos);
+    return (distToPos <= 0);
   }
 
   public boolean isDoneTurning(double angle){
-  return (Math.abs(angle - this.getGyroAngle()) < 2);
+    return (Math.abs(angle - this.getGyroAngle()) < 2);
   }
 
   private double getGainP(double setpoint, double current, double kP){ 	
-  double error = setpoint - current;  		
-  return KP_SIMPLE * error;
+    double error = setpoint - current;  		
+    return KP_SIMPLE * error;
   }
 
   private double linearRamp(double upperSpeed, double lowerSpeed){
-  double diff = (driveSetpoint - (double)Math.abs(getPosition(fLeftMotor)));
-  double corrected = .05 * diff;
-  double upperBound = Math.min(upperSpeed , corrected);
-  double lowerBound = Math.max(lowerSpeed , upperBound);
+    double diff = (driveSetpoint - (double)Math.abs(getPosition(fLeftMotor)));
+    double corrected = .05 * diff;
+    double upperBound = Math.min(upperSpeed , corrected);
+    double lowerBound = Math.max(lowerSpeed , upperBound);
   
-  SmartDashboard.putNumber("correctedoutput", corrected);
-  return lowerBound;
+    SmartDashboard.putNumber("correctedoutput", corrected);
+    return lowerBound;
   }
 
   public void driveToPos( double upperSpeed, double lowerSpeed){	
@@ -158,10 +163,10 @@ public class Sub_Drivetrain extends SubsystemBase {
   }
 
   public void turn (double angle, double upperSpeed, double lowerSpeed){
-  double corrected;
-  double rotation = angle - getGyroAngle();
-  double sign = Math.signum(rotation);      
-  corrected = 0.05 * rotation;
+    double corrected;
+    double rotation = angle - getGyroAngle();
+    double sign = Math.signum(rotation);      
+    corrected = 0.05 * rotation;
           
     if (sign > 0){
             corrected = Math.min(upperSpeed * sign, corrected);
@@ -172,7 +177,6 @@ public class Sub_Drivetrain extends SubsystemBase {
             corrected = Math.max(upperSpeed * sign, corrected);
             corrected = Math.min(lowerSpeed * sign, corrected);                    
           }
-  
           diffDriveGroup.arcadeDrive(0, corrected);
   }
 
