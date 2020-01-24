@@ -25,7 +25,7 @@ public final class Constants {
     public static final int DRV_RIGHT_BACK = 11;
     public static final int DRV_LEFT_FRONT = 12;
     public static final int DRV_LEFT_BACK = 13;
-    public static final int DRV_PIGEON = 40;
+    public static final int DRV_PIGEON = 50;
 
     //Sub_Shooter
     public static final int SHOOT_FALCON_0 = 16;
@@ -50,9 +50,11 @@ public final class Constants {
     public static final int CLM_SOL_EXTEND = 2;
     public static final int CLM_SPOOL = 25;
 
+    //Pigeon
+
     //Constants--------------------------------------------
     public static final double DRV_GEAR_RATIO = 10;
     public static final double DRV_WHEEL_SIZE = 6;
     public static final double DRV_WHEEL_DIAMETER = DRV_WHEEL_SIZE * Math.PI;
-
+    public static final double DRV_TICKS_TO_INCH = DRV_WHEEL_DIAMETER / 42;
 }
