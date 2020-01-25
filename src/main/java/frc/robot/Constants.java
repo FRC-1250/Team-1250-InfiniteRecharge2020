@@ -29,23 +29,23 @@ public final class Constants {
     public static final int CLM_SOL_PTO = 1;
 
     //Sub_Shooter
-    public static final int SHOOT_FALCON_0 = 16;
-    public static final int SHOOT_FALCON_1 = 17;
-    public static final int SHOOT_TURRET = 18;
-    public static final int SHOOT_HOOD = 19;
+    public static final int SHOOT_FALCON_0 = 14;
+    public static final int SHOOT_FALCON_1 = 15;
+    public static final int SHOOT_TURRET = 16;
+    public static final int SHOOT_HOOD = 17;
 
     //Sub_Panel
-    public static final int PANEL_MOTOR = 20;
+    public static final int PANEL_MOTOR = 18;
     public static final int PANEL_SOL = 0;
     public static final I2C.Port PANEL_SENSOR_PORT = I2C.Port.kOnboard;
 
     //Sub_Intake
-    public static final int INT_COL_MOTOR = 21;
+    public static final int INT_COL_MOTOR = 19;
 
     //Sub_Hopper
-    public static final int HOP_FALCON_0 = 22;
-    public static final int HOP_FALCON_1 = 23;
-    public static final int HOP_ELE_MOTOR = 24;
+    public static final int HOP_FALCON_0 = 20;
+    public static final int HOP_FALCON_1 = 21;
+    public static final int HOP_ELE_MOTOR = 22;
     public static final int HOP_ELE_SENS = 0;
 
     //Sub_Climber
