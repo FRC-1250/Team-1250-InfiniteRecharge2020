@@ -58,4 +58,14 @@ public final class Constants {
     public static final double DRV_WHEEL_SIZE = 6;
     public static final double DRV_WHEEL_CIRCUMF = DRV_WHEEL_SIZE * Math.PI;
     public static final double DRV_TICKS_TO_INCH = DRV_WHEEL_CIRCUMF / 42;
+
+    public static final double SHOOT_TURRET_P = 0.6;
+    public static final double SHOOT_TURRET_D = 0.0;
+
+    public static final double SHOOT_TURRET_HOME= 2348;
+    public static final double SHOOT_TURRET_LEFT_BOUND= 1120;
+    public static final double SHOOT_TURRET_RIGHT_BOUND= 3560;
+
+
+
 }
