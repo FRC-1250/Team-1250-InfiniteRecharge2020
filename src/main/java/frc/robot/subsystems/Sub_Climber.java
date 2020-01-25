@@ -7,14 +7,21 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Sub_Climber extends SubsystemBase {
   /**
    * Creates a new Sub_Climber.
    */
   public Sub_Climber() {
+  }
 
+  Solenoid solenoid = new Solenoid(Constants.CLM_SOL_EXTEND);
+
+  public void extendCylinder() {
+    solenoid.set(true);
   }
 
   @Override

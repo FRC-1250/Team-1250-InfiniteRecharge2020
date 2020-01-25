@@ -23,8 +23,8 @@ public class Sub_Panel extends SubsystemBase {
   /**
    * Creates a new Sub_Panel.
    */
-  CANSparkMax spark = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
-    final I2C.Port i2cPort = I2C.Port.kOnboard;
+    CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
+    I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
     
     ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
     ColorMatch m_colorMatcher = new ColorMatch();
@@ -54,12 +54,26 @@ public class Sub_Panel extends SubsystemBase {
     configureColors();
   }
 
+  public static int findIndex(String arr[], String t) {
+    int len = arr.length; 
+    int i = 0; 
+    while (i < len) { 
+        if (arr[i] == t) {
+            return i;
+        } 
+        else {
+            i++; 
+        } 
+    }
+    return -1; 
+    } 
+
   public void spinMotor() {
-    spark.set(0.1);
+    panelMotor.set(0.1);
   }
 
   public void stopMotor() {
-    spark.set(0);
+    panelMotor.set(0);
   }
 
   public void configureColors() {
@@ -70,7 +84,6 @@ public class Sub_Panel extends SubsystemBase {
   }
   
   public void senseColors() {
-
     final Color detectedColor = m_colorSensor.getColor();
 
     String colorString;
@@ -88,11 +101,6 @@ public class Sub_Panel extends SubsystemBase {
       colorString = "Unknown";
     }
 
-    /**
-     * Open Smart Dashboard or Shuffleboard to see the color detected by the 
-     * sensor.
-     */
-    
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", colorString);
 
@@ -133,10 +141,13 @@ public class Sub_Panel extends SubsystemBase {
     return colorString;
   }
 
-  /* TODO: make this
-  public Color getFieldColor() {
+  public String getFieldColor() {
+    String[] colors = {"blue", "green", "red", "yellow"};
+    String robot_sensor = getSensorColor();
+    int color_index = findIndex(colors, robot_sensor) + 2;
+    String real_color = colors[color_index % 4];
+    return real_color;
   }
-  */
 
   public boolean stopOnColor(String stopColor) {
     String color = getSensorColor();
@@ -145,7 +156,6 @@ public class Sub_Panel extends SubsystemBase {
     }
     return false;
   }
-
 
   public void periodic() {
     // This method will be called once per scheduler run

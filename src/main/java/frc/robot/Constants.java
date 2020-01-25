@@ -26,6 +26,7 @@ public final class Constants {
     public static final int DRV_LEFT_FRONT = 12;
     public static final int DRV_LEFT_BACK = 13;
     public static final int DRV_PIGEON = 50;
+    public static final int CLM_SOL_PTO = 1;
 
     //Sub_Shooter
     public static final int SHOOT_FALCON_0 = 16;
@@ -40,21 +41,21 @@ public final class Constants {
 
     //Sub_Intake
     public static final int INT_COL_MOTOR = 21;
-    public static final int INT_HOP_0 = 22;
-    public static final int INT_HOP_1 = 23;
-    public static final int INT_HOP_ELE = 24;
-    public static final int INT_HOP_ELE_SENS = 0;
+
+    //Sub_Hopper
+    public static final int HOP_FALCON_0 = 22;
+    public static final int HOP_FALCON_1 = 23;
+    public static final int HOP_ELE_MOTOR = 24;
+    public static final int HOP_ELE_SENS = 0;
 
     //Sub_Climber
-    public static final int CLM_SOL_PTO = 1;
     public static final int CLM_SOL_EXTEND = 2;
-    public static final int CLM_SPOOL = 25;
-
+    
     //Pigeon
 
     //Constants--------------------------------------------
     public static final double DRV_GEAR_RATIO = 10;
     public static final double DRV_WHEEL_SIZE = 6;
-    public static final double DRV_WHEEL_DIAMETER = DRV_WHEEL_SIZE * Math.PI;
-    public static final double DRV_TICKS_TO_INCH = DRV_WHEEL_DIAMETER / 42;
+    public static final double DRV_WHEEL_CIRCUMF = DRV_WHEEL_SIZE * Math.PI;
+    public static final double DRV_TICKS_TO_INCH = DRV_WHEEL_CIRCUMF / 42;
 }

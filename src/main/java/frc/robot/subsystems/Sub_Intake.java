@@ -7,7 +7,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Sub_Intake extends SubsystemBase {
   /**
@@ -15,6 +19,13 @@ public class Sub_Intake extends SubsystemBase {
    */
   public Sub_Intake() {
 
+  }
+
+  WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
+  Solenoid intakeSol = new Solenoid(0);
+
+  public void collect() {
+    intakeMotor.set(0.5);
   }
 
   @Override
