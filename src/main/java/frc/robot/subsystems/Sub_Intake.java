@@ -22,7 +22,7 @@ public class Sub_Intake extends SubsystemBase {
   }
 
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
-  Solenoid intakeSol = new Solenoid(0);
+  // Solenoid intakeSol = new Solenoid(0);
 
   public void collect() {
     intakeMotor.set(0.5);

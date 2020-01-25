@@ -15,13 +15,13 @@ public class Cmd_SpinThrice extends CommandBase {
    * Creates a new Cmd_SpinThrice.
    */
   private final Sub_Panel s_panel;
-  String desiredColor;
+  char desiredColor;
   int i = 0;
-  String pastColor = "";
-  public Cmd_SpinThrice(Sub_Panel subsystem, String stopColor) {
+  char pastColor = 'N';
+  public Cmd_SpinThrice(Sub_Panel subsystem) {
     s_panel = subsystem;
     addRequirements(subsystem);
-    desiredColor = stopColor;
+    desiredColor = s_panel.getSensorColor();
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -45,11 +45,11 @@ public class Cmd_SpinThrice extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    String currentColor = s_panel.getSensorColor();
+    char currentColor = s_panel.getSensorColor();
     if (currentColor == desiredColor && currentColor != pastColor) {
       i++;
     }
-    if (i == 2) {
+    if (i == 3) {
       return true;
     }
     pastColor = currentColor;

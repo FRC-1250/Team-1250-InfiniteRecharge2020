@@ -13,6 +13,7 @@ import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,6 +57,31 @@ public class Sub_Panel extends SubsystemBase {
     configureColors();
   }
 
+  public char getDataFromField() {
+    String gameData;
+    gameData = DriverStation.getInstance().getGameSpecificMessage();
+    if(gameData.length() > 0)
+    {
+      switch (gameData.charAt(0))
+      {
+        case 'R' :
+          return 'R';
+        case 'G' :
+          return 'G';
+        case 'B' :
+          return 'B';
+        case 'Y' :
+          return 'Y';
+        default :
+          //This is corrupt data (should never happen)
+          return 'A';
+      }
+    } else {
+      //Code for no data received yet
+      return 'N';
+    }
+  }
+
   public void extendCylinder() {
     panelSol.set(true);
   }
@@ -64,7 +90,7 @@ public class Sub_Panel extends SubsystemBase {
     panelSol.set(false);
   }
 
-  public static int findIndex(String arr[], String t) {
+  public static int findIndex(char arr[], char t) {
     int len = arr.length; 
     int i = 0; 
     while (i < len) { 
@@ -96,23 +122,23 @@ public class Sub_Panel extends SubsystemBase {
   public void senseColors() {
     final Color detectedColor = m_colorSensor.getColor();
 
-    String colorString;
+    char colorChar;
     final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
-      colorString = "Blue";
+      colorChar = 'B';
     } else if (match.color == kRedTarget) {
-      colorString = "Red";
+      colorChar = 'R';
     } else if (match.color == kGreenTarget) {
-      colorString = "Green";
+      colorChar = 'G';
     } else if (match.color == kYellowTarget) {
-      colorString = "Yellow";
+      colorChar = 'Y';
     } else {
-      colorString = "Unknown";
+      colorChar = 'U';
     }
 
     SmartDashboard.putNumber("Confidence", match.confidence);
-    SmartDashboard.putString("Detected Color", colorString);
+    SmartDashboard.putString("Detected Color", Character.toString(colorChar));
 
     /**
      * In addition to RGB IR values, the color sensor can also return an 
@@ -131,37 +157,37 @@ public class Sub_Panel extends SubsystemBase {
 
   }
 
-  public String getSensorColor() {
+  public char getSensorColor() {
     final Color detectedColor = m_colorSensor.getColor();
 
-    String colorString;
+    char colorChar;
     final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
-      colorString = "Blue";
+      colorChar = 'B';
     } else if (match.color == kRedTarget) {
-      colorString = "Red";
+      colorChar = 'R';
     } else if (match.color == kGreenTarget) {
-      colorString = "Green";
+      colorChar = 'G';
     } else if (match.color == kYellowTarget) {
-      colorString = "Yellow";
+      colorChar = 'Y';
     } else {
-      colorString = "Unknown";
+      colorChar = 'U';
     }
-    return colorString;
+    return colorChar;
   }
 
-  public String getFieldColor() {
-    String[] colors = {"blue", "green", "red", "yellow"};
-    String robot_sensor = getSensorColor();
+  public char getFieldColor() {
+    char[] colors = {'B', 'G', 'R', 'Y'};
+    char robot_sensor = getSensorColor();
     int color_index = findIndex(colors, robot_sensor) + 2;
-    String real_color = colors[color_index % 4];
+    char real_color = colors[color_index % 4];
     return real_color;
   }
 
-  public boolean stopOnColor(String stopColor) {
-    String color = getSensorColor();
-    if (color == stopColor) {
+  public boolean stopOnColor() {
+    char color = getSensorColor();
+    if (color == getDataFromField()) {
       return true;
     }
     return false;

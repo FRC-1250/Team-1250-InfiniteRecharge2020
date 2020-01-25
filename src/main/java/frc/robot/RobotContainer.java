@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_SpinThrice;
+import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Intake;
@@ -38,8 +39,6 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Configure the button bindin
- 
     configureButtonBindings();        
   }
 
@@ -52,8 +51,11 @@ public class RobotContainer {
   private void configureButtonBindings() {
     Joystick Gamepad = new Joystick(0);
     JoystickButton x = new JoystickButton(Gamepad, 1);
-    x.whenPressed(new Cmd_SpinThrice(s_panel, "Blue"));
-    
+    if (s_panel.getDataFromField() == 'N') {
+      x.whenPressed(new Cmd_SpinThrice(s_panel));
+    } else {
+      x.whenPressed(new Cmd_StopOnColor(s_panel));
+    }
   }
 
 
