@@ -50,11 +50,19 @@ public final class Constants {
     public static final int CLM_SOL_EXTEND = 2;
     public static final int CLM_SPOOL = 25;
 
-    //Pigeon
-
     //Constants--------------------------------------------
     public static final double DRV_GEAR_RATIO = 10;
     public static final double DRV_WHEEL_SIZE = 6;
     public static final double DRV_WHEEL_DIAMETER = DRV_WHEEL_SIZE * Math.PI;
     public static final double DRV_TICKS_TO_INCH = DRV_WHEEL_DIAMETER / 42;
+
+    public static final double SHOOT_TURRET_P = 0.6;
+    public static final double SHOOT_TURRET_D = 0.0;
+
+    public static final double SHOOT_TURRET_HOME= 2348;
+    public static final double SHOOT_TURRET_LEFT_BOUND= 1120;
+    public static final double SHOOT_TURRET_RIGHT_BOUND= 3560;
+
+
+
 }
