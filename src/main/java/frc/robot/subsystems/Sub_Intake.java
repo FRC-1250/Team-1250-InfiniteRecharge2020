@@ -28,6 +28,10 @@ public class Sub_Intake extends SubsystemBase {
     intakeMotor.set(0.5);
   }
 
+  public void collectStop() {
+    intakeMotor.set(0);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

@@ -7,7 +7,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -59,7 +58,6 @@ public class Sub_Shooter extends SubsystemBase {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
-    NetworkTableEntry ta = table.getEntry("ta");
     NetworkTableEntry tv = table.getEntry("tv");
 
     if (Gamepad1.getRawButton(2)) {
@@ -71,7 +69,6 @@ public class Sub_Shooter extends SubsystemBase {
 
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0);
-    double area = ta.getDouble(0.0);
     double v = tv.getDouble(0.0);
 
     SmartDashboard.putNumber("tx", x);
