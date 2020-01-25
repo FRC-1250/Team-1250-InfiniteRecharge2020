@@ -26,12 +26,12 @@ public class Sub_Hopper extends SubsystemBase {
   public Sub_Hopper() {
   }
 
-  public void shootMotors() {
+  public void spinHopperMotors() {
     leftMotor.set(0.5);
     rightMotor.set(-0.5);
   }
   // might need to get flipped
-  public void reverseMotors() {
+  public void reverseHopperMotors() {
     leftMotor.set(-0.5);
     rightMotor.set(0.5);
   }
