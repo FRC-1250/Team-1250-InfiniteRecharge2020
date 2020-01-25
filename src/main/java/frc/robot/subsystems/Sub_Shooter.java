@@ -7,7 +7,12 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.FollowerType;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -19,22 +24,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Sub_Shooter extends SubsystemBase {
-  /**
-   * Creates a new Sub_Shooter.
-   */
+  //Speed Controllers created
   WPI_TalonSRX turretTalon = new WPI_TalonSRX(Constants.SHOOT_TURRET);
+  CANSparkMax hoodNeo = new CANSparkMax(Constants.SHOOT_HOOD, MotorType.kBrushless);
+  WPI_TalonFX flywheelFalconLeft = new WPI_TalonFX(Constants.SHOOT_FALCON_0);
+  WPI_TalonFX flywheelFalconRight = new WPI_TalonFX(Constants.SHOOT_FALCON_1);
 
   Joystick Gamepad0 = new Joystick(0);
   Joystick Gamepad1 = new Joystick(1);
 
-  double p = Constants.SHOOT_TURRET_P;
-  double d = Constants.SHOOT_TURRET_D;
+  double turretP = Constants.SHOOT_TURRET_P;
+  double turretD = Constants.SHOOT_TURRET_D;
 
   public Sub_Shooter() {
-
+   flywheelFalconRight.follow(flywheelFalconLeft);
+   flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
   }
 
-
+  
 
 
 
@@ -44,7 +51,7 @@ public class Sub_Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    PIDController turretPIDController = new PIDController(p, 0, d);
+    PIDController turretPIDController = new PIDController(turretP, 0, turretD);
 
     double turretCurrentPos = turretTalon.getSelectedSensorPosition();
     SmartDashboard.putNumber("Turret Position", turretCurrentPos);
