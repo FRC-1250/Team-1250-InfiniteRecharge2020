@@ -15,8 +15,9 @@ public class Cmd_StopOnColor extends CommandBase {
    * Creates a new Cmd_StopOnColor.
    */
   private final Sub_Panel s_panel;
-  String color;
-  public Cmd_StopOnColor(Sub_Panel subsystem) {
+  char color;
+  public Cmd_StopOnColor(Sub_Panel subsystem, char _color) {
+    color = _color;
     s_panel = subsystem;
     addRequirements(subsystem);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -42,6 +43,6 @@ public class Cmd_StopOnColor extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return s_panel.stopOnColor();
+    return s_panel.stopOnColor(color);
   }
 }

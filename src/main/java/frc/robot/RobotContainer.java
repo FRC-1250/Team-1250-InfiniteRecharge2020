@@ -10,9 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
-import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Intake;
 import frc.robot.subsystems.Sub_Limelight;
@@ -31,7 +31,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Sub_Drivetrain s_drivetrain = new Sub_Drivetrain();
   private final Sub_Panel s_panel = new Sub_Panel();
-  private final Sub_Climber s_climber = new Sub_Climber();
   private final Sub_Intake s_intake = new Sub_Intake();
   private final Sub_Limelight s_limelight = new Sub_Limelight();
   private final Sub_Shooter s_shooter = new Sub_Shooter();
@@ -51,11 +50,10 @@ public class RobotContainer {
   private void configureButtonBindings() {
     Joystick Gamepad = new Joystick(0);
     JoystickButton x = new JoystickButton(Gamepad, 1);
-    if (s_panel.getDataFromField() == 'N') {
-      x.whenPressed(new Cmd_SpinThrice(s_panel));
-    } else {
-      x.whenPressed(new Cmd_StopOnColor(s_panel));
-    }
+    JoystickButton b = new JoystickButton(Gamepad, 3);
+
+    x.whenPressed(new Cmd_SpinThrice(s_panel));
+    b.whenPressed(new Cmd_StopOnColor(s_panel, 'R'));
   }
 
 
