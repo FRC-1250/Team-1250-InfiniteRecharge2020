@@ -33,7 +33,8 @@ public class Sub_Panel extends SubsystemBase {
    */
     CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
     I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
-    
+    Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
+
     ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
     ColorMatch m_colorMatcher = new ColorMatch();
 
@@ -70,6 +71,14 @@ public class Sub_Panel extends SubsystemBase {
   public Sub_Panel() {    
     configureColors();
     panelMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  public void extendCylinder() {
+    panelSol.set(true);
+  }
+
+  public void retractCylinders() {
+    panelSol.set(false);
   }
 
   public void getRGBValues() {
