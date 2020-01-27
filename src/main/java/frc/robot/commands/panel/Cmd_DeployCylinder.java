@@ -7,29 +7,25 @@
 
 package frc.robot.commands.panel;
 
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Sub_Panel;
 
-public class Cmd_StopOnColor extends CommandBase {
+public class Cmd_DeployCylinder extends CommandBase {
   /**
-   * Creates a new Cmd_StopOnColor.
+   * Creates a new Cmd_DeployCylinder.
    */
   private final Sub_Panel s_panel;
-  char color;
-  public Cmd_StopOnColor(Sub_Panel subsystem, char _color) {
-    color = _color;
-    s_panel = subsystem;
-    addRequirements(subsystem);
+  public Cmd_DeployCylinder(Sub_Panel panel) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(panel);
+    s_panel = panel;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     s_panel.extendCylinder();
-    s_panel.spinMotor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,13 +36,11 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_panel.retractCylinders();
-    s_panel.stopMotor();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return s_panel.stopOnColor(color);
+    return false;
   }
 }

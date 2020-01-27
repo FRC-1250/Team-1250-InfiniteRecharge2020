@@ -51,9 +51,6 @@ public class RobotContainer {
     Joystick Gamepad = new Joystick(0);
     JoystickButton x = new JoystickButton(Gamepad, 1);
     JoystickButton b = new JoystickButton(Gamepad, 3);
-
-    x.whenPressed(new Cmd_SpinThrice(s_panel));
-    b.whenPressed(new Cmd_StopOnColor(s_panel, 'R'));
   }
 
 

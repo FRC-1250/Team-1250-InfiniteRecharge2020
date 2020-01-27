@@ -48,7 +48,7 @@ public class Cmd_SpinThrice extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    SmartDashboard.putNumber("i", i);
+    // SmartDashboard.putNumber("i", i);
     char currentColor = s_panel.getSensorColor();
     if (currentColor == desiredColor && currentColor != pastColor) {
       i++;

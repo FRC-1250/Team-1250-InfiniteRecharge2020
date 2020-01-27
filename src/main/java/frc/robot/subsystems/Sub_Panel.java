@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Random;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
 
@@ -195,45 +198,54 @@ public class Sub_Panel extends SubsystemBase {
     return real_color;
   }
 
+  public int getProximity() {
+    return m_colorSensor.getProximity();
+  }
+
+  public char getRandomColor() {
+    final String alphabet = "RGBY";
+    final int N = alphabet.length();
+    Random r = new Random();
+    return alphabet.charAt(r.nextInt(N));
+  }
+
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
-    if (color == 'N') { // color should equal 'N' when you want to stop on whatever color you see as you deploy the command
-      color = getSensorColor();
-      if (color == getDataFromField()) {
-        return true;
+    if (getProximity() > 140) {
+      if (color == 'N') { // color should equal 'N' when you want to stop on whatever color you see as you deploy the command
+        color = getSensorColor();
+        SmartDashboard.putString("fromField", Character.toString(getDataFromField()));
+        //if (color == getDataFromField()) { // TODO: USE DURING GAME (DOESN'T REALLY WORK FOR TESTING)
+        if (color == getRandomColor()) {
+          return true;
+        }
+        return false;
+      } else {
+        if (color == getSensorColor()) {
+          return true;
+        }
+        return false;
       }
-      return false;
-    } else {
-      if (color == getSensorColor()) {
-        return true;
-      }
-      return false;
     }
+    return false;
   }
 
   public void configureButtons() {
     Joystick Gamepad = new Joystick(0);
     JoystickButton x = new JoystickButton(Gamepad, 1);
+    JoystickButton y = new JoystickButton(Gamepad, 2);
     JoystickButton b = new JoystickButton(Gamepad, 3);
 
-    if (getSensorColor() == 'Y') {
-      x.whenPressed(new Cmd_StopOnColor(this, 'R'));
-      SmartDashboard.putString("Cmd", "awful yellow");
+    if (getDataFromField() == 'N') {
+      b.whenPressed(new Cmd_SpinThrice(this));
+      x.whenPressed(new Cmd_StopOnColor(this, 'N'));
+      SmartDashboard.putString("Cmd", "x = stoponcolor, b = spinthrice");
     } else {
-      if (getDataFromField() == 'N') {
-        x.whenPressed(new Cmd_SpinThrice(this));
-        SmartDashboard.putString("Cmd", "spinthrice");
-      } else {
-        b.whenPressed(new Cmd_SpinThrice(this));
-        x.whenPressed(new Cmd_StopOnColor(this, 'N'));
-        SmartDashboard.putString("Cmd", "stoponcolor");
-      }
+      SmartDashboard.putString("Cmd", "data from field != 'N'");
     }
-
   }
 
   public void periodic() {
-    // configureButtons();
-    // This method will be called once per scheduler run
+    configureButtons();
     senseColors();
     getRGBValues();
   }
