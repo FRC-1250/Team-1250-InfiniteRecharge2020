@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
 

@@ -10,7 +10,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.subsystems.Sub_Drivetrain;
