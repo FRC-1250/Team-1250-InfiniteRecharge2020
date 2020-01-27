@@ -7,6 +7,7 @@
 
 package frc.robot.commands.panel;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Panel;
 
@@ -15,19 +16,21 @@ public class Cmd_SpinThrice extends CommandBase {
    * Creates a new Cmd_SpinThrice.
    */
   private final Sub_Panel s_panel;
-  String desiredColor;
-  int i = 0;
-  String pastColor = "";
-  public Cmd_SpinThrice(Sub_Panel subsystem, String stopColor) {
+  char desiredColor;
+  int i;
+  char pastColor;
+  public Cmd_SpinThrice(Sub_Panel subsystem) {
     s_panel = subsystem;
     addRequirements(subsystem);
-    desiredColor = stopColor;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    i = 0;
+    pastColor = 'N';
+    desiredColor = s_panel.getSensorColor();
     s_panel.spinMotor();
   }
 
@@ -45,11 +48,12 @@ public class Cmd_SpinThrice extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    String currentColor = s_panel.getSensorColor();
+    SmartDashboard.putNumber("i", i);
+    char currentColor = s_panel.getSensorColor();
     if (currentColor == desiredColor && currentColor != pastColor) {
       i++;
     }
-    if (i == 2) {
+    if (i == 7) {
       return true;
     }
     pastColor = currentColor;

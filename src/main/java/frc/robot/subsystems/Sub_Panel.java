@@ -11,14 +11,21 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.commands.panel.Cmd_SpinThrice;
+import frc.robot.commands.panel.Cmd_StopOnColor;
 
 public class Sub_Panel extends SubsystemBase {
   /**
@@ -27,33 +34,43 @@ public class Sub_Panel extends SubsystemBase {
     CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
     I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
     Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
-    
+
     ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
     ColorMatch m_colorMatcher = new ColorMatch();
 
+    /*
     Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
     Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
     Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+    */
 
     // Our colors vvv
     /*
-    // Without LED
+    // Without LED (does not work great, sees red as yellow)
     private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.47, 0.34);
     private final Color kGreenTarget = ColorMatch.makeColor(0.23, 0.57, 0.19);
     private final Color kRedTarget = ColorMatch.makeColor(0.59, 0.08, 0.32);
     private final Color kYellowTarget = ColorMatch.makeColor(0.40, 0.51, 0.08);
   */
   /*
+  
     // With LED
     private final Color kBlueTarget = ColorMatch.makeColor(0.17, 0.45, 0.34);
     private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.55, 0.24);
     private final Color kRedTarget = ColorMatch.makeColor(0.42, 0.39, 0.16);
     private final Color kYellowTarget = ColorMatch.makeColor(0.33, 0.53, 0.13);
+*/
+  // Last try with configured colors
+  private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.46, 0.35);
+  private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.53, 0.25);
+  private final Color kRedTarget = ColorMatch.makeColor(0.41, 0.40, 0.17);
+  private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.13);
 
-    */
+
   public Sub_Panel() {    
     configureColors();
+    panelMotor.setIdleMode(IdleMode.kBrake);
   }
 
   public void extendCylinder() {
@@ -64,7 +81,26 @@ public class Sub_Panel extends SubsystemBase {
     panelSol.set(false);
   }
 
-  public static int findIndex(String arr[], String t) {
+  public void getRGBValues() {
+    Color detectedColor = m_colorSensor.getColor();
+    SmartDashboard.putNumber("Red", detectedColor.red);
+    SmartDashboard.putNumber("Green", detectedColor.green);
+    SmartDashboard.putNumber("Blue", detectedColor.blue);
+  }
+
+  public char getDataFromField() {
+    String str_gameData;
+    str_gameData = DriverStation.getInstance().getGameSpecificMessage();
+    if(str_gameData.length() > 0)
+    {
+      return str_gameData.charAt(0);
+    } else {
+      //Code for no data received yet
+      return 'N';
+    }
+  }
+
+  public static int findIndex(char arr[], char t) {
     int len = arr.length; 
     int i = 0; 
     while (i < len) { 
@@ -79,7 +115,7 @@ public class Sub_Panel extends SubsystemBase {
     } 
 
   public void spinMotor() {
-    panelMotor.set(0.1);
+    panelMotor.set(0.4);
   }
 
   public void stopMotor() {
@@ -96,23 +132,23 @@ public class Sub_Panel extends SubsystemBase {
   public void senseColors() {
     final Color detectedColor = m_colorSensor.getColor();
 
-    String colorString;
+    char colorChar;
     final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
-      colorString = "Blue";
+      colorChar = 'B';
     } else if (match.color == kRedTarget) {
-      colorString = "Red";
+      colorChar = 'R';
     } else if (match.color == kGreenTarget) {
-      colorString = "Green";
+      colorChar = 'G';
     } else if (match.color == kYellowTarget) {
-      colorString = "Yellow";
+      colorChar = 'Y';
     } else {
-      colorString = "Unknown";
+      colorChar = 'U';
     }
 
     SmartDashboard.putNumber("Confidence", match.confidence);
-    SmartDashboard.putString("Detected Color", colorString);
+    SmartDashboard.putString("Detected Color", Character.toString(colorChar));
 
     /**
      * In addition to RGB IR values, the color sensor can also return an 
@@ -131,44 +167,74 @@ public class Sub_Panel extends SubsystemBase {
 
   }
 
-  public String getSensorColor() {
+  public char getSensorColor() {
     final Color detectedColor = m_colorSensor.getColor();
 
-    String colorString;
+    char colorChar;
     final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
-      colorString = "Blue";
+      colorChar = 'B';
     } else if (match.color == kRedTarget) {
-      colorString = "Red";
+      colorChar = 'R';
     } else if (match.color == kGreenTarget) {
-      colorString = "Green";
+      colorChar = 'G';
     } else if (match.color == kYellowTarget) {
-      colorString = "Yellow";
+      colorChar = 'Y';
     } else {
-      colorString = "Unknown";
+      colorChar = 'U';
     }
-    return colorString;
+    return colorChar;
   }
 
-  public String getFieldColor() {
-    String[] colors = {"blue", "green", "red", "yellow"};
-    String robot_sensor = getSensorColor();
+  public char getFieldColor() {
+    char[] colors = {'B', 'G', 'R', 'Y'};
+    char robot_sensor = getSensorColor();
     int color_index = findIndex(colors, robot_sensor) + 2;
-    String real_color = colors[color_index % 4];
+    char real_color = colors[color_index % 4];
     return real_color;
   }
 
-  public boolean stopOnColor(String stopColor) {
-    String color = getSensorColor();
-    if (color == stopColor) {
-      return true;
+  public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
+    if (color == 'N') { // color should equal 'N' when you want to stop on whatever color you see as you deploy the command
+      color = getSensorColor();
+      if (color == getDataFromField()) {
+        return true;
+      }
+      return false;
+    } else {
+      if (color == getSensorColor()) {
+        return true;
+      }
+      return false;
     }
-    return false;
+  }
+
+  public void configureButtons() {
+    Joystick Gamepad = new Joystick(0);
+    JoystickButton x = new JoystickButton(Gamepad, 1);
+    JoystickButton b = new JoystickButton(Gamepad, 3);
+
+    if (getSensorColor() == 'Y') {
+      x.whenPressed(new Cmd_StopOnColor(this, 'R'));
+      SmartDashboard.putString("Cmd", "awful yellow");
+    } else {
+      if (getDataFromField() == 'N') {
+        x.whenPressed(new Cmd_SpinThrice(this));
+        SmartDashboard.putString("Cmd", "spinthrice");
+      } else {
+        b.whenPressed(new Cmd_SpinThrice(this));
+        x.whenPressed(new Cmd_StopOnColor(this, 'N'));
+        SmartDashboard.putString("Cmd", "stoponcolor");
+      }
+    }
+
   }
 
   public void periodic() {
+    // configureButtons();
     // This method will be called once per scheduler run
     senseColors();
+    getRGBValues();
   }
 }

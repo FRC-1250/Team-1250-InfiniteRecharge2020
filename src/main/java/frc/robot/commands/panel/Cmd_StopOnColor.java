@@ -15,12 +15,11 @@ public class Cmd_StopOnColor extends CommandBase {
    * Creates a new Cmd_StopOnColor.
    */
   private final Sub_Panel s_panel;
-  String color;
-  public Cmd_StopOnColor(Sub_Panel subsystem, String stopColor) {
+  char color;
+  public Cmd_StopOnColor(Sub_Panel subsystem, char _color) {
+    color = _color;
     s_panel = subsystem;
     addRequirements(subsystem);
-    color = stopColor;
-    
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
