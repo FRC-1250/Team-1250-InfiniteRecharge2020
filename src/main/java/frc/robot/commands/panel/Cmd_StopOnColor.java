@@ -29,19 +29,20 @@ public class Cmd_StopOnColor extends CommandBase {
   @Override
   public void initialize() {
     s_panel.extendCylinder();
-    s_panel.spinMotor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    s_panel.spinMotor(0.2);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_panel.retractCylinders();
+    // s_panel.retractCylinders();
     s_panel.stopMotor();
+    
   }
 
   // Returns true when the command should end.

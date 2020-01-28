@@ -31,7 +31,7 @@ public class Cmd_SpinThrice extends CommandBase {
     i = 0;
     pastColor = 'N';
     desiredColor = s_panel.getSensorColor();
-    s_panel.spinMotor();
+    s_panel.spinMotor(0.4);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

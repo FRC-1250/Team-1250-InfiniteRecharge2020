@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
 
@@ -34,6 +33,7 @@ public class Sub_Panel extends SubsystemBase {
   /**
    * Creates a new Sub_Panel.
    */
+    
     CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
     I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
     Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
@@ -107,18 +107,18 @@ public class Sub_Panel extends SubsystemBase {
     int len = arr.length; 
     int i = 0; 
     while (i < len) { 
-        if (arr[i] == t) {
-            return i;
-        } 
-        else {
-            i++; 
-        } 
+      if (arr[i] == t) {
+        return i;
+      } 
+      else {
+        i++; 
+      } 
     }
     return -1; 
     } 
 
-  public void spinMotor() {
-    panelMotor.set(0.4);
+  public void spinMotor(double speed) {
+    panelMotor.set(speed);
   }
 
   public void stopMotor() {
@@ -211,19 +211,8 @@ public class Sub_Panel extends SubsystemBase {
 
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
     if (getProximity() > 140) {
-      if (color == 'N') { // color should equal 'N' when you want to stop on whatever color you see as you deploy the command
-        color = getSensorColor();
-        SmartDashboard.putString("fromField", Character.toString(getDataFromField()));
-        //if (color == getDataFromField()) { // TODO: USE DURING GAME (DOESN'T REALLY WORK FOR TESTING)
-        if (color == getRandomColor()) {
-          return true;
-        }
-        return false;
-      } else {
-        if (color == getSensorColor()) {
-          return true;
-        }
-        return false;
+      if (color == getSensorColor()) {
+        return true;
       }
     }
     return false;
@@ -231,20 +220,31 @@ public class Sub_Panel extends SubsystemBase {
 
   public void configureButtons() {
     Joystick Gamepad = new Joystick(0);
-    JoystickButton x = new JoystickButton(Gamepad, 1);
-    JoystickButton y = new JoystickButton(Gamepad, 2);
-    JoystickButton b = new JoystickButton(Gamepad, 3);
+    JoystickButton leftClick = new JoystickButton(Gamepad, 11);
 
+    JoystickButton x = new JoystickButton(Gamepad, 1);
+    JoystickButton a = new JoystickButton(Gamepad, 2);
+    JoystickButton b = new JoystickButton(Gamepad, 3);
+    JoystickButton y = new JoystickButton(Gamepad, 4);
     if (getDataFromField() == 'N') {
-      b.whenPressed(new Cmd_SpinThrice(this));
-      x.whenPressed(new Cmd_StopOnColor(this, 'N'));
-      SmartDashboard.putString("Cmd", "x = stoponcolor, b = spinthrice");
+      if (leftClick.get()) {
+        x.whenPressed(new Cmd_StopOnColor(this, 'B'));
+        a.whenPressed(new Cmd_StopOnColor(this, 'G'));
+        b.whenPressed(new Cmd_StopOnColor(this, 'R'));
+        y.whenPressed(new Cmd_StopOnColor(this, 'Y'));
+        SmartDashboard.putString("Mode", "STOP ON COLOR");
+      } else {
+        x.whenPressed(new Cmd_SpinThrice(this));
+        SmartDashboard.putString("Mode", "SPIN THRICE");
+      }
     } else {
+      x.whenPressed(new Cmd_StopOnColor(this, getDataFromField()));
       SmartDashboard.putString("Cmd", "data from field != 'N'");
     }
   }
 
   public void periodic() {
+    // RobotContainer.configurePanel();
     configureButtons();
     senseColors();
     getRGBValues();
