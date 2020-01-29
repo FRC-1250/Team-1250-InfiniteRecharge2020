@@ -7,7 +7,9 @@
 
 package frc.robot.commands.panel;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Sub_Panel;
 
 public class Cmd_StopOnColor extends CommandBase {
@@ -26,7 +28,8 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_panel.spinMotor();
+    s_panel.extendCylinder();
+    s_panel.spinMotor(0.2 * s_panel.bestSpinDirection(color));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -37,6 +40,7 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    // s_panel.retractCylinders();
     s_panel.stopMotor();
   }
 

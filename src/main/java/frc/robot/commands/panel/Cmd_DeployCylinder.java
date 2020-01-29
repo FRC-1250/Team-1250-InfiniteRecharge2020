@@ -11,27 +11,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Panel;
 
-public class Cmd_SpinThrice extends CommandBase {
+public class Cmd_DeployCylinder extends CommandBase {
   /**
-   * Creates a new Cmd_SpinThrice.
+   * Creates a new Cmd_DeployCylinder.
    */
   private final Sub_Panel s_panel;
-  char desiredColor;
-  int i;
-  char pastColor;
-  public Cmd_SpinThrice(Sub_Panel subsystem) {
-    s_panel = subsystem;
-    addRequirements(subsystem);
+  public Cmd_DeployCylinder(Sub_Panel panel) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(panel);
+    s_panel = panel;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    i = 0;
-    pastColor = 'N';
-    desiredColor = s_panel.getSensorColor();
-    s_panel.spinMotor(0.4);
+    s_panel.extendCylinder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,21 +36,11 @@ public class Cmd_SpinThrice extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_panel.stopMotor();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // SmartDashboard.putNumber("i", i);
-    char currentColor = s_panel.getSensorColor();
-    if (currentColor == desiredColor && currentColor != pastColor) {
-      i++;
-    }
-    if (i == 7) {
-      return true;
-    }
-    pastColor = currentColor;
     return false;
   }
 }

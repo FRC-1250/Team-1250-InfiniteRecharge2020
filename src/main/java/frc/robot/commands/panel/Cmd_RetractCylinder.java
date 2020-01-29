@@ -8,29 +8,28 @@
 package frc.robot.commands.panel;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Panel;
 
-public class Cmd_SpinMotor extends CommandBase {
-  private final Sub_Panel s_panel;
+public class Cmd_RetractCylinder extends CommandBase {
   /**
-   * Creates a new Cmd_SpinMotor.
+   * Creates a new Cmd_RetractCylinder.
    */
-  public Cmd_SpinMotor(Sub_Panel subsystem) {
-    s_panel = subsystem;
-    addRequirements(subsystem);
+  private final Sub_Panel s_panel;
+  public Cmd_RetractCylinder(Sub_Panel panel) {
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(panel);
+    s_panel = panel;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    s_panel.retractCylinders();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    s_panel.spinMotor();
   }
 
   // Called once the command ends or is interrupted.

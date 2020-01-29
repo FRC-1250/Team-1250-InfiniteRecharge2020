@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -30,37 +31,14 @@ public class Sub_Panel extends SubsystemBase {
   /**
    * Creates a new Sub_Panel.
    */
-    CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
-    I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
-    Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
+    
+  CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
+  I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
+  Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
 
-    ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-    ColorMatch m_colorMatcher = new ColorMatch();
+  ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+  ColorMatch m_colorMatcher = new ColorMatch();
 
-    /*
-    Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
-    Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
-    Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
-    Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
-    */
-
-    // Our colors vvv
-    /*
-    // Without LED (does not work great, sees red as yellow)
-    private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.47, 0.34);
-    private final Color kGreenTarget = ColorMatch.makeColor(0.23, 0.57, 0.19);
-    private final Color kRedTarget = ColorMatch.makeColor(0.59, 0.08, 0.32);
-    private final Color kYellowTarget = ColorMatch.makeColor(0.40, 0.51, 0.08);
-  */
-  /*
-  
-    // With LED
-    private final Color kBlueTarget = ColorMatch.makeColor(0.17, 0.45, 0.34);
-    private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.55, 0.24);
-    private final Color kRedTarget = ColorMatch.makeColor(0.42, 0.39, 0.16);
-    private final Color kYellowTarget = ColorMatch.makeColor(0.33, 0.53, 0.13);
-*/
-  // Last try with configured colors
   private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.46, 0.35);
   private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.53, 0.25);
   private final Color kRedTarget = ColorMatch.makeColor(0.41, 0.40, 0.17);
@@ -103,18 +81,18 @@ public class Sub_Panel extends SubsystemBase {
     int len = arr.length; 
     int i = 0; 
     while (i < len) { 
-        if (arr[i] == t) {
-            return i;
-        } 
-        else {
-            i++; 
-        } 
+      if (arr[i] == t) {
+        return i;
+      } 
+      else {
+        i++; 
+      } 
     }
     return -1; 
     } 
 
-  public void spinMotor() {
-    panelMotor.set(0.4);
+  public void spinMotor(double speed) {
+    panelMotor.set(speed);
   }
 
   public void stopMotor() {
@@ -149,21 +127,9 @@ public class Sub_Panel extends SubsystemBase {
     SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", Character.toString(colorChar));
 
-    /**
-     * In addition to RGB IR values, the color sensor can also return an 
-     * infrared proximity value. The chip contains an IR led which will emit
-     * IR pulses and measure the intensity of the return. When an object is 
-     * close the value of the proximity will be large (max 2047 with default
-     * settings) and will approach zero when the object is far away.
-     * 
-     * Proximity can be used to roughly approximate the distance of an object
-     * or provide a threshold for when an object is close enough to provide
-     * accurate color values.
-     */
     final int proximity = m_colorSensor.getProximity();
 
     SmartDashboard.putNumber("Proximity", proximity);
-
   }
 
   public char getSensorColor() {
@@ -194,45 +160,61 @@ public class Sub_Panel extends SubsystemBase {
     return real_color;
   }
 
+  public int getProximity() {
+    return m_colorSensor.getProximity();
+  }
+
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
-    if (color == 'N') { // color should equal 'N' when you want to stop on whatever color you see as you deploy the command
-      color = getSensorColor();
-      if (color == getDataFromField()) {
-        return true;
-      }
-      return false;
-    } else {
+    if (getProximity() > 140) {
       if (color == getSensorColor()) {
         return true;
       }
-      return false;
     }
+    return false;
+  }
+
+  public int bestSpinDirection(char desiredColor) {
+    char[] colors = {'Y', 'R', 'G', 'B'};
+    int colorIndex, desiredColorIndex;
+    if (getProximity() > 140) {
+      colorIndex = findIndex(colors, getSensorColor());
+      desiredColorIndex = findIndex(colors, desiredColor);
+      int indexDiff = colorIndex - desiredColorIndex;
+      if ((indexDiff == -3) || (indexDiff == 1)) {
+        return -1; // spin CCW
+      }
+    }
+    return 1; // spin CW
   }
 
   public void configureButtons() {
     Joystick Gamepad = new Joystick(0);
+    JoystickButton leftClick = new JoystickButton(Gamepad, 11);
+
     JoystickButton x = new JoystickButton(Gamepad, 1);
+    JoystickButton a = new JoystickButton(Gamepad, 2);
     JoystickButton b = new JoystickButton(Gamepad, 3);
-
-    if (getSensorColor() == 'Y') {
-      x.whenPressed(new Cmd_StopOnColor(this, 'R'));
-      SmartDashboard.putString("Cmd", "awful yellow");
-    } else {
-      if (getDataFromField() == 'N') {
-        x.whenPressed(new Cmd_SpinThrice(this));
-        SmartDashboard.putString("Cmd", "spinthrice");
+    JoystickButton y = new JoystickButton(Gamepad, 4);
+    if (getDataFromField() == 'N') {
+      if (leftClick.get()) {
+        x.whenPressed(new Cmd_StopOnColor(this, 'B'));
+        a.whenPressed(new Cmd_StopOnColor(this, 'G'));
+        b.whenPressed(new Cmd_StopOnColor(this, 'R'));
+        y.whenPressed(new Cmd_StopOnColor(this, 'Y'));
+        SmartDashboard.putString("Mode", "STOP ON COLOR");
       } else {
-        b.whenPressed(new Cmd_SpinThrice(this));
-        x.whenPressed(new Cmd_StopOnColor(this, 'N'));
-        SmartDashboard.putString("Cmd", "stoponcolor");
+        x.whenPressed(new Cmd_SpinThrice(this));
+        SmartDashboard.putString("Mode", "SPIN THRICE");
       }
+    } else {
+      x.whenPressed(new Cmd_StopOnColor(this, getDataFromField()));
+      SmartDashboard.putString("Cmd", "data from field != 'N'");
     }
-
   }
 
   public void periodic() {
-    // configureButtons();
-    // This method will be called once per scheduler run
+    // RobotContainer.configurePanel();
+    configureButtons();
     senseColors();
     getRGBValues();
   }

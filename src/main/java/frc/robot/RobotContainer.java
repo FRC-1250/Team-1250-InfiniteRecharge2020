@@ -28,16 +28,49 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Sub_Drivetrain s_drivetrain = new Sub_Drivetrain();
-  private final Sub_Panel s_panel = new Sub_Panel();
-  private final Sub_Intake s_intake = new Sub_Intake();
-  private final Sub_Limelight s_limelight = new Sub_Limelight();
-  private final Sub_Shooter s_shooter = new Sub_Shooter();
+  private static final Sub_Drivetrain s_drivetrain = new Sub_Drivetrain();
+  public static final Sub_Panel s_panel = new Sub_Panel();
+  private static final Sub_Intake s_intake = new Sub_Intake();
+  private static final Sub_Limelight s_limelight = new Sub_Limelight();
+  private static final Sub_Shooter s_shooter = new Sub_Shooter();
+  private static Joystick Gamepad = new Joystick(0);
+  private static JoystickButton x = new JoystickButton(Gamepad, 1);
+  private static JoystickButton a = new JoystickButton(Gamepad, 2);
+  private static JoystickButton b = new JoystickButton(Gamepad, 3);
+  private static JoystickButton y = new JoystickButton(Gamepad, 4);
+  private static JoystickButton start = new JoystickButton(Gamepad, 10);
+  private static JoystickButton leftClick = new JoystickButton(Gamepad, 11);
+  private static JoystickButton rightClick = new JoystickButton(Gamepad, 12);
+  static Command spinThrice = new Cmd_SpinThrice(s_panel);
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     configureButtonBindings();        
+  }
+
+  public static void configurePanel() {
+    JoystickButton x = new JoystickButton(Gamepad, 1);
+    JoystickButton a = new JoystickButton(Gamepad, 2);
+    JoystickButton b = new JoystickButton(Gamepad, 3);
+    JoystickButton y = new JoystickButton(Gamepad, 4);
+    if (s_panel.getDataFromField() == 'N') {
+      if (leftClick.get()) {
+        x.whenPressed(new Cmd_StopOnColor(s_panel, 'B'));
+        a.whenPressed(new Cmd_StopOnColor(s_panel, 'G'));
+        b.whenPressed(new Cmd_StopOnColor(s_panel, 'R'));
+        y.whenPressed(new Cmd_StopOnColor(s_panel, 'Y'));
+        SmartDashboard.putString("Mode", "STOP ON COLOR");
+      } else {
+        x.whenPressed(spinThrice);
+        SmartDashboard.putString("Mode", "SPIN THRICE");
+        // maybe instead, do if (x.get()) { execute spinthrice }
+        // or x.and(a).whenActive(command, interruptible);
+      }
+    } else {
+      x.whenPressed(new Cmd_StopOnColor(s_panel, s_panel.getDataFromField()));
+      SmartDashboard.putString("Cmd", "data from field != 'N'");
+    }
   }
 
   /**
@@ -50,9 +83,6 @@ public class RobotContainer {
     Joystick Gamepad = new Joystick(0);
     JoystickButton x = new JoystickButton(Gamepad, 1);
     JoystickButton b = new JoystickButton(Gamepad, 3);
-
-    x.whenPressed(new Cmd_SpinThrice(s_panel));
-    b.whenPressed(new Cmd_StopOnColor(s_panel, 'R'));
   }
 
 
