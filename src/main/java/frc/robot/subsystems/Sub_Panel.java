@@ -188,35 +188,8 @@ public class Sub_Panel extends SubsystemBase {
     return 1; // spin CW
   }
 
-  public void configureButtons() {
-    Joystick Gamepad = new Joystick(0);
-    JoystickButton leftClick = new JoystickButton(Gamepad, 11);
-
-    JoystickButton x = new JoystickButton(Gamepad, 1);
-    JoystickButton a = new JoystickButton(Gamepad, 2);
-    JoystickButton b = new JoystickButton(Gamepad, 3);
-    JoystickButton y = new JoystickButton(Gamepad, 4);
-    if (getDataFromField() == 'N') {
-      if (leftClick.get()) {
-        x.whenPressed(new Cmd_StopOnColor(this, 'B'));
-        a.whenPressed(new Cmd_StopOnColor(this, 'G'));
-        b.whenPressed(new Cmd_StopOnColor(this, 'R'));
-        y.whenPressed(new Cmd_StopOnColor(this, 'Y'));
-        SmartDashboard.putString("Mode", "STOP ON COLOR");
-      } else {
-        x.whenPressed(new Cmd_SpinThrice(this));
-        SmartDashboard.putString("Mode", "SPIN THRICE");
-      }
-    } else {
-      x.whenPressed(new Cmd_StopOnColor(this, getDataFromField()));
-      SmartDashboard.putString("Cmd", "data from field != 'N'");
-    }
-  }
-
   public void periodic() {
-    // RobotContainer.configurePanel();
-    configureButtons();
+    RobotContainer.configurePanel();
     senseColors();
-    getRGBValues();
   }
 }

@@ -43,6 +43,7 @@ public final class Constants {
 
     //Sub_Intake
     public static final int INT_COL_MOTOR = 19;
+    public static final int INT_SOL = 3;
 
     //Sub_Hopper
     public static final int HOP_FALCON_0 = 20;
@@ -68,4 +69,9 @@ public final class Constants {
     public static final double SHOOT_TURRET_LEFT_BOUND= 1120;
     public static final double SHOOT_TURRET_RIGHT_BOUND= 3560;
 
+    // Buttons
+    public static final int CLIMB_MODE = 5; // LB
+    public static final int SHOOT_MODE = 9; // Back button
+    public static final int PANEL_MODE = 10; // Start button
+    
 }
