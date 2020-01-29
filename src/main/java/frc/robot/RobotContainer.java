@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.commands.intake.Cmd_SpinMotor;
+import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Intake;
 import frc.robot.subsystems.Sub_Limelight;
@@ -28,20 +30,24 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  // Subsystems
   private static final Sub_Drivetrain s_drivetrain = new Sub_Drivetrain();
   public static final Sub_Panel s_panel = new Sub_Panel();
   private static final Sub_Intake s_intake = new Sub_Intake();
   private static final Sub_Limelight s_limelight = new Sub_Limelight();
   private static final Sub_Shooter s_shooter = new Sub_Shooter();
+  private static final Sub_Climber s_climb = new Sub_Climber();
+
+  // Buttons
   private static Joystick Gamepad = new Joystick(0);
   private static JoystickButton x = new JoystickButton(Gamepad, 1);
   private static JoystickButton a = new JoystickButton(Gamepad, 2);
   private static JoystickButton b = new JoystickButton(Gamepad, 3);
   private static JoystickButton y = new JoystickButton(Gamepad, 4);
-  private static JoystickButton start = new JoystickButton(Gamepad, 10);
-  private static JoystickButton leftClick = new JoystickButton(Gamepad, 11);
-  private static JoystickButton rightClick = new JoystickButton(Gamepad, 12);
-  static Command spinThrice = new Cmd_SpinThrice(s_panel);
+  private static JoystickButton rb = new JoystickButton(Gamepad, 6);
+  private static JoystickButton panelMode = new JoystickButton(Gamepad, Constants.PANEL_MODE); // start button
+  private static JoystickButton shootMode = new JoystickButton(Gamepad, Constants.SHOOT_MODE); // back button
+  private static JoystickButton climbMode = new JoystickButton(Gamepad, Constants.CLIMB_MODE); // lt button
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -50,27 +56,25 @@ public class RobotContainer {
   }
 
   public static void configurePanel() {
-    JoystickButton x = new JoystickButton(Gamepad, 1);
-    JoystickButton a = new JoystickButton(Gamepad, 2);
-    JoystickButton b = new JoystickButton(Gamepad, 3);
-    JoystickButton y = new JoystickButton(Gamepad, 4);
-    if (s_panel.getDataFromField() == 'N') {
-      if (leftClick.get()) {
-        x.whenPressed(new Cmd_StopOnColor(s_panel, 'B'));
-        a.whenPressed(new Cmd_StopOnColor(s_panel, 'G'));
-        b.whenPressed(new Cmd_StopOnColor(s_panel, 'R'));
-        y.whenPressed(new Cmd_StopOnColor(s_panel, 'Y'));
-        SmartDashboard.putString("Mode", "STOP ON COLOR");
-      } else {
-        x.whenPressed(spinThrice);
-        SmartDashboard.putString("Mode", "SPIN THRICE");
-        // maybe instead, do if (x.get()) { execute spinthrice }
-        // or x.and(a).whenActive(command, interruptible);
-      }
-    } else {
-      x.whenPressed(new Cmd_StopOnColor(s_panel, s_panel.getDataFromField()));
-      SmartDashboard.putString("Cmd", "data from field != 'N'");
-    }
+    panelMode.and(x).whenActive(new Cmd_StopOnColor(s_panel, 'B'));
+    panelMode.and(a).whenActive(new Cmd_StopOnColor(s_panel, 'G'));
+    panelMode.and(b).whenActive(new Cmd_StopOnColor(s_panel, 'R'));
+    panelMode.and(y).whenActive(new Cmd_StopOnColor(s_panel, 'Y'));
+    panelMode.and(rb).and(x).whenActive(new Cmd_SpinThrice(s_panel), true);
+    panelMode.and(rb).and(y).whenActive(new Cmd_StopOnColor(s_panel, s_panel.getDataFromField()));
+  }
+
+  public static void configureCollector() {
+    // default buttons
+    x.whileHeld(new Cmd_SpinMotor(s_intake));
+  }
+
+  public static void configureShooter() {
+    // ex: shootMode.and(x).whenActive(new Cmd_Shoot());
+  }
+
+  public static void configureClimber() {
+    // ex: climbMode.and(x).whenActive(new Cmd_Climb());
   }
 
   /**

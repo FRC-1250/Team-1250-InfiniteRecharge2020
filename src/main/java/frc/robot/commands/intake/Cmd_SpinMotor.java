@@ -5,31 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.panel;
+package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.Sub_Panel;
+import frc.robot.subsystems.Sub_Intake;
 
-public class Cmd_StopOnColor extends CommandBase {
+public class Cmd_SpinMotor extends CommandBase {
   /**
-   * Creates a new Cmd_StopOnColor.
+   * Creates a new Cmd_SpinMotor.
    */
-  private final Sub_Panel s_panel;
-  char color;
-  public Cmd_StopOnColor(Sub_Panel subsystem, char _color) {
-    color = _color;
-    s_panel = subsystem;
-    addRequirements(subsystem);
+  private final Sub_Intake s_intake;
+  public Cmd_SpinMotor(Sub_Intake intake) {
+    s_intake = intake;
+    addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_panel.extendCylinder();
-    s_panel.spinMotor(0.15 * s_panel.bestSpinDirection(color));
+    s_intake.spinIntake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,13 +35,12 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // s_panel.retractCylinders();
-    s_panel.stopMotor();
+    s_intake.stopIntake();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return s_panel.stopOnColor(color);
+    return false;
   }
 }

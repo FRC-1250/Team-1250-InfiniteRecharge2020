@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class Sub_Intake extends SubsystemBase {
   /**
@@ -24,24 +25,25 @@ public class Sub_Intake extends SubsystemBase {
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
   Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
 
-  public void collect() {
+  public void spinIntake() {
     intakeMotor.set(0.5);
   }
 
-  public void collectStop() {
+  public void stopIntake() {
     intakeMotor.set(0);
   }
 
-  public void collectSolExtend(){
+  public void extendCylinder() {
     intakeSol.set(true);
   }
 
-  public void collectSolRetract(){
+  public void retractCylinder() {
     intakeSol.set(false);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    RobotContainer.configureCollector();
   }
 }

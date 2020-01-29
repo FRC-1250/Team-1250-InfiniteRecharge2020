@@ -74,4 +74,9 @@ public final class Constants {
     public static final double DRV_KP_SIMPLE = 0.05;
 
 
+    // Buttons
+    public static final int CLIMB_MODE = 5; // LB
+    public static final int SHOOT_MODE = 9; // Back button
+    public static final int PANEL_MODE = 10; // Start button
+    
 }
