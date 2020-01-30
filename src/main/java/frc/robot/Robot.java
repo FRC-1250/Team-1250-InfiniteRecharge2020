@@ -27,6 +27,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   private Sub_Drivetrain s_drivetrain;
+  public static int i;
 
   @Override
   public void robotInit() {
@@ -35,6 +36,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     s_drivetrain = new Sub_Drivetrain();
     RobotContainer.s_panel.retractCylinders();
+    i = 0;
   }
 
   /**
@@ -51,6 +53,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    if (i > 7) {
+      i = 0;
+    }
     
   }
 

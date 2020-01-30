@@ -7,11 +7,11 @@
 
 package frc.robot.subsystems;
 
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -191,5 +191,7 @@ public class Sub_Panel extends SubsystemBase {
   public void periodic() {
     RobotContainer.configurePanel();
     senseColors();
+    // System.out.println("##############################" + panelMotor.getFaults());
+    // panelMotor.getFaults());
   }
 }

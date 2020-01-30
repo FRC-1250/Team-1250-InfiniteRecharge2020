@@ -39,11 +39,7 @@ public class Sub_Shooter extends SubsystemBase {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
   }
-
   
-
-
-
   public double degToRad(double deg) {
     return deg * Math.PI / 180;
   }
@@ -59,13 +55,6 @@ public class Sub_Shooter extends SubsystemBase {
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry tv = table.getEntry("tv");
-
-    if (Gamepad1.getRawButton(2)) {
-      table.getEntry("ledMode").setNumber(1);
-    }
-    else {
-      table.getEntry("ledMode").setNumber(3);
-    }
 
     double x = tx.getDouble(0.0);
     double y = ty.getDouble(0);

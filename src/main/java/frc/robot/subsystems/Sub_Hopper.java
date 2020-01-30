@@ -36,6 +36,11 @@ public class Sub_Hopper extends SubsystemBase {
     rightMotor.set(0.5);
   }
 
+  public void stopHopperMotors() {
+    leftMotor.set(0);
+    rightMotor.set(0);
+  }
+
   public void uptakeGo() {
     uptakeMotor.set(0.5);
   }
@@ -50,6 +55,11 @@ public class Sub_Hopper extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    /* if (Gamepad.getSomeButton()) {
+      // unjam intake
+    } else {
+      // background management stuff
+    }
+    */
   }
 }

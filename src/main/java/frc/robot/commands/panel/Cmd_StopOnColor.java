@@ -40,8 +40,8 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // s_panel.retractCylinders();
     s_panel.stopMotor();
+    s_panel.retractCylinders();
   }
 
   // Returns true when the command should end.

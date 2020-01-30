@@ -23,7 +23,7 @@ public class Sub_Intake extends SubsystemBase {
   }
 
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
-  Solenoid intakeSol = new Solenoid(Constants.INT_SOL);
+  Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
 
   public void spinIntake() {
     intakeMotor.set(0.5);
@@ -31,6 +31,10 @@ public class Sub_Intake extends SubsystemBase {
 
   public void stopIntake() {
     intakeMotor.set(0);
+  }
+
+  public void reverseIntake() {
+    intakeMotor.set(-0.5);
   }
 
   public void extendCylinder() {
