@@ -40,8 +40,9 @@ public class Sub_Shooter extends SubsystemBase {
    flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
   }
 
-  
-
+  //TODO:
+  //Config pid for hood and pidf for wheel
+  //pid for hood will be realllllllly slow (config max)
 
 
   public double degToRad(double deg) {
