@@ -18,11 +18,11 @@ import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
 import frc.robot.commands.intake.Cmd_UnjamIntake;
+import frc.robot.subsystems.Sub_CAN;
 import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Hopper;
 import frc.robot.subsystems.Sub_Intake;
-import frc.robot.subsystems.Sub_Limelight;
 import frc.robot.subsystems.Sub_Panel;
 import frc.robot.subsystems.Sub_Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,13 +38,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // Subsystems
-  private static final Sub_Drivetrain s_drivetrain = new Sub_Drivetrain();
+  public static final Sub_Drivetrain s_drivetrain = new Sub_Drivetrain();
   public static final Sub_Panel s_panel = new Sub_Panel();
-  private static final Sub_Intake s_intake = new Sub_Intake();
-  private static final Sub_Limelight s_limelight = new Sub_Limelight();
-  private static final Sub_Shooter s_shooter = new Sub_Shooter();
-  private static final Sub_Climber s_climb = new Sub_Climber();
-  private static final Sub_Hopper s_hopper = new Sub_Hopper();
+  public static final Sub_Intake s_intake = new Sub_Intake();
+  public static final Sub_Shooter s_shooter = new Sub_Shooter();
+  public static final Sub_Climber s_climb = new Sub_Climber();
+  public static final Sub_Hopper s_hopper = new Sub_Hopper();
+  public static final Sub_CAN s_can = new Sub_CAN();
 
   // Buttons
   private static Joystick Gamepad = new Joystick(0);
@@ -76,9 +76,6 @@ public class RobotContainer {
   }
 
   public static void configureCollector() {
-      // Default mode
-    // TODO: make sure that these buttons don't override the other "[mode].and(x)" buttons
-    // (i.e. "shootMode.and(x)" is stopped when it reaches "x" because of these buttons)
     x.whenPressed(new Cmd_Collect(s_intake, s_hopper));
     b.whenPressed(new Cmd_StopCollect(s_intake, s_hopper));
     a.whenPressed(new Cmd_UnjamIntake(s_intake, s_hopper));
@@ -162,13 +159,12 @@ public class RobotContainer {
     // shooter_Fire.whenActive();
     panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
     panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel, s_panel.getDataFromField()), true);
-    panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel), false);
+    panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel, s_shooter), false);
     collect_Collect.toggleWhenActive(new Cmd_Collect(s_intake, s_hopper), false);
     collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), false);
     // climb_Extend.whenActive();
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();
-
   }
 
   public Command getAutonomousCommand() {

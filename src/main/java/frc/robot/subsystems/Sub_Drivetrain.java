@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.Vector;
+
+import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -18,9 +21,11 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utilities.CAN_DeviceFaults;
+import frc.robot.utilities.CAN_Input;
 
 
-public class Sub_Drivetrain extends SubsystemBase {
+public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   CANSparkMax fRightMotor = new CANSparkMax(Constants.DRV_RIGHT_FRONT, MotorType.kBrushless);
   CANSparkMax bRightMotor = new CANSparkMax(Constants.DRV_RIGHT_BACK, MotorType.kBrushless);
@@ -169,15 +174,15 @@ public class Sub_Drivetrain extends SubsystemBase {
     corrected = 0.05 * rotation;
           
     if (sign > 0){
-            corrected = Math.min(upperSpeed * sign, corrected);
-            corrected = Math.max(lowerSpeed * sign, corrected);
-          }
-              
+      corrected = Math.min(upperSpeed * sign, corrected);
+      corrected = Math.max(lowerSpeed * sign, corrected);
+    }
+
     else{
-            corrected = Math.max(upperSpeed * sign, corrected);
-            corrected = Math.min(lowerSpeed * sign, corrected);                    
-          }
-          diffDriveGroup.arcadeDrive(0, corrected);
+      corrected = Math.max(upperSpeed * sign, corrected);
+      corrected = Math.min(lowerSpeed * sign, corrected);                    
+    }
+    diffDriveGroup.arcadeDrive(0, corrected);
   }
 
   public void driveStop(){
@@ -198,5 +203,16 @@ public class Sub_Drivetrain extends SubsystemBase {
     else{
       drive(Gamepad);
     }
+  }
+
+  public Vector<CAN_DeviceFaults> input() {
+    StickyFaults fault = new StickyFaults();
+    Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
+    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
+    myCanDevices.add(new CAN_DeviceFaults(fRightMotor.getStickyFaults(), fRightMotor.getDeviceId()));
+    myCanDevices.add(new CAN_DeviceFaults(fLeftMotor));
+    myCanDevices.add(new CAN_DeviceFaults(bRightMotor));
+    myCanDevices.add(new CAN_DeviceFaults(bLeftMotor));
+    return myCanDevices;
   }
 }

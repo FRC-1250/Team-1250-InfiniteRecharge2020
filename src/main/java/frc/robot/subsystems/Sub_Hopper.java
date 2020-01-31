@@ -7,13 +7,18 @@
 
 package frc.robot.subsystems;
 
+import java.util.Vector;
+
+import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utilities.CAN_DeviceFaults;
+import frc.robot.utilities.CAN_Input;
 
-public class Sub_Hopper extends SubsystemBase {
+public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   /**
    * Creates a new Sub_Hopper.
    */
@@ -61,5 +66,15 @@ public class Sub_Hopper extends SubsystemBase {
       // background management stuff
     }
     */
+  }
+
+  public Vector<CAN_DeviceFaults> input() {
+    StickyFaults fault = new StickyFaults();
+    Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
+    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
+    myCanDevices.add(new CAN_DeviceFaults(leftMotor));
+    myCanDevices.add(new CAN_DeviceFaults(rightMotor));
+    myCanDevices.add(new CAN_DeviceFaults(uptakeMotor));
+    return myCanDevices;
   }
 }

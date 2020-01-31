@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.Vector;
+
+import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -27,8 +30,9 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.utilities.*;
 
-public class Sub_Panel extends SubsystemBase {
+public class Sub_Panel extends SubsystemBase implements CAN_Input {
   /**
    * Creates a new Sub_Panel.
    */
@@ -193,5 +197,14 @@ public class Sub_Panel extends SubsystemBase {
     senseColors();
     // System.out.println("##############################" + panelMotor.getFaults());
     // panelMotor.getFaults());
+  }
+
+  public Vector<CAN_DeviceFaults> input() {
+    StickyFaults fault = new StickyFaults();
+    Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
+    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
+    // or (?) myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE));
+    myCanDevices.add(new CAN_DeviceFaults(panelMotor));
+    return myCanDevices;
   }
 }

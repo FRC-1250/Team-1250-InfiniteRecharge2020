@@ -7,7 +7,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.Vector;
+
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -21,8 +24,10 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utilities.CAN_DeviceFaults;
+import frc.robot.utilities.CAN_Input;
 
-public class Sub_Shooter extends SubsystemBase {
+public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   //Speed Controllers created
   WPI_TalonSRX turretTalon = new WPI_TalonSRX(Constants.SHOOT_TURRET);
   CANSparkMax hoodNeo = new CANSparkMax(Constants.SHOOT_HOOD, MotorType.kBrushless);
@@ -35,6 +40,11 @@ public class Sub_Shooter extends SubsystemBase {
   double turretP = Constants.SHOOT_TURRET_P;
   double turretD = Constants.SHOOT_TURRET_D;
 
+  public double turretCurrentPos;
+  public double turretHome = Constants.SHOOT_TURRET_HOME;
+  public double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
+  public double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
+
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
@@ -44,11 +54,15 @@ public class Sub_Shooter extends SubsystemBase {
     return deg * Math.PI / 180;
   }
 
+  public void spinTurretMotor(double speed) {
+    turretTalon.set(speed);
+  }
+
   @Override
   public void periodic() {
     PIDController turretPIDController = new PIDController(turretP, 0, turretD);
 
-    double turretCurrentPos = turretTalon.getSelectedSensorPosition();
+    turretCurrentPos = turretTalon.getSelectedSensorPosition();
     SmartDashboard.putNumber("Turret Position", turretCurrentPos);
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -62,10 +76,6 @@ public class Sub_Shooter extends SubsystemBase {
 
     SmartDashboard.putNumber("tx", x);
     SmartDashboard.putNumber("tv", v);
-
-    double turretHome = Constants.SHOOT_TURRET_HOME;
-    double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
-    double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
 
     double distance = 60.25/(Math.tan(degToRad(26.85) + degToRad(y)));
     SmartDashboard.putNumber("Distance From Outer Port", distance);
@@ -115,6 +125,17 @@ public class Sub_Shooter extends SubsystemBase {
     }
 
     turretPIDController.close();
-    
+  }
+
+  public Vector<CAN_DeviceFaults> input() {
+    StickyFaults fault = new StickyFaults();
+    Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
+    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
+    // or (?) myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE));
+    myCanDevices.add(new CAN_DeviceFaults(turretTalon));
+    myCanDevices.add(new CAN_DeviceFaults(hoodNeo));
+    myCanDevices.add(new CAN_DeviceFaults(flywheelFalconLeft));
+    myCanDevices.add(new CAN_DeviceFaults(flywheelFalconRight));
+    return myCanDevices;
   }
 }

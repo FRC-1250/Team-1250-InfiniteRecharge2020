@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -29,6 +31,8 @@ public class Robot extends TimedRobot {
   private Sub_Drivetrain s_drivetrain;
   public static int i;
 
+  public static AddressableLED ledStrip;
+  public static AddressableLEDBuffer ledStripBuffer;
   @Override
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -36,6 +40,19 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     s_drivetrain = new Sub_Drivetrain();
     RobotContainer.s_panel.retractCylinders();
+
+    ledStrip = new AddressableLED(Constants.LED_PWM_PORT);
+
+    // Reuse buffer
+    // Default to a length of 60, start empty output
+    // Length is expensive to set, so only set it once, then just update data
+    ledStripBuffer = new AddressableLEDBuffer(RobotContainer.s_can.can_length);
+    ledStrip.setLength(ledStripBuffer.getLength());
+
+    // Set the data
+    ledStrip.setData(ledStripBuffer);
+    ledStrip.start();
+
     i = 0;
   }
 
