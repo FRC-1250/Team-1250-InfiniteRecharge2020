@@ -7,9 +7,13 @@
 
 package frc.robot.subsystems;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 import com.ctre.phoenix.motorcontrol.StickyFaults;
+import com.revrobotics.CANSparkMax.FaultID;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -24,16 +28,12 @@ public class Sub_CAN extends SubsystemBase implements CAN_Input {
   /**
    * Creates a new Sub_CAN.
    */
-  private final AddressableLED ledStrip = Robot.ledStrip;
-  private final AddressableLEDBuffer ledStripBuffer = Robot.ledStripBuffer;
-  public int can_length;
-  
   public Sub_CAN() {
   }
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> masterCanDevices = new Vector<CAN_DeviceFaults>();
-    // inputs from each subsystem with CAN
+    // Inputs from each subsystem with CAN
     masterCanDevices.addAll(RobotContainer.s_panel.input());
     masterCanDevices.addAll(RobotContainer.s_drivetrain.input());
     masterCanDevices.addAll(RobotContainer.s_shooter.input());
@@ -42,25 +42,40 @@ public class Sub_CAN extends SubsystemBase implements CAN_Input {
     return masterCanDevices;
   }
 
-  @Override
-  public void periodic() {
+  public int sortLEDByCAN(String getLength) {
     String msg = "CAN_MSG_NOT_FOUND";
-    Vector<CAN_DeviceFaults> can_devices = input();
-    can_length = can_devices.size();
+    Vector<CAN_DeviceFaults> can_devices = this.input();
+    int can_length = can_devices.size();
 
-    for (int i = 0; i < can_devices.size(); i++) {
-      if (can_devices.get(i).stickyfault == msg) {
+    if (getLength == "getLength") {
+      return can_length;
+    }
+
+    Collections.sort(can_devices, new Comparator<CAN_DeviceFaults>() {
+      public int compare(CAN_DeviceFaults c1, CAN_DeviceFaults c2) {
+        return c1.getCanID() - c2.getCanID();
+      }
+    });
+
+    // Palette cleanser
+    for (int i = 0; i < Robot.ledStripBuffer.getLength(); i++) {
+      Robot.ledStripBuffer.setRGB(i, 0, 0, 255);
+    }
+
+    for (int i = 1; i < Robot.ledStripBuffer.getLength(); i++) {
+      if ((can_devices.get(i).stickyfault == msg) || (can_devices.get(i).stickyfault == "true")) {
         // bad
-        ledStripBuffer.setRGB(i, 255, 0, 0);
-      } else if (can_devices.get(i).stickyfault == "SPARK") {
-        // not sure about CAN for sparks (sticky faults are shorts and don't follow a visible pattern)
-        ledStripBuffer.setRGB(i, 255, 165, 0);
+        Robot.ledStripBuffer.setRGB(i, 60, 0, 0);
       } else {
         // good
-        ledStripBuffer.setRGB(i, 0, 255, 0);
+        Robot.ledStripBuffer.setRGB(i, 0, 60, 0);
       }
-      System.out.println("CANCANCANCAN ###########" + i + " " + can_devices.get(i).stickyfault);
+      System.out.println("CANCANCANCAN ###########" + i + " " + can_devices.get(i).getCanID() + " " + can_devices.get(i).stickyfault);
     }
-    ledStrip.setData(ledStripBuffer);
+    return can_length;
+  }
+
+  @Override
+  public void periodic() {
   }
 }

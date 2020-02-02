@@ -12,7 +12,7 @@ import java.util.Vector;
 import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utilities.CAN_DeviceFaults;
@@ -26,7 +26,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   WPI_TalonFX leftMotor = new WPI_TalonFX(Constants.HOP_FALCON_0);
   WPI_TalonFX rightMotor = new WPI_TalonFX(Constants.HOP_FALCON_1);
   WPI_TalonFX uptakeMotor = new WPI_TalonFX(Constants.HOP_ELE_MOTOR);
-  DigitalInput uptakeSensor = new DigitalInput(Constants.HOP_ELE_SENS);
+  AnalogInput uptakeSensor = new AnalogInput(Constants.HOP_ELE_SENS);
 
   public Sub_Hopper() {
   }
@@ -54,10 +54,6 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     uptakeMotor.set(-0.5);
   }
 
-  public boolean getSensor() {
-    return uptakeSensor.get();
-  }
-
   @Override
   public void periodic() {
     /* if (Gamepad.getSomeButton()) {
@@ -69,9 +65,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   }
 
   public Vector<CAN_DeviceFaults> input() {
-    StickyFaults fault = new StickyFaults();
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
-    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
     myCanDevices.add(new CAN_DeviceFaults(leftMotor));
     myCanDevices.add(new CAN_DeviceFaults(rightMotor));
     myCanDevices.add(new CAN_DeviceFaults(uptakeMotor));

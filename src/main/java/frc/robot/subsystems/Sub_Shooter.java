@@ -128,10 +128,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public Vector<CAN_DeviceFaults> input() {
-    StickyFaults fault = new StickyFaults();
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
-    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
-    // or (?) myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE));
     myCanDevices.add(new CAN_DeviceFaults(turretTalon));
     myCanDevices.add(new CAN_DeviceFaults(hoodNeo));
     myCanDevices.add(new CAN_DeviceFaults(flywheelFalconLeft));

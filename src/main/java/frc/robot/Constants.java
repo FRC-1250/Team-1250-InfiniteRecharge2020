@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public final class Constants {
 
     //Robot Devices----------------------------------------
+
+    // ALL DEVICES WILL HAVE TO BE PUT IN ORDER OF PHYSICAL DAISY CHAIN (CHANGE THESE LATER)
     //Sub_Drivetrain
     public static final int DRV_RIGHT_FRONT = 10;
     public static final int DRV_RIGHT_BACK = 11;
@@ -69,7 +71,7 @@ public final class Constants {
     public static final double SHOOT_TURRET_LEFT_BOUND= 1120;
     public static final double SHOOT_TURRET_RIGHT_BOUND= 3560;
 
-    public static final int LED_PWM_PORT = 0; // must be a PWM header
+    public static final int LED_PWM_PORT = 9; // must be a PWM header
 
     // Buttons
     public static final int CLIMB_MODE = 5; // LB

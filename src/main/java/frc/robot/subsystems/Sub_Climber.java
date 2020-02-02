@@ -35,9 +35,8 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   }
   
   public Vector<CAN_DeviceFaults> input() {
-    StickyFaults fault = new StickyFaults();
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
-    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
+    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE));
     return myCanDevices;
   }
 }

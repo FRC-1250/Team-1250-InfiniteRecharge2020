@@ -206,10 +206,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
 
   public Vector<CAN_DeviceFaults> input() {
-    StickyFaults fault = new StickyFaults();
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
-    // myCanDevices.add(new CAN_DeviceFaults(CAN_DEVICE.getStickyFaults(fault).toString(), CAN_DEVICE.getDeviceID()));
-    myCanDevices.add(new CAN_DeviceFaults(fRightMotor.getStickyFaults(), fRightMotor.getDeviceId()));
+    myCanDevices.add(new CAN_DeviceFaults(fRightMotor));
     myCanDevices.add(new CAN_DeviceFaults(fLeftMotor));
     myCanDevices.add(new CAN_DeviceFaults(bRightMotor));
     myCanDevices.add(new CAN_DeviceFaults(bLeftMotor));

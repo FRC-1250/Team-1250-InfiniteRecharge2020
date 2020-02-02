@@ -125,12 +125,12 @@ public class RobotContainer {
 
   Trigger collect_Collect = new Trigger() {
     @Override
-    public boolean get() { return collectMode.get() && x.get(); }
+    public boolean get() { return !panelMode.get() && !shootMode.get() && !climbMode.get() && x.get(); }
   };
 
   Trigger collect_StopCollect = new Trigger() {
     @Override
-    public boolean get() { return collectMode.get() && b.get(); }
+    public boolean get() { return !panelMode.get() && !shootMode.get() && !climbMode.get() && b.get(); }
   };
 
   Trigger climb_Extend = new Trigger() {

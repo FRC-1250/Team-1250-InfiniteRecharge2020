@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Sub_Drivetrain;
-import frc.robot.subsystems.Sub_Panel;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
@@ -46,14 +45,11 @@ public class Robot extends TimedRobot {
     // Reuse buffer
     // Default to a length of 60, start empty output
     // Length is expensive to set, so only set it once, then just update data
-    ledStripBuffer = new AddressableLEDBuffer(RobotContainer.s_can.can_length);
+    ledStripBuffer = new AddressableLEDBuffer(RobotContainer.s_can.sortLEDByCAN("getLength"));
     ledStrip.setLength(ledStripBuffer.getLength());
 
-    // Set the data
-    ledStrip.setData(ledStripBuffer);
-    ledStrip.start();
-
     i = 0;
+    ledStrip.start();
   }
 
   /**
@@ -73,7 +69,10 @@ public class Robot extends TimedRobot {
     if (i > 7) {
       i = 0;
     }
-    
+
+    RobotContainer.s_can.sortLEDByCAN("");
+    // Set the data
+    ledStrip.setData(ledStripBuffer);
   }
 
   /**
