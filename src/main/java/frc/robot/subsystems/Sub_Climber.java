@@ -23,10 +23,23 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   public Sub_Climber() {
   }
 
-  Solenoid solenoid = new Solenoid(Constants.CLM_SOL_EXTEND);
+  Solenoid phaseOneSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND0);
+  Solenoid phaseTwoSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND1);
 
-  public void extendCylinder() {
-    solenoid.set(true);
+  public void extendPhase1Cylinder() {
+    phaseOneSolenoid.set(true);
+  }
+
+  public void retractPhase1Cylinder() {
+    phaseOneSolenoid.set(true);
+  }
+
+  public void extendPhase2Cylinder() {
+    phaseOneSolenoid.set(false);
+  }
+
+  public void retractPhase2Cylinder() {
+    phaseOneSolenoid.set(false);
   }
 
   @Override

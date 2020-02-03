@@ -54,10 +54,9 @@ public final class Constants {
     public static final int HOP_ELE_SENS = 0;
 
     //Sub_Climber
-    public static final int CLM_SOL_EXTEND = 2;
+    public static final int CLM_SOL_EXTEND0 = 2;
+    public static final int CLM_SOL_EXTEND1 = 4;
     
-    //Pigeon
-
     //Constants--------------------------------------------
     public static final double DRV_GEAR_RATIO = 10;
     public static final double DRV_WHEEL_SIZE = 6;

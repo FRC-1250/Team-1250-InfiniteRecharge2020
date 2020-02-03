@@ -28,9 +28,11 @@ public class Cmd_SpinThrice extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pastColor = 'N';
-    desiredColor = s_panel.getSensorColor();
-    s_panel.spinMotor(0.4);
+    if (s_panel.isProximityGood()) {
+      pastColor = 'N';
+      desiredColor = s_panel.getSensorColor();
+      s_panel.spinMotor(0.4);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

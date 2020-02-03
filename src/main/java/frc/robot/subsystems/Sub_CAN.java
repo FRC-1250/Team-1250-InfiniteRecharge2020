@@ -70,7 +70,7 @@ public class Sub_CAN extends SubsystemBase implements CAN_Input {
         // good
         Robot.ledStripBuffer.setRGB(i, 0, 60, 0);
       }
-      System.out.println("CANCANCANCAN ###########" + i + " " + can_devices.get(i).getCanID() + " " + can_devices.get(i).stickyfault);
+      // System.out.println("CANCANCANCAN ###########" + i + " " + can_devices.get(i).getCanID() + " " + can_devices.get(i).stickyfault);
     }
     return can_length;
   }

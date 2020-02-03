@@ -165,6 +165,14 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   public int getProximity() {
     return m_colorSensor.getProximity();
   }
+  
+  public boolean isProximityGood() {
+    if (getProximity() > 140) {
+      // Not seeing anything
+      return false;
+    }
+    return true;
+  }
 
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
     if (getProximity() > 140) {
@@ -178,7 +186,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   public int bestSpinDirection(char desiredColor) {
     char[] colors = {'Y', 'R', 'G', 'B'};
     int colorIndex, desiredColorIndex;
-    if (getProximity() > 140) {
+    if (isProximityGood()) {
       colorIndex = findIndex(colors, getSensorColor());
       desiredColorIndex = findIndex(colors, desiredColor);
       int indexDiff = colorIndex - desiredColorIndex;

@@ -168,10 +168,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Cmd_SpinMotor();
-  }
-
-  private Command Cmd_SpinMotor() {
     return null;
   }
 }
