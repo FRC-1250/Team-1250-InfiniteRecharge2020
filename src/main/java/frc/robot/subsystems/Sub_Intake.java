@@ -9,10 +9,11 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
-import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -28,6 +29,11 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
 
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
   Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
+  ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+
+  public void setShuffleboarrd() {
+    intakeTab.add("Intake Current Draw", intakeMotor.getSupplyCurrent());
+  }
 
   public void spinIntake() {
     intakeMotor.set(0.5);

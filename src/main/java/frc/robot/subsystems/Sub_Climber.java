@@ -9,8 +9,6 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
-import com.ctre.phoenix.motorcontrol.StickyFaults;
-
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,6 +23,10 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
 
   Solenoid phaseOneSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND0);
   Solenoid phaseTwoSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND1);
+
+  //public void setShuffleboard() {
+  //  SmartDashboard.putNumber(key, value);
+  //}
 
   public void extendPhase1Cylinder() {
     phaseOneSolenoid.set(true);

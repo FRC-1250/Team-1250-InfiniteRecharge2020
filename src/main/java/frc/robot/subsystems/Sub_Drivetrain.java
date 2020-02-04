@@ -9,15 +9,17 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
-import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -34,6 +36,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   private SpeedControllerGroup gRightSide = new SpeedControllerGroup(fRightMotor, bRightMotor);
   private SpeedControllerGroup gLeftSide = new SpeedControllerGroup(fLeftMotor, bLeftMotor);
   private DifferentialDrive diffDriveGroup = new DifferentialDrive(gLeftSide, gRightSide);
+  Solenoid solPTO = new Solenoid(Constants.CLM_SOL_PTO);
 
   PigeonIMU pigeon = new PigeonIMU(Constants.DRV_PIGEON);
 
@@ -45,6 +48,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 	private final double KP_SIMPLE = 0.05;
   //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
+  ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
 
   public Sub_Drivetrain(){
     //Ramp Rates
@@ -53,7 +57,14 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     fLeftMotor.setOpenLoopRampRate(0.2);
     bLeftMotor.setOpenLoopRampRate(0.2);  
   }
-         
+
+  public void setShuffleboard() {
+    driveTab.add("Left RPM", getVelocity(fLeftMotor));
+    driveTab.add("Right RPM", getVelocity(fRightMotor));
+    driveTab.add("Left Current Draw", fLeftMotor.getOutputCurrent());
+    driveTab.add("Right Current Draw", fRightMotor.getOutputCurrent());
+  }
+  
   public void idleMode(IdleMode idleMode){
     //Idle Mode config
     fRightMotor.setIdleMode(idleMode);

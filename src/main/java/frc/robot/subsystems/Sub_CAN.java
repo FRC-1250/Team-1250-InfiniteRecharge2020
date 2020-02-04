@@ -7,18 +7,11 @@
 
 package frc.robot.subsystems;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
-import com.ctre.phoenix.motorcontrol.StickyFaults;
-import com.revrobotics.CANSparkMax.FaultID;
-
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
@@ -44,6 +37,7 @@ public class Sub_CAN extends SubsystemBase implements CAN_Input {
 
   public int sortLEDByCAN(String getLength) {
     String msg = "CAN_MSG_NOT_FOUND";
+
     Vector<CAN_DeviceFaults> can_devices = this.input();
     int can_length = can_devices.size();
 

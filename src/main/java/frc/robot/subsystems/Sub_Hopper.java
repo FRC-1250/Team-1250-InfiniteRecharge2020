@@ -9,10 +9,11 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
-import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utilities.CAN_DeviceFaults;
@@ -28,7 +29,20 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   WPI_TalonFX uptakeMotor = new WPI_TalonFX(Constants.HOP_ELE_MOTOR);
   AnalogInput uptakeSensor = new AnalogInput(Constants.HOP_ELE_SENS);
 
+  ShuffleboardTab hopperTab = Shuffleboard.getTab("Hopper");
+
   public Sub_Hopper() {
+  }
+
+  public void setShuffleboard() {
+    hopperTab.add("Left RPM", getVelocity(leftMotor));
+    hopperTab.add("Right RPM", getVelocity(rightMotor));
+    hopperTab.add("Left Current Draw", leftMotor.getSupplyCurrent());
+    hopperTab.add("Right Current Draw", rightMotor.getSupplyCurrent());
+  }
+
+  public double getVelocity(WPI_TalonFX motor){
+    return motor.getSelectedSensorVelocity();
   }
 
   public void spinHopperMotors() {

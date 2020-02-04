@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import java.util.Vector;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.StickyFaults;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -21,7 +20,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utilities.CAN_DeviceFaults;
@@ -45,9 +45,25 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
   public double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
 
+  NetworkTable table;
+  NetworkTableEntry tx, ty, tv;
+  double x, y, v;
+
+  ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
+
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
+  }
+
+  public void setShuffleboard() {
+    shooterTab.add("Turret Position (ticks)", turretTalon.getSelectedSensorPosition());
+    shooterTab.add("Shooter RPM", flywheelFalconLeft.getSelectedSensorVelocity());
+    shooterTab.add("Turret Distance from Home (ticks)", turretDistFromHome());
+    shooterTab.add("Limelight Sees Target", limelightSeesTarget());
+    shooterTab.add("X Offset Angle (degrees)", tx.getDouble(-1));
+    shooterTab.add("Hood Temperature (C)", hoodNeo.getMotorTemperature());
+    shooterTab.add("Distance from Outer Port", getPortDist());
   }
   
   public double degToRad(double deg) {
@@ -58,30 +74,32 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     turretTalon.set(speed);
   }
 
+  public boolean limelightSeesTarget() {
+    return v == 1;
+  }
+  
+  public double turretDistFromHome() {
+    return Math.abs(turretCurrentPos - turretHome);
+  }
+
+  public double getPortDist() {
+    return 60.25/(Math.tan(degToRad(26.85) + degToRad(y)));
+  }
+
   @Override
   public void periodic() {
     PIDController turretPIDController = new PIDController(turretP, 0, turretD);
 
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
+    tv = table.getEntry("tv");
+    x = tx.getDouble(-1);
+    y = ty.getDouble(-1);
+
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
-    SmartDashboard.putNumber("Turret Position", turretCurrentPos);
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry tx = table.getEntry("tx");
-    NetworkTableEntry ty = table.getEntry("ty");
-    NetworkTableEntry tv = table.getEntry("tv");
-
-    double x = tx.getDouble(0.0);
-    double y = ty.getDouble(0);
-    double v = tv.getDouble(0.0);
-
-    SmartDashboard.putNumber("tx", x);
-    SmartDashboard.putNumber("tv", v);
-
-    double distance = 60.25/(Math.tan(degToRad(26.85) + degToRad(y)));
-    SmartDashboard.putNumber("Distance From Outer Port", distance);
-
-
-    if (v == 1) // If you see a target
+    if (limelightSeesTarget())
     {
       if (!Gamepad1.getRawButton(1)) // If x isn't pressed
       {
@@ -94,9 +112,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
         double xDiff = 0 - steering_adjust;
         double xCorrect = 0.05 * xDiff;
         turretTalon.set(xCorrect);
-        SmartDashboard.putNumber("xCorrect", xCorrect);
       }
-    } else if ((v == 0) && (!Gamepad1.getRawButton(1))) // If you do see a target
+    } else if ((!limelightSeesTarget()) && (!Gamepad1.getRawButton(1))) // If you don't see a target
     {
       if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) 
       {

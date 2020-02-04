@@ -7,9 +7,7 @@
 
 package frc.robot.commands.panel;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Sub_Panel;
 
 public class Cmd_StopOnColor extends CommandBase {

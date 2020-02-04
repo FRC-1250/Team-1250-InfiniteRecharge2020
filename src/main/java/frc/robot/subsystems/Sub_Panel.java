@@ -9,9 +9,6 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
-import com.ctre.phoenix.motorcontrol.StickyFaults;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -22,10 +19,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.utilities.*;
 
@@ -40,16 +39,26 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
 
   ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   ColorMatch m_colorMatcher = new ColorMatch();
+  ColorMatchResult match;
 
   private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.46, 0.35);
   private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.53, 0.25);
   private final Color kRedTarget = ColorMatch.makeColor(0.41, 0.40, 0.17);
   private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.13);
 
+  ShuffleboardTab panelTab = Shuffleboard.getTab("Panel");
 
   public Sub_Panel() {    
     configureColors();
     panelMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  public void setShuffleboard() {
+    panelTab.add("Proximity", getProximity());
+    panelTab.add("isProximityGood", isProximityGood());
+    panelTab.add("Current Color", Character.toString(getSensorColor()));
+    panelTab.add("Halves Around Panel", Robot.halvesAroundPanel);
+    panelTab.add("isDeployed", isCylinderExtended());
   }
 
   public void extendCylinder() {
@@ -60,11 +69,14 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     panelSol.set(false);
   }
 
-  public void getRGBValues() {
+  public boolean isCylinderExtended() {
+    return panelSol.get();
+  }
+
+  public double[] getRGBValues() {
     Color detectedColor = m_colorSensor.getColor();
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
+    double[] rgb = {detectedColor.red, detectedColor.green, detectedColor.blue};
+    return rgb;
   }
 
   public char getDataFromField() {
@@ -91,7 +103,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
       } 
     }
     return -1; 
-    } 
+  } 
 
   public void spinMotor(double speed) {
     panelMotor.set(speed);
@@ -107,38 +119,15 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     m_colorMatcher.addColorMatch(kRedTarget);
     m_colorMatcher.addColorMatch(kYellowTarget);
   }
-  
-  public void senseColors() {
-    final Color detectedColor = m_colorSensor.getColor();
 
-    char colorChar;
-    final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-
-    if (match.color == kBlueTarget) {
-      colorChar = 'B';
-    } else if (match.color == kRedTarget) {
-      colorChar = 'R';
-    } else if (match.color == kGreenTarget) {
-      colorChar = 'G';
-    } else if (match.color == kYellowTarget) {
-      colorChar = 'Y';
-    } else {
-      colorChar = 'U';
-    }
-
-    SmartDashboard.putNumber("Confidence", match.confidence);
-    SmartDashboard.putString("Detected Color", Character.toString(colorChar));
-
-    final int proximity = m_colorSensor.getProximity();
-
-    SmartDashboard.putNumber("Proximity", proximity);
+  public double getConfidence() {
+    return match.confidence;
   }
 
   public char getSensorColor() {
-    final Color detectedColor = m_colorSensor.getColor();
-
+    Color detectedColor = m_colorSensor.getColor();
     char colorChar;
-    final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+    match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
       colorChar = 'B';
@@ -199,7 +188,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
 
   public void periodic() {
     RobotContainer.configurePanel();
-    senseColors();
+    setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {

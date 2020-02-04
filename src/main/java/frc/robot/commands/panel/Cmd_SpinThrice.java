@@ -53,9 +53,9 @@ public class Cmd_SpinThrice extends CommandBase {
     // SmartDashboard.putNumber("i", i);
     char currentColor = s_panel.getSensorColor();
     if (currentColor == desiredColor && currentColor != pastColor) {
-      Robot.i++;
+      Robot.halvesAroundPanel++;
     }
-    if (Robot.i == 7) {
+    if (Robot.halvesAroundPanel == 7) {
       return true;
     }
     pastColor = currentColor;
