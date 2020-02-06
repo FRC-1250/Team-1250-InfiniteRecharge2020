@@ -51,6 +51,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   public Sub_Panel() {    
     configureColors();
     panelMotor.setIdleMode(IdleMode.kBrake);
+    setShuffleboard();
   }
 
   public void setShuffleboard() {
@@ -58,7 +59,6 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     panelTab.add("isProximityGood", isProximityGood());
     panelTab.add("Current Color", Character.toString(getSensorColor()));
     panelTab.add("Halves Around Panel", Robot.halvesAroundPanel);
-    panelTab.add("isDeployed", isCylinderExtended());
   }
 
   public void extendCylinder() {
@@ -67,10 +67,6 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
 
   public void retractCylinders() {
     panelSol.set(false);
-  }
-
-  public boolean isCylinderExtended() {
-    return panelSol.get();
   }
 
   public double[] getRGBValues() {
@@ -188,7 +184,6 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
 
   public void periodic() {
     RobotContainer.configurePanel();
-    setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {

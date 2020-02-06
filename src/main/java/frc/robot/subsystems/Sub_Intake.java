@@ -24,14 +24,15 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   /**
    * Creates a new Sub_Intake.
    */
-  public Sub_Intake() {
-  }
-
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
   Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
 
-  public void setShuffleboarrd() {
+  public Sub_Intake() {
+    setShuffleboard();
+  }
+
+  public void setShuffleboard() {
     intakeTab.add("Intake Current Draw", intakeMotor.getSupplyCurrent());
   }
 

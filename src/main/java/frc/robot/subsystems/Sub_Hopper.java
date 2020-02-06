@@ -32,6 +32,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   ShuffleboardTab hopperTab = Shuffleboard.getTab("Hopper");
 
   public Sub_Hopper() {
+    setShuffleboard();
   }
 
   public void setShuffleboard() {

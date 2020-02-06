@@ -55,7 +55,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     fRightMotor.setOpenLoopRampRate(0.2);
     bRightMotor.setOpenLoopRampRate(0.2);
     fLeftMotor.setOpenLoopRampRate(0.2);
-    bLeftMotor.setOpenLoopRampRate(0.2);  
+    bLeftMotor.setOpenLoopRampRate(0.2);
+    setShuffleboard();
   }
 
   public void setShuffleboard() {

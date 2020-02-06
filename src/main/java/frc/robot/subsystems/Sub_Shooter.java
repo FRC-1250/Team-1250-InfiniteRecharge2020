@@ -54,6 +54,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
+   setShuffleboard();
   }
 
   public void setShuffleboard() {
@@ -64,10 +65,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     shooterTab.add("X Offset Angle (degrees)", tx.getDouble(-1));
     shooterTab.add("Hood Temperature (C)", hoodNeo.getMotorTemperature());
     shooterTab.add("Distance from Outer Port", getPortDist());
-  }
-  
-  public double degToRad(double deg) {
-    return deg * Math.PI / 180;
   }
 
   public void spinTurretMotor(double speed) {
@@ -83,7 +80,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public double getPortDist() {
-    return 60.25/(Math.tan(degToRad(26.85) + degToRad(y)));
+    return 60.25/(Math.tan(Math.toRadians(26.85) + Math.toRadians(y)));
   }
 
   @Override
@@ -99,10 +96,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
-    if (limelightSeesTarget())
-    {
-      if (!Gamepad1.getRawButton(1)) // If x isn't pressed
-      {
+    if (limelightSeesTarget()) {
+      if (!Gamepad1.getRawButton(1)) { // If x isn't pressed
         double heading_error = -x; // in order to change the target offset (in degrees), add it here
         // How much the limelight is looking away from the target (in degrees)
 
@@ -126,18 +121,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
 
     // Hard stop configurations
-    if (turretTalon.getSelectedSensorPosition() > turretRightStop)
-    {
+    if (turretTalon.getSelectedSensorPosition() > turretRightStop) {
       turretTalon.configPeakOutputReverse(0, 10);
-    } else
-    {
+    } else {
       turretTalon.configPeakOutputReverse(-1, 10);
     }
-    if (turretTalon.getSelectedSensorPosition() < turretLeftStop)
-    {
+    if (turretTalon.getSelectedSensorPosition() < turretLeftStop) {
       turretTalon.configPeakOutputForward(0, 10);
-    } else
-    {
+    } else {
       turretTalon.configPeakOutputForward(1, 10);
     }
 
