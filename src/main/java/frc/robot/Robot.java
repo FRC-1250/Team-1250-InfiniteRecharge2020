@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    s_drivetrain = new Sub_Drivetrain();
+    s_drivetrain = RobotContainer.s_drivetrain;
     RobotContainer.s_panel.retractCylinders();
 
     ledStrip = new AddressableLED(Constants.LED_PWM_PORT);

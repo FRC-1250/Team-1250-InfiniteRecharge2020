@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.Vector;
 
 import com.revrobotics.CANSparkMax;
@@ -16,9 +17,11 @@ import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.util.Color;
@@ -29,10 +32,7 @@ import frc.robot.RobotContainer;
 import frc.robot.utilities.*;
 
 public class Sub_Panel extends SubsystemBase implements CAN_Input {
-  /**
-   * Creates a new Sub_Panel.
-   */
-    
+  // Speed controllers created
   CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
   I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
   Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
@@ -47,18 +47,26 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.13);
 
   ShuffleboardTab panelTab = Shuffleboard.getTab("Panel");
-
-  public Sub_Panel() {    
+  NetworkTableEntry proxim = panelTab.add("Proximity", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", 90, "max", 2047))
+    .getEntry();
+  NetworkTableEntry isProximGood = panelTab.add("isProximityGood", "false").getEntry();
+  NetworkTableEntry curColor = panelTab.add("Cur Color", "U").getEntry();
+  NetworkTableEntry halvRoundPanel = panelTab.add("Half Rnd Panel", 0)
+    .withPosition(5, 0)
+    .getEntry();
+  
+  public Sub_Panel() {
     configureColors();
     panelMotor.setIdleMode(IdleMode.kBrake);
-    setShuffleboard();
   }
 
   public void setShuffleboard() {
-    panelTab.add("Proximity", getProximity());
-    panelTab.add("isProximityGood", isProximityGood());
-    panelTab.add("Current Color", Character.toString(getSensorColor()));
-    panelTab.add("Halves Around Panel", Robot.halvesAroundPanel);
+    proxim.setDouble(getProximity());
+    isProximGood.setString(Boolean.toString(isProximityGood()));
+    curColor.setString(Character.toString(getSensorColor()));
+    halvRoundPanel.setDouble((double)Robot.halvesAroundPanel);
   }
 
   public void extendCylinder() {
@@ -152,11 +160,10 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   }
   
   public boolean isProximityGood() {
-    if (getProximity() > 140) {
-      // Not seeing anything
-      return false;
+    if ((getProximity() > 150) && (getProximity() < 300)) {
+      return true;
     }
-    return true;
+    return false;
   }
 
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
@@ -184,6 +191,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
 
   public void periodic() {
     RobotContainer.configurePanel();
+    setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {

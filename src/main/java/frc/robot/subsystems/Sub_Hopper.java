@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -30,16 +31,19 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   AnalogInput uptakeSensor = new AnalogInput(Constants.HOP_ELE_SENS);
 
   ShuffleboardTab hopperTab = Shuffleboard.getTab("Hopper");
+  NetworkTableEntry lRPM = hopperTab.add("Left RPM", 0).getEntry();
+  NetworkTableEntry rRPM = hopperTab.add("Right RPM", 0).getEntry();
+  NetworkTableEntry lCurrentDraw = hopperTab.add("Left Current Draw", 0).getEntry();
+  NetworkTableEntry rCurrentDraw = hopperTab.add("Right Current Draw", 0).getEntry();
 
   public Sub_Hopper() {
-    setShuffleboard();
   }
 
   public void setShuffleboard() {
-    hopperTab.add("Left RPM", getVelocity(leftMotor));
-    hopperTab.add("Right RPM", getVelocity(rightMotor));
-    hopperTab.add("Left Current Draw", leftMotor.getSupplyCurrent());
-    hopperTab.add("Right Current Draw", rightMotor.getSupplyCurrent());
+    lRPM.setDouble(getVelocity(leftMotor));
+    rRPM.setDouble(getVelocity(rightMotor));
+    lCurrentDraw.setDouble(leftMotor.getSupplyCurrent());
+    rCurrentDraw.setDouble(rightMotor.getSupplyCurrent());
   }
 
   public double getVelocity(WPI_TalonFX motor){
@@ -47,13 +51,13 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   }
 
   public void spinHopperMotors() {
-    leftMotor.set(0.5);
-    rightMotor.set(-0.5);
+    leftMotor.set(0.1);
+    rightMotor.set(-0.1);
   }
-  // might need to get flipped
+  // might need to get flipped (and sped up)
   public void reverseHopperMotors() {
-    leftMotor.set(-0.5);
-    rightMotor.set(0.5);
+    leftMotor.set(-0.1);
+    rightMotor.set(0.1);
   }
 
   public void stopHopperMotors() {
@@ -71,12 +75,14 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic() {
+    // TODO: create unjam intake
     /* if (Gamepad.getSomeButton()) {
       // unjam intake
     } else {
       // background management stuff
     }
     */
+    setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {

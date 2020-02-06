@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -26,14 +27,15 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
    */
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
   Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
+
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+  NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0).getEntry();
 
   public Sub_Intake() {
-    setShuffleboard();
   }
 
   public void setShuffleboard() {
-    intakeTab.add("Intake Current Draw", intakeMotor.getSupplyCurrent());
+    curDraw.setDouble(intakeMotor.getSupplyCurrent());
   }
 
   public void spinIntake() {
@@ -60,6 +62,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   public void periodic() {
     // This method will be called once per scheduler run
     RobotContainer.configureCollector();
+    setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {

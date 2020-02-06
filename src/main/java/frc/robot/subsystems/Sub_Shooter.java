@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.Vector;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -20,7 +21,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -28,7 +32,7 @@ import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
 public class Sub_Shooter extends SubsystemBase implements CAN_Input {
-  //Speed Controllers created
+  // Speed controllers created
   WPI_TalonSRX turretTalon = new WPI_TalonSRX(Constants.SHOOT_TURRET);
   CANSparkMax hoodNeo = new CANSparkMax(Constants.SHOOT_HOOD, MotorType.kBrushless);
   WPI_TalonFX flywheelFalconLeft = new WPI_TalonFX(Constants.SHOOT_FALCON_0);
@@ -45,26 +49,55 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
   public double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
 
+  // Used for limelight methods
   NetworkTable table;
   NetworkTableEntry tx, ty, tv;
   double x, y, v;
 
+  // Shuffleboard
   ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
+  ShuffleboardLayout llLayout = shooterTab.getLayout("Limelight", BuiltInLayouts.kList).withSize(4, 2).withPosition(0, 1);
+  NetworkTableEntry turPos = shooterTab.add("Turret Position (ticks)", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", turretLeftStop, "max", turretRightStop))
+    .withSize(2, 1)
+    .withPosition(0, 0)
+    .getEntry();
+  NetworkTableEntry distFromHome = shooterTab.add("Turret Distance from Home (ticks)", 0)
+    .withSize(2, 1)
+    .withPosition(2, 0)
+    .getEntry();
+  NetworkTableEntry hoodTemp = shooterTab.add("Hood Temp", 0)
+    .withPosition(4, 0)
+    .getEntry();
+  NetworkTableEntry shootRPM = shooterTab.add("Shooter RPM", 0)
+    .withWidget(BuiltInWidgets.kGraph)
+    .withPosition(5, 0)
+    .getEntry();
+  NetworkTableEntry distFromPort = shooterTab.add("Distance from Outer Port", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", 12, "max", 629))
+    .withPosition(7, 0)
+    .getEntry();
+  NetworkTableEntry xOffset = llLayout.add("X Offset Angle (degrees)", 0)
+    .withWidget(BuiltInWidgets.kDial)
+    .getEntry();
+  NetworkTableEntry seeTarget = llLayout.add("Sees Target", "false").getEntry();
+  //
 
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
-   setShuffleboard();
   }
 
   public void setShuffleboard() {
-    shooterTab.add("Turret Position (ticks)", turretTalon.getSelectedSensorPosition());
-    shooterTab.add("Shooter RPM", flywheelFalconLeft.getSelectedSensorVelocity());
-    shooterTab.add("Turret Distance from Home (ticks)", turretDistFromHome());
-    shooterTab.add("Limelight Sees Target", limelightSeesTarget());
-    shooterTab.add("X Offset Angle (degrees)", tx.getDouble(-1));
-    shooterTab.add("Hood Temperature (C)", hoodNeo.getMotorTemperature());
-    shooterTab.add("Distance from Outer Port", getPortDist());
+    turPos.setDouble(turretTalon.getSelectedSensorPosition());
+    shootRPM.setDouble(flywheelFalconLeft.getSelectedSensorVelocity());
+    distFromHome.setDouble(turretDistFromHome());
+    seeTarget.setString(Boolean.toString(limelightSeesTarget()));
+    xOffset.setDouble(tx.getDouble(-1));
+    hoodTemp.setDouble(hoodNeo.getMotorTemperature());
+    distFromPort.setDouble(getPortDist());
   }
 
   public void spinTurretMotor(double speed) {
@@ -131,8 +164,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     } else {
       turretTalon.configPeakOutputForward(1, 10);
     }
-
     turretPIDController.close();
+    setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {

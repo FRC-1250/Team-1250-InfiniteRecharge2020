@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.Vector;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -14,10 +15,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -48,7 +51,18 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 	private final double KP_SIMPLE = 0.05;
   //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
+
   ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
+  NetworkTableEntry lRPM = driveTab.add("Left RPM", 0).getEntry();
+  NetworkTableEntry rRPM = driveTab.add("Right RPM", 0).getEntry();
+  NetworkTableEntry lCurrentDraw = driveTab.add("Left Cur Draw", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", 0, "max", 100))
+    .getEntry();
+  NetworkTableEntry rCurrentDraw = driveTab.add("Right Cur Draw", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", 0, "max", 100))
+    .getEntry();
 
   public Sub_Drivetrain(){
     //Ramp Rates
@@ -56,14 +70,13 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     bRightMotor.setOpenLoopRampRate(0.2);
     fLeftMotor.setOpenLoopRampRate(0.2);
     bLeftMotor.setOpenLoopRampRate(0.2);
-    setShuffleboard();
   }
 
   public void setShuffleboard() {
-    driveTab.add("Left RPM", getVelocity(fLeftMotor));
-    driveTab.add("Right RPM", getVelocity(fRightMotor));
-    driveTab.add("Left Current Draw", fLeftMotor.getOutputCurrent());
-    driveTab.add("Right Current Draw", fRightMotor.getOutputCurrent());
+    lRPM.setDouble(getVelocity(fLeftMotor));
+    rRPM.setDouble(getVelocity(fRightMotor));
+    lCurrentDraw.setDouble(fLeftMotor.getOutputCurrent());
+    rCurrentDraw.setDouble(fRightMotor.getOutputCurrent());
   }
   
   public void idleMode(IdleMode idleMode){
@@ -215,6 +228,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     else{
       drive(Gamepad);
     }
+    setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {
