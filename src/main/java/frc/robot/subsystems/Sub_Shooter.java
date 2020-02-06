@@ -29,15 +29,19 @@ public class Sub_Shooter extends SubsystemBase {
   WPI_TalonFX flywheelFalconLeft = new WPI_TalonFX(Constants.SHOOT_FALCON_0);
   WPI_TalonFX flywheelFalconRight = new WPI_TalonFX(Constants.SHOOT_FALCON_1);
 
+
   Joystick Gamepad0 = new Joystick(0);
   Joystick Gamepad1 = new Joystick(1);
 
   double turretP = Constants.SHOOT_TURRET_P;
   double turretD = Constants.SHOOT_TURRET_D;
 
+  boolean wasHomeFound = false;
+  int hoodCollisionAmps = 5;
+
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
-   flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
+   flywheelFalconRight.setInverted(InvertType.OpposeMaster);
   }
 
   //TODO:
@@ -47,6 +51,18 @@ public class Sub_Shooter extends SubsystemBase {
 
   public double degToRad(double deg) {
     return deg * Math.PI / 180;
+  }
+
+  public void hoodNEOPercentControl(double percent){
+    hoodNeo.set(percent);
+  }
+
+  public double hoodNEOCurrentDraw(){
+    return hoodNeo.getOutputCurrent();
+  }
+
+  public void hoodNEOResetPos(){
+    hoodNeo.getEncoder().setPosition(0);
   }
 
   @Override
@@ -127,6 +143,28 @@ public class Sub_Shooter extends SubsystemBase {
     }
 
     turretPIDController.close();
+
+
+    //New Hood Stuff
+    //Auto Home Detect TODO: Find the value for hoodCollisionAmps
+    if(!wasHomeFound){
+      if (hoodNEOCurrentDraw() < hoodCollisionAmps){
+        hoodNEOPercentControl(-0.2);
+      }
+      else if (hoodNEOCurrentDraw() >= hoodCollisionAmps){
+        hoodNEOPercentControl(0);
+        hoodNEOResetPos();
+        wasHomeFound = true;
+      }
+    }
+
+    if(wasHomeFound){
+      hoodNeo.
+    }
+
+
     
   }
+
+
 }
