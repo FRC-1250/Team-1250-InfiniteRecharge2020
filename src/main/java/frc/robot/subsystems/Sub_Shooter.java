@@ -10,7 +10,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -29,6 +31,8 @@ public class Sub_Shooter extends SubsystemBase {
   WPI_TalonFX flywheelFalconLeft = new WPI_TalonFX(Constants.SHOOT_FALCON_0);
   WPI_TalonFX flywheelFalconRight = new WPI_TalonFX(Constants.SHOOT_FALCON_1);
 
+  public CANPIDController hoodPID = new CANPIDController(hoodNeo);
+
 
   Joystick Gamepad0 = new Joystick(0);
   Joystick Gamepad1 = new Joystick(1);
@@ -38,10 +42,20 @@ public class Sub_Shooter extends SubsystemBase {
 
   boolean wasHomeFound = false;
   int hoodCollisionAmps = 5;
+  double interpolatedHoodPosition;
+
+  double hoodP = 0.1;
+  double hoodI = 0;
+  double hoodD = 0;
+
 
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconRight.setInverted(InvertType.OpposeMaster);
+
+   hoodPID.setP(hoodP);
+   hoodPID.setI(hoodI);
+   hoodPID.setD(hoodD);
   }
 
   //TODO:
@@ -147,6 +161,7 @@ public class Sub_Shooter extends SubsystemBase {
 
     //New Hood Stuff
     //Auto Home Detect TODO: Find the value for hoodCollisionAmps
+    //TODO: Create lookup table for inerpolatedHoodPosition
     if(!wasHomeFound){
       if (hoodNEOCurrentDraw() < hoodCollisionAmps){
         hoodNEOPercentControl(-0.2);
@@ -157,9 +172,8 @@ public class Sub_Shooter extends SubsystemBase {
         wasHomeFound = true;
       }
     }
-
-    if(wasHomeFound){
-      hoodNeo.
+    else if(wasHomeFound){
+      hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
     }
 
 
