@@ -61,7 +61,6 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    RobotContainer.configureCollector();
     setShuffleboard();
   }
 

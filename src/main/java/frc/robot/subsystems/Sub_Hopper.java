@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.hopper.Cmd_HopperManagement;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -54,6 +55,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     leftMotor.set(0.1);
     rightMotor.set(-0.1);
   }
+
   // might need to get flipped (and sped up)
   public void reverseHopperMotors() {
     leftMotor.set(-0.1);
@@ -65,6 +67,14 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     rightMotor.set(0);
   }
 
+  public void spinUptakeMotor() {
+    uptakeMotor.set(0.1);
+  }
+
+  public void stopUptakeMotor() {
+    uptakeMotor.set(0);
+  }
+
   public void uptakeGo() {
     uptakeMotor.set(0.5);
   }
@@ -73,16 +83,20 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     uptakeMotor.set(-0.5);
   }
 
+  public boolean getSensor() {
+    if (uptakeSensor.getValue() > 1000) {
+      return true;
+    }
+    return false;
+  }
+
   @Override
   public void periodic() {
-    // TODO: create unjam intake
-    /* if (Gamepad.getSomeButton()) {
-      // unjam intake
-    } else {
-      // background management stuff
-    }
-    */
     setShuffleboard();
+  }
+
+  public void initDefaultCommand() {
+    setDefaultCommand(new Cmd_HopperManagement(this));
   }
 
   public Vector<CAN_DeviceFaults> input() {

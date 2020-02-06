@@ -131,7 +131,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     return ypr[0];
   }
 
-  //Resets the agle of the gyro to 0
+  //Resets the angle of the gyro to 0
   //TODO: Test this
   public void resetGyro(){
     pigeon.addYaw(-getGyroAngle());
@@ -244,8 +244,6 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     drive(0,0);
   }
   //----------------------------------
-
-
 
   @Override
   public void periodic(){

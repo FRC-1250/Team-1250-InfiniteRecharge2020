@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.commands.shooter.Cmd_ShootCells;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
@@ -61,34 +62,6 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureButtonBindings();        
-  }
-
-  // Configure modes
-  // TODO: add LEDs to indicate what mode the robot is in?
-  // ^some sign so software can know the code is being reached and operator knows buttons are ready to be pressed
-
-  public static void configurePanel() {
-    x.whenActive(new Cmd_StopOnColor(s_panel, 'B'));
-    x.whenActive(new Cmd_StopOnColor(s_panel, 'G'));
-    x.whenActive(new Cmd_StopOnColor(s_panel, 'R'));
-    x.whenActive(new Cmd_StopOnColor(s_panel, 'Y'));
-  }
-
-  public static void configureCollector() {
-    x.whenPressed(new Cmd_Collect(s_intake, s_hopper));
-    b.whenPressed(new Cmd_StopCollect(s_intake, s_hopper));
-    a.whenPressed(new Cmd_UnjamIntake(s_intake, s_hopper));
-  }
-
-  public static void configureShooter() {
-    // when mode button is pressed, start flywheels. in order to stop flywheels, change modes (how to stop a command when changing modes?)
-    shootMode.whenPressed(new Cmd_SpinFlywheels(s_shooter, s_hopper));
-    // lockTrack could be an empty command; as long it's still considered "running", other tracking methods would rely on it
-    // pseudocode: if (!lockTrack.active()) { stopTurretCommands(); }
-  }
-
-  public static void configureClimber() {
-    // ex: climbMode.and(x).whenActive(new Cmd_Climb());
   }
 
   /**
@@ -147,6 +120,9 @@ public class RobotContainer {
     public boolean get() { return climbMode.get() && b.get(); }
   };
 
+  // TODO: add LEDs to indicate what mode the robot is in?
+  // ^some sign so software can know the code is being reached and operator knows buttons are ready to be pressed
+
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -155,7 +131,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     shooter_SpinFlywheels.toggleWhenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper), false);
-    // shooter_Fire.whenActive();
+    shooter_Fire.whenActive(new Cmd_ShootCells(s_hopper), false);
     panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
     panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel, s_panel.getDataFromField()), true);
     panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel, s_shooter), false);
@@ -164,6 +140,7 @@ public class RobotContainer {
     // climb_Extend.whenActive();
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();
+    
   }
 
   public Command getAutonomousCommand() {

@@ -189,7 +189,6 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   }
 
   public void periodic() {
-    RobotContainer.configurePanel();
     setShuffleboard();
   }
 

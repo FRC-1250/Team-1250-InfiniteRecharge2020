@@ -106,8 +106,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
    hoodPID.setD(hoodD);
   }
 
-  //TODO:
-  //Config pid for hood and pidf for wheel
+  //TODO: Config pid for hood and pidf for wheel
   //pid for hood will be realllllllly slow (config max)
   public void setShuffleboard() {
     turPos.setDouble(turretTalon.getSelectedSensorPosition());
