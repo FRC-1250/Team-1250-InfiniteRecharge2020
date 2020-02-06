@@ -8,23 +8,27 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Sub_Hopper;
 import frc.robot.subsystems.Sub_Intake;
 
-public class Cmd_SpinMotor extends CommandBase {
+public class Cmd_Collect extends CommandBase {
   /**
-   * Creates a new Cmd_SpinMotor.
+   * Creates a new Cmd_Collect.
    */
   private final Sub_Intake s_intake;
-  public Cmd_SpinMotor(Sub_Intake intake) {
-    s_intake = intake;
-    addRequirements(intake);
+  private final Sub_Hopper s_hopper;
+  public Cmd_Collect(Sub_Intake intake, Sub_Hopper hopper) {
     // Use addRequirements() here to declare subsystem dependencies.
+    s_intake = intake;
+    s_hopper = hopper;
+    addRequirements(intake, hopper);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     s_intake.spinIntake();
+    s_intake.extendCylinder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,7 +39,6 @@ public class Cmd_SpinMotor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_intake.stopIntake();
   }
 
   // Returns true when the command should end.

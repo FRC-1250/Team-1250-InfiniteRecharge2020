@@ -7,9 +7,7 @@
 
 package frc.robot.commands.panel;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Sub_Panel;
 
 public class Cmd_StopOnColor extends CommandBase {
@@ -40,8 +38,8 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // s_panel.retractCylinders();
     s_panel.stopMotor();
+    s_panel.retractCylinders();
   }
 
   // Returns true when the command should end.

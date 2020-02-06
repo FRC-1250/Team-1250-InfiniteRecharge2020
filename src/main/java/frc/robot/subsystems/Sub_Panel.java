@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+import java.util.Vector;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -14,40 +16,56 @@ import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.commands.panel.Cmd_SpinThrice;
-import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.utilities.*;
 
-public class Sub_Panel extends SubsystemBase {
-  /**
-   * Creates a new Sub_Panel.
-   */
-    
+public class Sub_Panel extends SubsystemBase implements CAN_Input {
+  // Speed controllers created
   CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
   I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
   Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
 
   ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   ColorMatch m_colorMatcher = new ColorMatch();
+  ColorMatchResult match;
 
   private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.46, 0.35);
   private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.53, 0.25);
   private final Color kRedTarget = ColorMatch.makeColor(0.41, 0.40, 0.17);
   private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.13);
 
-
-  public Sub_Panel() {    
+  ShuffleboardTab panelTab = Shuffleboard.getTab("Panel");
+  NetworkTableEntry proxim = panelTab.add("Proximity", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", 90, "max", 2047))
+    .getEntry();
+  NetworkTableEntry isProximGood = panelTab.add("isProximityGood", "false").getEntry();
+  NetworkTableEntry curColor = panelTab.add("Cur Color", "U").getEntry();
+  NetworkTableEntry halvRoundPanel = panelTab.add("Half Rnd Panel", 0)
+    .withPosition(5, 0)
+    .getEntry();
+  
+  public Sub_Panel() {
     configureColors();
     panelMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  public void setShuffleboard() {
+    proxim.setDouble(getProximity());
+    isProximGood.setString(Boolean.toString(isProximityGood()));
+    curColor.setString(Character.toString(getSensorColor()));
+    halvRoundPanel.setDouble((double)Robot.halvesAroundPanel);
   }
 
   public void extendCylinder() {
@@ -58,11 +76,10 @@ public class Sub_Panel extends SubsystemBase {
     panelSol.set(false);
   }
 
-  public void getRGBValues() {
+  public double[] getRGBValues() {
     Color detectedColor = m_colorSensor.getColor();
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
+    double[] rgb = {detectedColor.red, detectedColor.green, detectedColor.blue};
+    return rgb;
   }
 
   public char getDataFromField() {
@@ -89,7 +106,7 @@ public class Sub_Panel extends SubsystemBase {
       } 
     }
     return -1; 
-    } 
+  } 
 
   public void spinMotor(double speed) {
     panelMotor.set(speed);
@@ -105,38 +122,15 @@ public class Sub_Panel extends SubsystemBase {
     m_colorMatcher.addColorMatch(kRedTarget);
     m_colorMatcher.addColorMatch(kYellowTarget);
   }
-  
-  public void senseColors() {
-    final Color detectedColor = m_colorSensor.getColor();
 
-    char colorChar;
-    final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-
-    if (match.color == kBlueTarget) {
-      colorChar = 'B';
-    } else if (match.color == kRedTarget) {
-      colorChar = 'R';
-    } else if (match.color == kGreenTarget) {
-      colorChar = 'G';
-    } else if (match.color == kYellowTarget) {
-      colorChar = 'Y';
-    } else {
-      colorChar = 'U';
-    }
-
-    SmartDashboard.putNumber("Confidence", match.confidence);
-    SmartDashboard.putString("Detected Color", Character.toString(colorChar));
-
-    final int proximity = m_colorSensor.getProximity();
-
-    SmartDashboard.putNumber("Proximity", proximity);
+  public double getConfidence() {
+    return match.confidence;
   }
 
   public char getSensorColor() {
-    final Color detectedColor = m_colorSensor.getColor();
-
+    Color detectedColor = m_colorSensor.getColor();
     char colorChar;
-    final ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+    match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == kBlueTarget) {
       colorChar = 'B';
@@ -163,6 +157,13 @@ public class Sub_Panel extends SubsystemBase {
   public int getProximity() {
     return m_colorSensor.getProximity();
   }
+  
+  public boolean isProximityGood() {
+    if ((getProximity() > 150) && (getProximity() < 300)) {
+      return true;
+    }
+    return false;
+  }
 
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
     if (getProximity() > 140) {
@@ -176,7 +177,7 @@ public class Sub_Panel extends SubsystemBase {
   public int bestSpinDirection(char desiredColor) {
     char[] colors = {'Y', 'R', 'G', 'B'};
     int colorIndex, desiredColorIndex;
-    if (getProximity() > 140) {
+    if (isProximityGood()) {
       colorIndex = findIndex(colors, getSensorColor());
       desiredColorIndex = findIndex(colors, desiredColor);
       int indexDiff = colorIndex - desiredColorIndex;
@@ -189,6 +190,12 @@ public class Sub_Panel extends SubsystemBase {
 
   public void periodic() {
     RobotContainer.configurePanel();
-    senseColors();
+    setShuffleboard();
+  }
+
+  public Vector<CAN_DeviceFaults> input() {
+    Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
+    myCanDevices.add(new CAN_DeviceFaults(panelMotor));
+    return myCanDevices;
   }
 }

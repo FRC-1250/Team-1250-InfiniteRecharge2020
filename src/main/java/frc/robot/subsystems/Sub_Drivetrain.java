@@ -7,21 +7,31 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+import java.util.Vector;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utilities.CAN_DeviceFaults;
+import frc.robot.utilities.CAN_Input;
 
 
-public class Sub_Drivetrain extends SubsystemBase {
-  //Drive motors
+public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
+
   CANSparkMax fRightMotor = new CANSparkMax(Constants.DRV_RIGHT_FRONT, MotorType.kBrushless);
   CANSparkMax bRightMotor = new CANSparkMax(Constants.DRV_RIGHT_BACK, MotorType.kBrushless);
   CANSparkMax fLeftMotor = new CANSparkMax(Constants.DRV_LEFT_FRONT, MotorType.kBrushless);
@@ -33,6 +43,7 @@ public class Sub_Drivetrain extends SubsystemBase {
 
   //Diff Drive
   private DifferentialDrive diffDriveGroup = new DifferentialDrive(gLeftSide, gRightSide);
+  Solenoid solPTO = new Solenoid(Constants.CLM_SOL_PTO);
 
   //Other devices
   PigeonIMU pigeon = new PigeonIMU(Constants.DRV_PIGEON);
@@ -47,14 +58,33 @@ public class Sub_Drivetrain extends SubsystemBase {
   //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
 
+  ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
+  NetworkTableEntry lRPM = driveTab.add("Left RPM", 0).getEntry();
+  NetworkTableEntry rRPM = driveTab.add("Right RPM", 0).getEntry();
+  NetworkTableEntry lCurrentDraw = driveTab.add("Left Cur Draw", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", 0, "max", 100))
+    .getEntry();
+  NetworkTableEntry rCurrentDraw = driveTab.add("Right Cur Draw", 0)
+    .withWidget(BuiltInWidgets.kNumberBar)
+    .withProperties(Map.of("min", 0, "max", 100))
+    .getEntry();
+
   public Sub_Drivetrain(){
     //Ramp Rates
     fRightMotor.setOpenLoopRampRate(0.2);
     bRightMotor.setOpenLoopRampRate(0.2);
     fLeftMotor.setOpenLoopRampRate(0.2);
-    bLeftMotor.setOpenLoopRampRate(0.2);  
+    bLeftMotor.setOpenLoopRampRate(0.2);
   }
-         
+
+  public void setShuffleboard() {
+    lRPM.setDouble(getVelocity(fLeftMotor));
+    rRPM.setDouble(getVelocity(fRightMotor));
+    lCurrentDraw.setDouble(fLeftMotor.getOutputCurrent());
+    rCurrentDraw.setDouble(fRightMotor.getOutputCurrent());
+  }
+  
   public void idleMode(IdleMode idleMode){
     //Idle Mode config
     fRightMotor.setIdleMode(idleMode);
@@ -194,15 +224,15 @@ public class Sub_Drivetrain extends SubsystemBase {
     corrected = 0.05 * rotation;
           
     if (sign > 0){
-            corrected = Math.min(upperSpeed * sign, corrected);
-            corrected = Math.max(lowerSpeed * sign, corrected);
-          }
-              
+      corrected = Math.min(upperSpeed * sign, corrected);
+      corrected = Math.max(lowerSpeed * sign, corrected);
+    }
+
     else{
-            corrected = Math.max(upperSpeed * sign, corrected);
-            corrected = Math.min(lowerSpeed * sign, corrected);                    
-          }
-          diffDriveGroup.arcadeDrive(0, corrected);
+      corrected = Math.max(upperSpeed * sign, corrected);
+      corrected = Math.min(lowerSpeed * sign, corrected);                    
+    }
+    diffDriveGroup.arcadeDrive(0, corrected);
   }
   
   //Stops driving---------------------
@@ -227,5 +257,15 @@ public class Sub_Drivetrain extends SubsystemBase {
     else{
       drive(Gamepad);
     }
+    setShuffleboard();
+  }
+
+  public Vector<CAN_DeviceFaults> input() {
+    Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
+    myCanDevices.add(new CAN_DeviceFaults(fRightMotor));
+    myCanDevices.add(new CAN_DeviceFaults(fLeftMotor));
+    myCanDevices.add(new CAN_DeviceFaults(bRightMotor));
+    myCanDevices.add(new CAN_DeviceFaults(bLeftMotor));
+    return myCanDevices;
   }
 }

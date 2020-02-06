@@ -5,34 +5,28 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.panel;
+package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.subsystems.Sub_Panel;
+import frc.robot.subsystems.Sub_Hopper;
+import frc.robot.subsystems.Sub_Shooter;
 
-public class Cmd_SpinThrice extends CommandBase {
+public class Cmd_SpinFlywheels extends CommandBase {
   /**
-   * Creates a new Cmd_SpinThrice.
+   * Creates a new heels.
    */
-  private final Sub_Panel s_panel;
-  char desiredColor;
-  char pastColor;
-  public Cmd_SpinThrice(Sub_Panel subsystem) {
-    s_panel = subsystem;
-    addRequirements(subsystem);
+  private final Sub_Shooter s_shooter;
+  private final Sub_Hopper s_hopper;
+  public Cmd_SpinFlywheels(Sub_Shooter shooter, Sub_Hopper hopper) {
     // Use addRequirements() here to declare subsystem dependencies.
+    s_shooter = shooter;
+    s_hopper = hopper;
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (s_panel.isProximityGood()) {
-      pastColor = 'N';
-      desiredColor = s_panel.getSensorColor();
-      s_panel.spinMotor(0.4);
-    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,22 +37,11 @@ public class Cmd_SpinThrice extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_panel.stopMotor();
-    s_panel.retractCylinders();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // SmartDashboard.putNumber("i", i);
-    char currentColor = s_panel.getSensorColor();
-    if (currentColor == desiredColor && currentColor != pastColor) {
-      Robot.halvesAroundPanel++;
-    }
-    if (Robot.halvesAroundPanel == 7) {
-      return true;
-    }
-    pastColor = currentColor;
     return false;
   }
 }
