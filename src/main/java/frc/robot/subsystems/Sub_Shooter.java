@@ -13,7 +13,9 @@ import java.util.Vector;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -37,6 +39,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   CANSparkMax hoodNeo = new CANSparkMax(Constants.SHOOT_HOOD, MotorType.kBrushless);
   WPI_TalonFX flywheelFalconLeft = new WPI_TalonFX(Constants.SHOOT_FALCON_0);
   WPI_TalonFX flywheelFalconRight = new WPI_TalonFX(Constants.SHOOT_FALCON_1);
+
+  public CANPIDController hoodPID = new CANPIDController(hoodNeo);
+
 
   Joystick Gamepad0 = new Joystick(0);
   Joystick Gamepad1 = new Joystick(1);
@@ -84,10 +89,21 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .getEntry();
   NetworkTableEntry seeTarget = llLayout.add("Sees Target", "false").getEntry();
   //
+  boolean wasHomeFound = false;
+  int hoodCollisionAmps = 5;
+  double interpolatedHoodPosition;
+
+  double hoodP = 0.1;
+  double hoodI = 0;
+  double hoodD = 0;
 
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
-   flywheelFalconLeft.setInverted(InvertType.OpposeMaster);
+   flywheelFalconRight.setInverted(InvertType.OpposeMaster);
+
+   hoodPID.setP(hoodP);
+   hoodPID.setI(hoodI);
+   hoodPID.setD(hoodD);
   }
 
   //TODO:
@@ -117,6 +133,18 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   public double getPortDist() {
     return 60.25/(Math.tan(Math.toRadians(26.85) + Math.toRadians(y)));
+  }
+
+  public void hoodNEOPercentControl(double percent){
+    hoodNeo.set(percent);
+  }
+
+  public double hoodNEOCurrentDraw(){
+    return hoodNeo.getOutputCurrent();
+  }
+
+  public void hoodNEOResetPos(){
+    hoodNeo.getEncoder().setPosition(0);
   }
 
   @Override
@@ -169,6 +197,29 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
     turretPIDController.close();
     setShuffleboard();
+    
+    //New Hood Stuff
+    //Auto Home Detect TODO: Find the value for hoodCollisionAmps
+    //TODO: Create lookup table for interpolatedHoodPosition
+    if(!wasHomeFound){
+      if (hoodNEOCurrentDraw() < hoodCollisionAmps){
+        hoodNEOPercentControl(-0.2);
+      }
+      else if (hoodNEOCurrentDraw() >= hoodCollisionAmps){
+        hoodNEOPercentControl(0);
+        hoodNEOResetPos();
+        wasHomeFound = true;
+      }
+    }
+    else if(wasHomeFound){
+      hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
+    }
+
+    if (Gamepad0.getRawButton(2)) {
+      flywheelFalconLeft.set(1);
+    } else {
+      flywheelFalconLeft.set(0);
+    }
   }
 
   public Vector<CAN_DeviceFaults> input() {
