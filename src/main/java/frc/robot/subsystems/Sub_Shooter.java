@@ -161,7 +161,7 @@ public class Sub_Shooter extends SubsystemBase {
 
     //New Hood Stuff
     //Auto Home Detect TODO: Find the value for hoodCollisionAmps
-    //TODO: Create lookup table for inerpolatedHoodPosition
+    //TODO: Create lookup table for interpolatedHoodPosition
     if(!wasHomeFound){
       if (hoodNEOCurrentDraw() < hoodCollisionAmps){
         hoodNEOPercentControl(-0.2);
@@ -176,9 +176,10 @@ public class Sub_Shooter extends SubsystemBase {
       hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
     }
 
-
-    
+    if (Gamepad0.getRawButton(2)) {
+      flywheelFalconLeft.set(1);
+    } else {
+      flywheelFalconLeft.set(0);
+    }
   }
-
-
 }

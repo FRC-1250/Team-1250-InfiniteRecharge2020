@@ -45,7 +45,6 @@ public final class Constants {
     public static final int INT_COL_MOTOR = 19;
     public static final int INT_COL_SOL = 3;
 
-
     //Sub_Hopper
     public static final int HOP_FALCON_0 = 20;
     public static final int HOP_FALCON_1 = 21;
