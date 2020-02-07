@@ -75,6 +75,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   NetworkTableEntry hoodTemp = shooterTab.add("Hood Temp", 0)
     .withPosition(4, 0)
     .getEntry();
+  NetworkTableEntry hoodTicks = shooterTab.add("Hood Ticks", 0)
+    .withPosition(4, 1)
+    .getEntry();
   NetworkTableEntry shootRPM = shooterTab.add("Shooter RPM", 0)
     .withWidget(BuiltInWidgets.kGraph)
     .withPosition(5, 0)
@@ -82,13 +85,17 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   NetworkTableEntry distFromPort = shooterTab.add("Distance from Outer Port", 0)
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 12, "max", 629))
+    .withSize(3, 1)
     .withPosition(7, 0)
     .getEntry();
   NetworkTableEntry xOffset = llLayout.add("X Offset Angle (degrees)", 0)
     .withWidget(BuiltInWidgets.kDial)
     .getEntry();
   NetworkTableEntry seeTarget = llLayout.add("Sees Target", "false").getEntry();
+
+  public ShuffleboardTab getTab() { return shooterTab; }
   //
+
   boolean wasHomeFound = false;
   int hoodCollisionAmps = 5;
   double interpolatedHoodPosition;
@@ -97,6 +104,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   double hoodI = 0;
   double hoodD = 0;
 
+  //TODO: Config pid for hood and pidf for wheel
+  //pid for hood will be realllllllly slow (config max)
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconRight.setInverted(InvertType.OpposeMaster);
@@ -106,10 +115,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
    hoodPID.setD(hoodD);
   }
 
-  //TODO: Config pid for hood and pidf for wheel
-  //pid for hood will be realllllllly slow (config max)
   public void setShuffleboard() {
     turPos.setDouble(turretTalon.getSelectedSensorPosition());
+    hoodTicks.setDouble(hoodNeo.getEncoder().getPosition());
     shootRPM.setDouble(flywheelFalconLeft.getSelectedSensorVelocity());
     distFromHome.setDouble(turretDistFromHome());
     seeTarget.setString(Boolean.toString(limelightSeesTarget()));
@@ -212,12 +220,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
     else if(wasHomeFound){
       hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
-    }
-
-    if (Gamepad0.getRawButton(2)) {
-      flywheelFalconLeft.set(1);
-    } else {
-      flywheelFalconLeft.set(0);
     }
   }
 

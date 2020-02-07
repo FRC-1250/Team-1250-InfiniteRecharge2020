@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
-import frc.robot.commands.shooter.Cmd_ShootCells;
+import frc.robot.commands.hopper.Cmd_ShootCells;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
@@ -53,22 +53,15 @@ public class RobotContainer {
   private static JoystickButton b = new JoystickButton(Gamepad, 3);
   private static JoystickButton y = new JoystickButton(Gamepad, 4);
   private static JoystickButton rb = new JoystickButton(Gamepad, 6);
-  private static JoystickButton panelMode = new JoystickButton(Gamepad, Constants.PANEL_MODE); // start button
-  private static JoystickButton shootMode = new JoystickButton(Gamepad, Constants.SHOOT_MODE); // back button
-  private static JoystickButton climbMode = new JoystickButton(Gamepad, Constants.CLIMB_MODE); // lt button
-  private static JoystickButton collectMode = new JoystickButton(Gamepad, Constants.COLLECT_MODE);
+  public static JoystickButton panelMode = new JoystickButton(Gamepad, Constants.PANEL_MODE); // start button
+  public static JoystickButton shootMode = new JoystickButton(Gamepad, Constants.SHOOT_MODE); // back button
+  public static JoystickButton climbMode = new JoystickButton(Gamepad, Constants.CLIMB_MODE); // lt button
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     configureButtonBindings();        
   }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
 
   Trigger shooter_SpinFlywheels = new Trigger() {
     @Override
@@ -105,6 +98,11 @@ public class RobotContainer {
     public boolean get() { return !panelMode.get() && !shootMode.get() && !climbMode.get() && b.get(); }
   };
 
+  Trigger collect_Unjam = new Trigger() {
+    @Override
+    public boolean get() { return !panelMode.get() && !shootMode.get() && !climbMode.get() && y.get(); }
+  };
+
   Trigger climb_Extend = new Trigger() {
     @Override
     public boolean get() { return climbMode.get() && x.get(); }
@@ -120,9 +118,6 @@ public class RobotContainer {
     public boolean get() { return climbMode.get() && b.get(); }
   };
 
-  // TODO: add LEDs to indicate what mode the robot is in?
-  // ^some sign so software can know the code is being reached and operator knows buttons are ready to be pressed
-
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -133,14 +128,14 @@ public class RobotContainer {
     shooter_SpinFlywheels.toggleWhenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper), false);
     shooter_Fire.whenActive(new Cmd_ShootCells(s_hopper), false);
     panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
-    panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel, s_panel.getDataFromField()), true);
+    panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel, 'R'/*s_panel.getDataFromField()*/), true);
     panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel, s_shooter), false);
-    collect_Collect.toggleWhenActive(new Cmd_Collect(s_intake, s_hopper), false);
+    collect_Collect.toggleWhenActive(new Cmd_Collect(s_intake), true);
     collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), false);
+    collect_Unjam.whenActive(new Cmd_UnjamIntake(s_hopper), false);
     // climb_Extend.whenActive();
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();
-    
   }
 
   public Command getAutonomousCommand() {

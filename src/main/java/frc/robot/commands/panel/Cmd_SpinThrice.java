@@ -28,11 +28,9 @@ public class Cmd_SpinThrice extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (s_panel.isProximityGood()) {
-      pastColor = 'N';
-      desiredColor = s_panel.getSensorColor();
-      s_panel.spinMotor(0.4);
-    }
+    pastColor = 'N';
+    desiredColor = s_panel.getSensorColor();
+    s_panel.spinMotor(0.4);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -50,15 +48,17 @@ public class Cmd_SpinThrice extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // SmartDashboard.putNumber("i", i);
-    char currentColor = s_panel.getSensorColor();
-    if (currentColor == desiredColor && currentColor != pastColor) {
-      Robot.halvesAroundPanel++;
+    if (s_panel.isProximityGood()) {
+      char currentColor = s_panel.getSensorColor();
+      if (currentColor == desiredColor && currentColor != pastColor) {
+        Robot.halvesAroundPanel++;
+      }
+      if (Robot.halvesAroundPanel == 7) {
+        return true;
+      }
+      pastColor = currentColor;
+      return false;
     }
-    if (Robot.halvesAroundPanel == 7) {
-      return true;
-    }
-    pastColor = currentColor;
     return false;
   }
 }

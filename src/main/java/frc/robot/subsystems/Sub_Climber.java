@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import java.util.Vector;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utilities.*;
@@ -23,6 +25,9 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
 
   Solenoid phaseOneSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND0);
   Solenoid phaseTwoSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND1);
+
+  ShuffleboardTab climbTab = Shuffleboard.getTab("Climber");
+  public ShuffleboardTab getTab() { return climbTab; }
 
   public void extendPhase1Cylinder() {
     phaseOneSolenoid.set(true);
@@ -40,9 +45,13 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
     phaseOneSolenoid.set(false);
   }
 
+  public void setShuffleboard() {
+    // add stuff
+  }
+
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    setShuffleboard();
   }
   
   public Vector<CAN_DeviceFaults> input() {

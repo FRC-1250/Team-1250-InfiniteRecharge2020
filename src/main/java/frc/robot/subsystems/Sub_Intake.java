@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -28,8 +27,14 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
   Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
 
+  // Shuffleboard
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-  NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0).getEntry();
+  NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
+  .withSize(2, 1)
+  .getEntry();
+
+  public ShuffleboardTab getTab() { return intakeTab; }
+  //
 
   public Sub_Intake() {
   }

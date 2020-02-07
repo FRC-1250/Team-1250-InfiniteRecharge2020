@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.utilities.*;
 
 public class Sub_Panel extends SubsystemBase implements CAN_Input {
@@ -45,16 +44,26 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   private final Color kRedTarget = ColorMatch.makeColor(0.41, 0.40, 0.17);
   private final Color kYellowTarget = ColorMatch.makeColor(0.31, 0.56, 0.13);
 
+  // Shuffleboard
   ShuffleboardTab panelTab = Shuffleboard.getTab("Panel");
   NetworkTableEntry proxim = panelTab.add("Proximity", 0)
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 90, "max", 2047))
+    .withSize(2, 1)
+    .withPosition(1, 0)
     .getEntry();
-  NetworkTableEntry isProximGood = panelTab.add("isProximityGood", "false").getEntry();
-  NetworkTableEntry curColor = panelTab.add("Cur Color", "U").getEntry();
+  NetworkTableEntry isProximGood = panelTab.add("isProximityGood", "false")
+    .withPosition(0, 0)
+    .getEntry();
+  NetworkTableEntry curColor = panelTab.add("Cur Color", "U")
+    .withPosition(3, 0)
+    .getEntry();
   NetworkTableEntry halvRoundPanel = panelTab.add("Half Rnd Panel", 0)
-    .withPosition(5, 0)
+    .withPosition(4, 0)
     .getEntry();
+
+  public ShuffleboardTab getTab() { return panelTab; }
+  //
   
   public Sub_Panel() {
     configureColors();
@@ -159,7 +168,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   }
   
   public boolean isProximityGood() {
-    if ((getProximity() > 150) && (getProximity() < 300)) {
+    if ((getProximity() > 150) && (getProximity() < 500)) {
       return true;
     }
     return false;

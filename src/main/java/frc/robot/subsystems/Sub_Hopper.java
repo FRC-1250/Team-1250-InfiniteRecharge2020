@@ -31,11 +31,23 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   WPI_TalonFX uptakeMotor = new WPI_TalonFX(Constants.HOP_ELE_MOTOR);
   AnalogInput uptakeSensor = new AnalogInput(Constants.HOP_ELE_SENS);
 
+  // Shuffleboard
   ShuffleboardTab hopperTab = Shuffleboard.getTab("Hopper");
-  NetworkTableEntry lRPM = hopperTab.add("Left RPM", 0).getEntry();
-  NetworkTableEntry rRPM = hopperTab.add("Right RPM", 0).getEntry();
-  NetworkTableEntry lCurrentDraw = hopperTab.add("Left Current Draw", 0).getEntry();
-  NetworkTableEntry rCurrentDraw = hopperTab.add("Right Current Draw", 0).getEntry();
+  NetworkTableEntry lRPM = hopperTab.add("L RPM", 0)
+    .withPosition(0, 0)
+    .getEntry();
+  NetworkTableEntry rRPM = hopperTab.add("R RPM", 0)
+    .withPosition(2, 0)
+    .getEntry();
+  NetworkTableEntry lCurrentDraw = hopperTab.add("L Current Draw", 0)
+    .withPosition(0, 1)
+    .getEntry();
+  NetworkTableEntry rCurrentDraw = hopperTab.add("R Current Draw", 0)
+    .withPosition(2, 1)
+    .getEntry();
+
+  public ShuffleboardTab getTab() { return hopperTab; }
+  //
 
   public Sub_Hopper() {
   }

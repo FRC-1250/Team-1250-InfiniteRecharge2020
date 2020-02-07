@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
 
   public static AddressableLED ledStrip;
   public static AddressableLEDBuffer ledStripBuffer;
+  private final Joystick Gamepad = new Joystick(0);
   long initTime;
   @Override
   public void robotInit() {
@@ -46,7 +48,7 @@ public class Robot extends TimedRobot {
     // Reuse buffer
     // Default to a length of 60, start empty output
     // Length is expensive to set, so only set it once, then just update data
-    ledStripBuffer = new AddressableLEDBuffer(RobotContainer.s_can.sortLEDByCAN("getLength"));
+    ledStripBuffer = new AddressableLEDBuffer(30);
     ledStrip.setLength(ledStripBuffer.getLength());
 
     halvesAroundPanel = 0;
@@ -74,7 +76,7 @@ public class Robot extends TimedRobot {
 
     // Timer set to pause CAN check for 3 seconds
     if (System.currentTimeMillis() - initTime > 3000) {
-      RobotContainer.s_can.sortLEDByCAN("");
+      RobotContainer.s_can.sortLEDByCAN();
       ledStrip.setData(ledStripBuffer);
       initTime = System.currentTimeMillis();
     }

@@ -58,6 +58,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
 
+  // Shuffleboard
   ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
   NetworkTableEntry lRPM = driveTab.add("Left RPM", 0).getEntry();
   NetworkTableEntry rRPM = driveTab.add("Right RPM", 0).getEntry();
@@ -69,6 +70,9 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 0, "max", 100))
     .getEntry();
+  
+  public ShuffleboardTab getTab() { return driveTab; }
+  //
 
   public Sub_Drivetrain(){
     //Ramp Rates

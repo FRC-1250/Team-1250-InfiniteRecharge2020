@@ -5,11 +5,10 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Hopper;
-import frc.robot.subsystems.Sub_Shooter;
 
 public class Cmd_ShootCells extends CommandBase {
   /**
@@ -23,26 +22,22 @@ public class Cmd_ShootCells extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     s_hopper.spinHopperMotors();
     s_hopper.spinUptakeMotor();
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     s_hopper.stopHopperMotors();
     s_hopper.stopUptakeMotor();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
