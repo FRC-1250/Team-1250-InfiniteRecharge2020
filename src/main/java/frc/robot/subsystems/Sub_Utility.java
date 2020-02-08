@@ -19,9 +19,9 @@ import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
-public class Sub_CAN extends SubsystemBase implements CAN_Input {
+public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
-  public Sub_CAN() {
+  public Sub_Utility() {
     makeModeEntries(true);
     makeCommandEntries(true);
   }

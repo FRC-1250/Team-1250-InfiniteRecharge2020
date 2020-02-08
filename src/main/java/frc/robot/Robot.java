@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
 
     // Timer set to pause CAN check for 3 seconds
     if (System.currentTimeMillis() - initTime > 3000) {
-      RobotContainer.s_can.sortLEDByCAN();
+      RobotContainer.s_util.sortLEDByCAN();
       ledStrip.setData(ledStripBuffer);
       initTime = System.currentTimeMillis();
     }

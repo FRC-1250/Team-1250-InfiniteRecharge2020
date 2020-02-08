@@ -18,7 +18,7 @@ import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
 import frc.robot.commands.intake.Cmd_UnjamIntake;
-import frc.robot.subsystems.Sub_CAN;
+import frc.robot.subsystems.Sub_Utility;
 import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Hopper;
@@ -44,7 +44,7 @@ public class RobotContainer {
   public static final Sub_Shooter s_shooter = new Sub_Shooter();
   public static final Sub_Climber s_climb = new Sub_Climber();
   public static final Sub_Hopper s_hopper = new Sub_Hopper();
-  public static final Sub_CAN s_can = new Sub_CAN();
+  public static final Sub_Utility s_util = new Sub_Utility();
 
   // Buttons
   private static Joystick Gamepad = new Joystick(0);
