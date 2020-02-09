@@ -24,6 +24,6 @@ public class CmdI_StopMotor extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_panel.stopMotor();
+    s_panel.spinPanelMotor(0);
   }
 }

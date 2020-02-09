@@ -5,32 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.panel;
+package frc.robot.commands.climber;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.subsystems.Sub_Panel;
+import frc.robot.subsystems.Sub_Drivetrain;
 
-public class Cmd_SpinThrice extends CommandBase {
+public class Cmd_EngagePTO extends CommandBase {
   /**
-   * Creates a new Cmd_SpinThrice.
+   * Creates a new Cmd_EngagePTO.
    */
-  private final Sub_Panel s_panel;
-  char desiredColor;
-  char pastColor;
-  public Cmd_SpinThrice(Sub_Panel subsystem) {
-    s_panel = subsystem;
-    addRequirements(subsystem);
+  private final Sub_Drivetrain s_drive;
+  public Cmd_EngagePTO(Sub_Drivetrain drive) {
     // Use addRequirements() here to declare subsystem dependencies.
+    s_drive = drive;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pastColor = 'N';
-    desiredColor = s_panel.getSensorColor();
-    s_panel.spinPanelMotor(0.4);
+    s_drive.engagePTO();
+    s_drive.driveSpeed = 0.3;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,24 +35,11 @@ public class Cmd_SpinThrice extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_panel.spinPanelMotor(0);
-    s_panel.retractCylinders();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (s_panel.isProximityGood()) {
-      char currentColor = s_panel.getSensorColor();
-      if (currentColor == desiredColor && currentColor != pastColor) {
-        Robot.halvesAroundPanel++;
-      }
-      if (Robot.halvesAroundPanel == 7) {
-        return true;
-      }
-      pastColor = currentColor;
-      return false;
-    }
     return false;
   }
 }

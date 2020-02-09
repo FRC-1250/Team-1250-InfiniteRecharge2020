@@ -43,12 +43,12 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   //Diff Drive
   private DifferentialDrive diffDriveGroup = new DifferentialDrive(gLeftSide, gRightSide);
+  
   Solenoid solPTO = new Solenoid(Constants.CLM_SOL_PTO);
 
   //Other devices
   PigeonIMU pigeon = new PigeonIMU(Constants.DRV_PIGEON);
   Joystick Gamepad = new Joystick(0);
-
 
 
   public static double accumError = 0;
@@ -57,6 +57,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 	private final double pSimple = Constants.DRV_KP_SIMPLE;
   //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
+
+  public double driveSpeed = 1;
 
   // Shuffleboard
   ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
@@ -97,14 +99,18 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     bLeftMotor.setIdleMode(idleMode);
   }
 
+  public void engagePTO() {
+    solPTO.set(true);
+  }
+
   //Actual Drive Method
   public void drive(double left, double right){
-    diffDriveGroup.tankDrive(left, right);
+    diffDriveGroup.tankDrive(left * driveSpeed, right * driveSpeed); // driveSpeed changes value as PTO engages
   }
 
   //The drive method that passes the joystick values (Overloaded)
   public void drive(Joystick joy){
-    drive(-joy.getY(), -joy.getThrottle());
+    drive(joy.getY() * driveSpeed, joy.getThrottle() * driveSpeed);
   }
 
   //Arcade drive method
@@ -207,7 +213,6 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     double upperBound = Math.min(upperSpeed , corrected);
     double lowerBound = Math.max(lowerSpeed , upperBound);
   
-    SmartDashboard.putNumber("correctedoutput", corrected);
     return lowerBound;
   }
 
@@ -217,7 +222,6 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     double sign = Math.signum(driveSetpoint);
     
     diffDriveGroup.arcadeDrive(linearRamp(upperSpeed,lowerSpeed) * sign, 0 + offset);
-    
   }
 
   //Executes the turning of the robot for auton
@@ -227,12 +231,10 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     double sign = Math.signum(rotation);      
     corrected = 0.05 * rotation;
           
-    if (sign > 0){
+    if (sign > 0) {
       corrected = Math.min(upperSpeed * sign, corrected);
       corrected = Math.max(lowerSpeed * sign, corrected);
-    }
-
-    else{
+    } else {
       corrected = Math.max(upperSpeed * sign, corrected);
       corrected = Math.min(lowerSpeed * sign, corrected);                    
     }

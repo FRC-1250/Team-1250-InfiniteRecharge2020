@@ -13,11 +13,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.commands.diagnostic.Cmd_RunFlywheels;
+import frc.robot.commands.diagnostic.Cmd_RunHood;
 import frc.robot.commands.hopper.Cmd_ShootCells;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
+import frc.robot.commands.shooter.Cmd_Track;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
-import frc.robot.commands.intake.Cmd_UnjamIntake;
+import frc.robot.commands.intake.Cmd_UnjamHopper;
 import frc.robot.subsystems.Sub_Utility;
 import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
@@ -65,12 +68,17 @@ public class RobotContainer {
 
   Trigger shooter_SpinFlywheels = new Trigger() {
     @Override
-    public boolean get() { return shootMode.get() && x.get(); }
+    public boolean get() { return shootMode.get(); }
   };
 
   Trigger shooter_Fire = new Trigger() {
     @Override
     public boolean get() { return shootMode.get() && b.get(); }
+  };
+
+  Trigger shooter_Track = new Trigger() {
+    @Override
+    public boolean get() { return shootMode.get(); }
   };
 
   Trigger panel_SpinThrice = new Trigger() {
@@ -125,14 +133,16 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    shooter_SpinFlywheels.toggleWhenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper), false);
+    shooter_SpinFlywheels.whenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper, 1), false);
+    shooter_Track.whenActive(new Cmd_Track(s_shooter), false);
     shooter_Fire.whenActive(new Cmd_ShootCells(s_hopper), false);
     panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
-    panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel, 'R'/*s_panel.getDataFromField()*/), true);
+    panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel), true);
     panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel, s_shooter), false);
-    collect_Collect.toggleWhenActive(new Cmd_Collect(s_intake), true);
-    collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), false);
-    collect_Unjam.whenActive(new Cmd_UnjamIntake(s_hopper), false);
+    collect_Collect.whenActive(new Cmd_Collect(s_intake), true);
+    collect_Unjam.whenActive(new Cmd_UnjamHopper(s_hopper), false);
+    collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), true);
+    shootMode.and(a).whenActive(new Cmd_RunFlywheels(s_shooter));
     // climb_Extend.whenActive();
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();

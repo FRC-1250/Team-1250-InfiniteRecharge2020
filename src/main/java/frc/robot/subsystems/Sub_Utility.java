@@ -13,9 +13,17 @@ import java.util.Vector;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.commands.diagnostic.Cmd_RunFlywheels;
+import frc.robot.commands.diagnostic.Cmd_RunIntake;
+import frc.robot.commands.diagnostic.Cmd_RunPanel;
+import frc.robot.commands.diagnostic.Cmd_RunTurret;
+import frc.robot.commands.diagnostic.Cmd_RunUptake;
+import frc.robot.commands.diagnostic.Cmd_RunHood;
+import frc.robot.commands.diagnostic.Cmd_RunHopper;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -24,8 +32,10 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   public Sub_Utility() {
     makeModeEntries(true);
     makeCommandEntries(true);
+    makeTestCommands();
   }
 
+  // CAN
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> masterCanDevices = new Vector<CAN_DeviceFaults>();
     // Grabs inputs from each subsystem that has CAN (manually add)
@@ -51,7 +61,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
     // Palette cleanser
     for (int i = 0; i < Robot.ledStripBuffer.getLength(); i++) {
-      Robot.ledStripBuffer.setRGB(i, 0, 0, 255);
+      Robot.ledStripBuffer.setRGB(i, 0, 0, 30);
     }
 
     for (int i = 1; i < can_length; i++) {
@@ -66,6 +76,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     }
     return can_length;
   }
+  //
 
   // Shuffleboard
   ShuffleboardTab[] allTabs = {RobotContainer.s_shooter.getTab(), RobotContainer.s_panel.getTab(), RobotContainer.s_intake.getTab(),
@@ -76,11 +87,11 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   public NetworkTableEntry[][] makeCommandEntries(boolean initialize) {
     if (initialize) {
       String[] buttons = {"X", "A", "B", "Y"};
-      for (int i = 0; i < allTabs.length; i++) {
-        for (int j = 0; j < 4; j++) {
-        allCommandEntries[i][j] = allTabs[i].add(buttons[j], "none")
+      for (int tab = 0; tab < allTabs.length; tab++) {
+        for (int button = 0; button < buttons.length; button++) {
+        allCommandEntries[tab][button] = allTabs[tab].add(buttons[button], "none")
           .withSize(1, 1)
-          .withPosition(2+j, 4)
+          .withPosition(2+button, 3)
           .getEntry();
         }
       }
@@ -90,12 +101,23 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     return null;
   }
 
+  public void makeTestCommands() {
+    SmartDashboard.putData("Hood Motor (F)", new Cmd_RunHood(RobotContainer.s_shooter, 0.1));
+    SmartDashboard.putData("Hood Motor (B)", new Cmd_RunHood(RobotContainer.s_shooter, -0.1));
+    SmartDashboard.putData("Hopper Motors", new Cmd_RunHopper(RobotContainer.s_hopper));
+    SmartDashboard.putData("Intake Motor", new Cmd_RunIntake(RobotContainer.s_intake));
+    SmartDashboard.putData("Turret Motor", new Cmd_RunTurret(RobotContainer.s_shooter));
+    SmartDashboard.putData("Flywheel Motors", new Cmd_RunFlywheels(RobotContainer.s_shooter));
+    SmartDashboard.putData("Uptake Motor", new Cmd_RunUptake(RobotContainer.s_hopper));
+    SmartDashboard.putData("Panel Motor", new Cmd_RunPanel(RobotContainer.s_panel));
+  }
+
   public NetworkTableEntry[] makeModeEntries(boolean initialize) {
     if (initialize) {
       for (int i = 0; i < allTabs.length; i++) {
         allModeEntries[i] = allTabs[i].add("Robot Mode", "default")
           .withSize(2, 1)
-          .withPosition(0, 4)
+          .withPosition(0, 3)
           .getEntry();
       }
     } else {
@@ -134,7 +156,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
       cmd[2] = "Stop on Color";
       cmd[3] = "Deploy Cylinder";
     } else if (whatMode() == "Shoot") {
-      cmd[0] = "Spin Flywheels";
       cmd[2] = "Fire";
     } else if (whatMode() == "Climb") {
       cmd[0] = "Extend";
@@ -142,7 +163,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
       cmd[3] = "Retract";
     } else {
       cmd[0] = "Collect";
-      cmd[2] = "Stop Collect";
       cmd[3] = "Unjam";
     }
     return cmd;

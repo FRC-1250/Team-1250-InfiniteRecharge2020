@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -28,6 +29,8 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
 
   ShuffleboardTab climbTab = Shuffleboard.getTab("Climber");
   public ShuffleboardTab getTab() { return climbTab; }
+  NetworkTableEntry phase1 = climbTab.add("Phase 1", "false").getEntry();
+  NetworkTableEntry phase2 = climbTab.add("Phase 2", "false").getEntry();
 
   public void extendPhase1Cylinder() {
     phaseOneSolenoid.set(true);
@@ -46,7 +49,9 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   }
 
   public void setShuffleboard() {
-    // add stuff
+    phase1.setString(Boolean.toString(phaseOneSolenoid.get()));
+    phase2.setString(Boolean.toString(phaseTwoSolenoid.get()));
+    // next stage
   }
 
   @Override

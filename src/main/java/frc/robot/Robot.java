@@ -33,7 +33,6 @@ public class Robot extends TimedRobot {
 
   public static AddressableLED ledStrip;
   public static AddressableLEDBuffer ledStripBuffer;
-  private final Joystick Gamepad = new Joystick(0);
   long initTime;
   @Override
   public void robotInit() {

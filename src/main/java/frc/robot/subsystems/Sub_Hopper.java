@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,6 +32,8 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   WPI_TalonFX uptakeMotor = new WPI_TalonFX(Constants.HOP_ELE_MOTOR);
   AnalogInput uptakeSensor = new AnalogInput(Constants.HOP_ELE_SENS);
 
+  Joystick Gamepad = new Joystick(0);
+
   // Shuffleboard
   ShuffleboardTab hopperTab = Shuffleboard.getTab("Hopper");
   NetworkTableEntry lRPM = hopperTab.add("L RPM", 0)
@@ -45,6 +48,9 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   NetworkTableEntry rCurrentDraw = hopperTab.add("R Current Draw", 0)
     .withPosition(2, 1)
     .getEntry();
+  NetworkTableEntry sensorValue = hopperTab.add("Sensor Value", 0)
+    .withPosition(4, 0)
+    .getEntry();
 
   public ShuffleboardTab getTab() { return hopperTab; }
   //
@@ -57,42 +63,20 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     rRPM.setDouble(getVelocity(rightMotor));
     lCurrentDraw.setDouble(leftMotor.getSupplyCurrent());
     rCurrentDraw.setDouble(rightMotor.getSupplyCurrent());
+    sensorValue.setDouble(uptakeSensor.getValue());
+  }
+
+  public void spinHopperMotors(double speed) {
+    leftMotor.set(speed);
+    rightMotor.set(speed);
+  }
+
+  public void spinUptakeMotor(double speed) {
+    uptakeMotor.set(speed);
   }
 
   public double getVelocity(WPI_TalonFX motor){
     return motor.getSelectedSensorVelocity();
-  }
-
-  public void spinHopperMotors() {
-    leftMotor.set(0.1);
-    rightMotor.set(-0.1);
-  }
-
-  // might need to get flipped (and sped up)
-  public void reverseHopperMotors() {
-    leftMotor.set(-0.1);
-    rightMotor.set(0.1);
-  }
-
-  public void stopHopperMotors() {
-    leftMotor.set(0);
-    rightMotor.set(0);
-  }
-
-  public void spinUptakeMotor() {
-    uptakeMotor.set(0.1);
-  }
-
-  public void stopUptakeMotor() {
-    uptakeMotor.set(0);
-  }
-
-  public void uptakeGo() {
-    uptakeMotor.set(0.5);
-  }
-
-  public void uptakeReverse() {
-    uptakeMotor.set(-0.5);
   }
 
   public boolean getSensor() {
@@ -105,11 +89,19 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     setShuffleboard();
+    if (!(Gamepad.getRawButton(9)) && !(Gamepad.getRawButton(3))) {
+      if (getSensor()) {
+        spinUptakeMotor(0);
+      } else {
+        spinUptakeMotor(0.4);
+      }
+      spinHopperMotors(0.6);
+    }
   }
 
-  public void initDefaultCommand() {
-    setDefaultCommand(new Cmd_HopperManagement(this));
-  }
+  // public void initDefaultCommand() {
+  //   setDefaultCommand(new Cmd_HopperManagement(this));
+  // }
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();

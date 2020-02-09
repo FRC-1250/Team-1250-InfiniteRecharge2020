@@ -30,8 +30,8 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   // Shuffleboard
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
   NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
-  .withSize(2, 1)
-  .getEntry();
+    .withSize(2, 1)
+    .getEntry();
 
   public ShuffleboardTab getTab() { return intakeTab; }
   //
@@ -43,16 +43,8 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
     curDraw.setDouble(intakeMotor.getSupplyCurrent());
   }
 
-  public void spinIntake() {
-    intakeMotor.set(0.5);
-  }
-
-  public void stopIntake() {
-    intakeMotor.set(0);
-  }
-
-  public void reverseIntake() {
-    intakeMotor.set(-0.5);
+  public void spinIntakeMotor(double speed) {
+    intakeMotor.set(-speed);
   }
 
   public void extendCylinder() {

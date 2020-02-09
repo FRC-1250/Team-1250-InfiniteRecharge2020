@@ -20,7 +20,7 @@ public class Cmd_DeployCylinder extends CommandBase {
   private final Sub_Shooter s_shooter;
   public Cmd_DeployCylinder(Sub_Panel panel, Sub_Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(panel, shooter);
+    addRequirements(panel);
     s_panel = panel;
     s_shooter = shooter;
   }

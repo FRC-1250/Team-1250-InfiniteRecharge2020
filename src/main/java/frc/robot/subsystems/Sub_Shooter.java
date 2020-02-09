@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.shooter.Cmd_TurretGoHome;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -44,10 +45,12 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
 
   Joystick Gamepad0 = new Joystick(0);
-  Joystick Gamepad1 = new Joystick(1);
+  Joystick Gamepad2 = new Joystick(2);
+
 
   double turretP = Constants.SHOOT_TURRET_P;
   double turretD = Constants.SHOOT_TURRET_D;
+  PIDController turretPIDController = new PIDController(turretP, 0, turretD);
 
   public double turretCurrentPos;
   public double turretHome = Constants.SHOOT_TURRET_HOME;
@@ -78,6 +81,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   NetworkTableEntry hoodTicks = shooterTab.add("Hood Ticks", 0)
     .withPosition(4, 1)
     .getEntry();
+  NetworkTableEntry hoodCurrent = shooterTab.add("Hood Current", 0)
+    .withPosition(4, 2)
+    .getEntry();
   NetworkTableEntry shootRPM = shooterTab.add("Shooter RPM", 0)
     .withWidget(BuiltInWidgets.kGraph)
     .withPosition(5, 0)
@@ -92,6 +98,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withWidget(BuiltInWidgets.kDial)
     .getEntry();
   NetworkTableEntry seeTarget = llLayout.add("Sees Target", "false").getEntry();
+  NetworkTableEntry homeFound = shooterTab.add("Home Found", "false").getEntry();
 
   public ShuffleboardTab getTab() { return shooterTab; }
   //
@@ -113,6 +120,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
    hoodPID.setP(hoodP);
    hoodPID.setI(hoodI);
    hoodPID.setD(hoodD);
+   initDefaultCommand();
   }
 
   public void setShuffleboard() {
@@ -124,10 +132,56 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     xOffset.setDouble(tx.getDouble(-1));
     hoodTemp.setDouble(hoodNeo.getMotorTemperature());
     distFromPort.setDouble(getPortDist());
+    hoodCurrent.setDouble(hoodNEOCurrentDraw());
+    homeFound.setString(Boolean.toString(wasHomeFound));
   }
 
+  // Diagnostic methods
   public void spinTurretMotor(double speed) {
     turretTalon.set(speed);
+  }
+
+  public void spinFlywheelMotors(double speed) {
+    flywheelFalconLeft.set(speed);
+  }
+
+  public void spinHoodMotor(double speed) {
+    hoodNeo.set(speed);
+  }
+  //
+
+  public void updateLimelight() {
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
+    tv = table.getEntry("tv");
+    x = tx.getDouble(-1);
+    y = ty.getDouble(-1);
+  }
+
+  public void track() {
+    if (limelightSeesTarget()) {
+      double heading_error = -x; // in order to change the target offset (in degrees), add it here
+      // How much the limelight is looking away from the target (in degrees)
+
+      double steering_adjust = turretPIDController.calculate(heading_error);
+      // Returns the next output of the PID controller (where it thinks the turret should go)
+      
+      double xDiff = 0 - steering_adjust;
+      double xCorrect = 0.05 * xDiff;
+      turretTalon.set(xCorrect);
+    }
+  }
+
+  public void goHome() {
+    if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
+      // If you're to the right of the center, move left until you're within 50 ticks
+      turretTalon.set(0.3);
+    } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
+      turretTalon.set(-0.3);
+    } else {
+      turretTalon.set(0);
+    }
   }
 
   public boolean limelightSeesTarget() {
@@ -154,44 +208,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     hoodNeo.getEncoder().setPosition(0);
   }
 
-  @Override
-  public void periodic() {
-    PIDController turretPIDController = new PIDController(turretP, 0, turretD);
-
-    table = NetworkTableInstance.getDefault().getTable("limelight");
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty");
-    tv = table.getEntry("tv");
-    x = tx.getDouble(-1);
-    y = ty.getDouble(-1);
-
-    turretCurrentPos = turretTalon.getSelectedSensorPosition();
-
-    if (limelightSeesTarget()) {
-      if (!Gamepad1.getRawButton(1)) { // If x isn't pressed
-        double heading_error = -x; // in order to change the target offset (in degrees), add it here
-        // How much the limelight is looking away from the target (in degrees)
-
-        double steering_adjust = turretPIDController.calculate(heading_error);
-        // Returns the next output of the PID controller (where it thinks the turret should go)
-        
-        double xDiff = 0 - steering_adjust;
-        double xCorrect = 0.05 * xDiff;
-        turretTalon.set(xCorrect);
-      }
-    } else if ((!limelightSeesTarget()) && (!Gamepad1.getRawButton(1))) // If you don't see a target
-    {
-      if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) 
-      {
-        // If you're to the right of the center, move left until you're within 50 ticks
-        turretTalon.set(0.3);
-      } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) 
-      {
-        turretTalon.set(-0.3);
-      }
-    }
-
-    // Hard stop configurations
+  public void hardStopConfiguration() {
     if (turretTalon.getSelectedSensorPosition() > turretRightStop) {
       turretTalon.configPeakOutputReverse(0, 10);
     } else {
@@ -202,25 +219,42 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     } else {
       turretTalon.configPeakOutputForward(1, 10);
     }
-    turretPIDController.close();
-    setShuffleboard();
-    
+  }
+
+  public void hoodNEOGoHome() {
     //New Hood Stuff
     //Auto Home Detect TODO: Find the value for hoodCollisionAmps
     //TODO: Create lookup table for interpolatedHoodPosition
-    if(!wasHomeFound){
-      if (hoodNEOCurrentDraw() < hoodCollisionAmps){
-        hoodNEOPercentControl(-0.2);
-      }
-      else if (hoodNEOCurrentDraw() >= hoodCollisionAmps){
-        hoodNEOPercentControl(0);
-        hoodNEOResetPos();
-        wasHomeFound = true;
-      }
-    }
-    else if(wasHomeFound){
-      hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
-    }
+    // if(!wasHomeFound) {
+    //   if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
+    //     hoodNEOPercentControl(0.4);
+    //   } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
+    //     hoodNEOPercentControl(0);
+    //     hoodNEOResetPos();
+    //     wasHomeFound = true;
+    //   }
+    // } else if (wasHomeFound) {
+    //   // hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
+    //   hoodNEOPercentControl(0);
+    // }
+  }
+
+  public void initDefaultCommand() {
+    setDefaultCommand(new Cmd_TurretGoHome(this));
+  }
+
+  @Override
+  public void periodic() {
+    spinHoodMotor(Gamepad2.getThrottle() * 0.4);
+
+    updateLimelight();
+
+    hardStopConfiguration();
+    setShuffleboard();
+
+    hoodNEOGoHome();
+
+    turretCurrentPos = turretTalon.getSelectedSensorPosition();
   }
 
   public Vector<CAN_DeviceFaults> input() {

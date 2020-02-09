@@ -17,8 +17,10 @@ public class Cmd_SpinFlywheels extends CommandBase {
    */
   private final Sub_Shooter s_shooter;
   private final Sub_Hopper s_hopper;
-  public Cmd_SpinFlywheels(Sub_Shooter shooter, Sub_Hopper hopper) {
+  double _speed;
+  public Cmd_SpinFlywheels(Sub_Shooter shooter, Sub_Hopper hopper, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
+    _speed = speed;
     s_shooter = shooter;
     s_hopper = hopper;
     addRequirements(shooter);
@@ -27,6 +29,7 @@ public class Cmd_SpinFlywheels extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    s_shooter.spinFlywheelMotors(_speed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

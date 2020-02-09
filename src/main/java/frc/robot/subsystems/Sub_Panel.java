@@ -55,11 +55,14 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   NetworkTableEntry isProximGood = panelTab.add("isProximityGood", "false")
     .withPosition(0, 0)
     .getEntry();
-  NetworkTableEntry curColor = panelTab.add("Cur Color", "U")
+  NetworkTableEntry halvRoundPanel = panelTab.add("Half Rnd Panel", 0)
     .withPosition(3, 0)
     .getEntry();
-  NetworkTableEntry halvRoundPanel = panelTab.add("Half Rnd Panel", 0)
+  NetworkTableEntry curColor = panelTab.add("Cur Color", "U")
     .withPosition(4, 0)
+    .getEntry();
+  NetworkTableEntry gameData = panelTab.add("Game Data", "None received")
+    .withPosition(5, 0)
     .getEntry();
 
   public ShuffleboardTab getTab() { return panelTab; }
@@ -75,6 +78,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     isProximGood.setString(Boolean.toString(isProximityGood()));
     curColor.setString(Character.toString(getSensorColor()));
     halvRoundPanel.setDouble((double)Robot.halvesAroundPanel);
+    gameData.setString(Character.toString(getDataFromField()));
   }
 
   public void extendCylinder() {
@@ -117,12 +121,8 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     return -1; 
   } 
 
-  public void spinMotor(double speed) {
+  public void spinPanelMotor(double speed) {
     panelMotor.set(speed);
-  }
-
-  public void stopMotor() {
-    panelMotor.set(0);
   }
 
   public void configureColors() {
