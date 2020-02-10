@@ -5,26 +5,29 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.diagnostic;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Shooter;
 
-public class Cmd_RunFlywheels extends CommandBase {
+public class Cmd_ToggleLL extends CommandBase {
   /**
-   * Creates a new Cmd_RunFlywheels.
+   * Creates a new Cmd_ToggleLL.
    */
-  private final Sub_Shooter s_shoot;
-  public Cmd_RunFlywheels(Sub_Shooter shoot) {
+  private final Sub_Shooter s_shooter;
+  public Cmd_ToggleLL(Sub_Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    s_shoot = shoot;
-    addRequirements(shoot);
+    s_shooter = shooter;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_shoot.spinFlywheelMotors(0.2);
+    if (s_shooter.table.getEntry("ledMode").getDouble(0) == 1) {
+      s_shooter.table.getEntry("ledMode").setNumber(3);
+    } else {
+      s_shooter.table.getEntry("ledMode").setNumber(1);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,7 +38,6 @@ public class Cmd_RunFlywheels extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_shoot.spinFlywheelMotors(0);
   }
 
   // Returns true when the command should end.

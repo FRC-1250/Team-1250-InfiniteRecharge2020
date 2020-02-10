@@ -22,6 +22,7 @@ import frc.robot.commands.diagnostic.Cmd_RunIntake;
 import frc.robot.commands.diagnostic.Cmd_RunPanel;
 import frc.robot.commands.diagnostic.Cmd_RunTurret;
 import frc.robot.commands.diagnostic.Cmd_RunUptake;
+import frc.robot.commands.shooter.Cmd_ToggleLL;
 import frc.robot.commands.diagnostic.Cmd_RunHood;
 import frc.robot.commands.diagnostic.Cmd_RunHopper;
 import frc.robot.utilities.CAN_DeviceFaults;
@@ -32,7 +33,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   public Sub_Utility() {
     makeModeEntries(true);
     makeCommandEntries(true);
-    makeTestCommands();
   }
 
   // CAN
@@ -110,6 +110,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     SmartDashboard.putData("Flywheel Motors", new Cmd_RunFlywheels(RobotContainer.s_shooter));
     SmartDashboard.putData("Uptake Motor", new Cmd_RunUptake(RobotContainer.s_hopper));
     SmartDashboard.putData("Panel Motor", new Cmd_RunPanel(RobotContainer.s_panel));
+    SmartDashboard.putData("Limelight Toggle", new Cmd_ToggleLL(RobotContainer.s_shooter));
   }
 
   public NetworkTableEntry[] makeModeEntries(boolean initialize) {
@@ -172,5 +173,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     setShuffleboard();
+    // makeTestCommands();
   }
 }

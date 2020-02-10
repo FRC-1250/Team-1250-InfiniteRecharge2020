@@ -12,6 +12,7 @@ import java.util.Vector;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -26,12 +27,13 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
    */
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
   Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
+  Joystick Gamepad0 = new Joystick(0);
 
   // Shuffleboard
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-  NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
-    .withSize(2, 1)
-    .getEntry();
+  // NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
+  //   .withSize(2, 1)
+  //   .getEntry();
 
   public ShuffleboardTab getTab() { return intakeTab; }
   //
@@ -40,7 +42,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   }
 
   public void setShuffleboard() {
-    curDraw.setDouble(intakeMotor.getSupplyCurrent());
+    //curDraw.setDouble(intakeMotor.getSupplyCurrent());
   }
 
   public void spinIntakeMotor(double speed) {
@@ -59,6 +61,13 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   public void periodic() {
     // This method will be called once per scheduler run
     setShuffleboard();
+    if (!Gamepad0.getRawButton(Constants.PANEL_MODE) && !Gamepad0.getRawButton(Constants.SHOOT_MODE) && !Gamepad0.getRawButton(Constants.CLIMB_MODE) && Gamepad0.getRawButton(Constants.BTN_X)) {
+      extendCylinder();
+      spinIntakeMotor(0.5);
+    } else {
+      retractCylinder();
+      spinIntakeMotor(0);
+    }
   }
 
   public Vector<CAN_DeviceFaults> input() {

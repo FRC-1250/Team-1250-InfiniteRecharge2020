@@ -133,16 +133,16 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    shooter_SpinFlywheels.whenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper, 1), false);
-    shooter_Track.whenActive(new Cmd_Track(s_shooter), false);
-    shooter_Fire.whenActive(new Cmd_ShootCells(s_hopper), false);
+    // shooter_SpinFlywheels.whenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper, 1), false);
+    // shooter_Track.whenActive(new Cmd_Track(s_shooter), false);
+    // shooter_Fire.whenActive(new Cmd_ShootCells(s_hopper), false);
     panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
     panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel), true);
     panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel, s_shooter), false);
     collect_Collect.whenActive(new Cmd_Collect(s_intake), true);
     collect_Unjam.whenActive(new Cmd_UnjamHopper(s_hopper), false);
     collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), true);
-    shootMode.and(a).whenActive(new Cmd_RunFlywheels(s_shooter));
+    // shootMode.and(a).whenActive(new Cmd_RunFlywheels(s_shooter));
     // climb_Extend.whenActive();
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();

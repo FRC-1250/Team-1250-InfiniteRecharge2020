@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import java.util.Map;
 import java.util.Vector;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.commands.shooter.Cmd_TurretGoHome;
 import frc.robot.utilities.CAN_DeviceFaults;
@@ -43,11 +45,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   public CANPIDController hoodPID = new CANPIDController(hoodNeo);
 
-
   Joystick Gamepad0 = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
-
-
+  
   double turretP = Constants.SHOOT_TURRET_P;
   double turretD = Constants.SHOOT_TURRET_D;
   PIDController turretPIDController = new PIDController(turretP, 0, turretD);
@@ -56,11 +56,12 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public double turretHome = Constants.SHOOT_TURRET_HOME;
   public double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
   public double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
+  double turretDeadband = 50;
 
   // Used for limelight methods
-  NetworkTable table;
-  NetworkTableEntry tx, ty, tv;
-  double x, y, v;
+  public NetworkTable table;
+  NetworkTableEntry tableTx, tableTy, tableTv;
+  double tx, ty, tv;
 
   // Shuffleboard
   ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
@@ -104,7 +105,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   //
 
   boolean wasHomeFound = false;
-  int hoodCollisionAmps = 5;
+  int hoodCollisionAmps = 40;
   double interpolatedHoodPosition;
 
   double hoodP = 0.1;
@@ -120,7 +121,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
    hoodPID.setP(hoodP);
    hoodPID.setI(hoodI);
    hoodPID.setD(hoodD);
-   initDefaultCommand();
+
+   turretTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+   turretTalon.configFeedbackNotContinuous(true, 10);
   }
 
   public void setShuffleboard() {
@@ -129,7 +132,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     shootRPM.setDouble(flywheelFalconLeft.getSelectedSensorVelocity());
     distFromHome.setDouble(turretDistFromHome());
     seeTarget.setString(Boolean.toString(limelightSeesTarget()));
-    xOffset.setDouble(tx.getDouble(-1));
+    xOffset.setDouble(tx);
     hoodTemp.setDouble(hoodNeo.getMotorTemperature());
     distFromPort.setDouble(getPortDist());
     hoodCurrent.setDouble(hoodNEOCurrentDraw());
@@ -152,16 +155,17 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   public void updateLimelight() {
     table = NetworkTableInstance.getDefault().getTable("limelight");
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty");
-    tv = table.getEntry("tv");
-    x = tx.getDouble(-1);
-    y = ty.getDouble(-1);
+    tableTx = table.getEntry("tx");
+    tableTy = table.getEntry("ty");
+    tableTv = table.getEntry("tv");
+    tx = tableTx.getDouble(-1);
+    ty = tableTy.getDouble(-1);
+    tv = tableTv.getDouble(-1);
   }
 
   public void track() {
     if (limelightSeesTarget()) {
-      double heading_error = -x; // in order to change the target offset (in degrees), add it here
+      double heading_error = -tx; // in order to change the target offset (in degrees), add it here
       // How much the limelight is looking away from the target (in degrees)
 
       double steering_adjust = turretPIDController.calculate(heading_error);
@@ -170,14 +174,16 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       double xDiff = 0 - steering_adjust;
       double xCorrect = 0.05 * xDiff;
       turretTalon.set(xCorrect);
+    } else {
+      goHome();
     }
   }
 
   public void goHome() {
-    if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
+    if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > turretDeadband)) {
       // If you're to the right of the center, move left until you're within 50 ticks
       turretTalon.set(0.3);
-    } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
+    } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -turretDeadband)) {
       turretTalon.set(-0.3);
     } else {
       turretTalon.set(0);
@@ -185,7 +191,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public boolean limelightSeesTarget() {
-    return v == 1;
+    return tv == 1;
   }
   
   public double turretDistFromHome() {
@@ -193,7 +199,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public double getPortDist() {
-    return 60.25/(Math.tan(Math.toRadians(26.85) + Math.toRadians(y)));
+    return 60.25/(Math.tan(Math.toRadians(26.85) + Math.toRadians(ty)));
   }
 
   public void hoodNEOPercentControl(double percent){
@@ -225,36 +231,44 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     //New Hood Stuff
     //Auto Home Detect TODO: Find the value for hoodCollisionAmps
     //TODO: Create lookup table for interpolatedHoodPosition
-    // if(!wasHomeFound) {
-    //   if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
-    //     hoodNEOPercentControl(0.4);
-    //   } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
-    //     hoodNEOPercentControl(0);
-    //     hoodNEOResetPos();
-    //     wasHomeFound = true;
-    //   }
-    // } else if (wasHomeFound) {
-    //   // hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
-    //   hoodNEOPercentControl(0);
-    // }
-  }
-
-  public void initDefaultCommand() {
-    setDefaultCommand(new Cmd_TurretGoHome(this));
+    if(!wasHomeFound) {
+      if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
+        hoodNEOPercentControl(0.4);
+      } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
+        hoodNEOPercentControl(0);
+        hoodNEOResetPos();
+        wasHomeFound = true;
+      }
+    } else if (wasHomeFound) {
+      // hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
+      hoodNEOPercentControl(0);
+    }
   }
 
   @Override
   public void periodic() {
     spinHoodMotor(Gamepad2.getThrottle() * 0.4);
+    if (Gamepad2.getRawButton(Constants.BTN_X)) {
+      hoodNEOGoHome();
+    }
+    if (Gamepad2.getRawButton(Constants.BTN_Y)) {
+      wasHomeFound = false;
+    }
 
     updateLimelight();
 
     hardStopConfiguration();
     setShuffleboard();
 
-    hoodNEOGoHome();
-
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
+
+    if (Gamepad0.getRawButton(Constants.SHOOT_MODE)) {
+      track();
+      spinFlywheelMotors(1);
+    } else {
+      spinFlywheelMotors(0);
+      goHome();
+    }
   }
 
   public Vector<CAN_DeviceFaults> input() {

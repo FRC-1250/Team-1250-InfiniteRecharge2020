@@ -89,13 +89,15 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     setShuffleboard();
-    if (!(Gamepad.getRawButton(9)) && !(Gamepad.getRawButton(3))) {
-      if (getSensor()) {
-        spinUptakeMotor(0);
-      } else {
-        spinUptakeMotor(0.4);
-      }
-      spinHopperMotors(0.6);
+    if ((Gamepad.getRawButton(Constants.SHOOT_MODE)) && (Gamepad.getRawButton(Constants.BTN_X))) {
+      spinHopperMotors(0.4);
+      spinUptakeMotor(1);
+    } else if (!getSensor()) {
+      spinHopperMotors(0.4);
+      spinUptakeMotor(0.4);
+    } else {
+      spinHopperMotors(0);
+      spinUptakeMotor(0);
     }
   }
 
