@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.commands.climber.Cmd_ExtendCylinders;
 import frc.robot.commands.diagnostic.Cmd_RunFlywheels;
 import frc.robot.commands.diagnostic.Cmd_RunHood;
 import frc.robot.commands.hopper.Cmd_ShootCells;
@@ -142,8 +143,8 @@ public class RobotContainer {
     collect_Collect.whenActive(new Cmd_Collect(s_intake), true);
     collect_Unjam.whenActive(new Cmd_UnjamHopper(s_hopper), false);
     collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), true);
+    // climb_Extend.whenActive(new Cmd_ExtendCylinders(s_climb), true);
     // shootMode.and(a).whenActive(new Cmd_RunFlywheels(s_shooter));
-    // climb_Extend.whenActive();
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();
   }

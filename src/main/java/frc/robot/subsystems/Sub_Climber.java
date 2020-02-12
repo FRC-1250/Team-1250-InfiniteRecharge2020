@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import java.util.Vector;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -31,21 +32,22 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   public ShuffleboardTab getTab() { return climbTab; }
   NetworkTableEntry phase1 = climbTab.add("Phase 1", "false").getEntry();
   NetworkTableEntry phase2 = climbTab.add("Phase 2", "false").getEntry();
+  Joystick Gamepad2 = new Joystick(2);
 
   public void extendPhase1Cylinder() {
     phaseOneSolenoid.set(true);
   }
 
   public void retractPhase1Cylinder() {
-    phaseOneSolenoid.set(true);
+    phaseOneSolenoid.set(false);
   }
 
   public void extendPhase2Cylinder() {
-    phaseOneSolenoid.set(false);
+    phaseTwoSolenoid.set(true);
   }
 
   public void retractPhase2Cylinder() {
-    phaseOneSolenoid.set(false);
+    phaseTwoSolenoid.set(false);
   }
 
   public void setShuffleboard() {
@@ -57,6 +59,15 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     setShuffleboard();
+    if (Gamepad2.getRawButton(7)) {
+      extendPhase1Cylinder();
+    } else if (Gamepad2.getRawButton(8)) {
+      extendPhase2Cylinder();
+    } else if (Gamepad2.getRawButton(5)){
+      retractPhase1Cylinder();
+    } else if (Gamepad2.getRawButton(6)) {
+      retractPhase2Cylinder();
+    }
   }
   
   public Vector<CAN_DeviceFaults> input() {
