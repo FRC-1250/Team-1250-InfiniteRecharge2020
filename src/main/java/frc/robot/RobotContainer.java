@@ -21,6 +21,7 @@ import frc.robot.commands.shooter.Cmd_Track;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
 import frc.robot.commands.intake.Cmd_UnjamHopper;
+import frc.robot.commands.hopper.Cmd_HopperManagement;
 import frc.robot.subsystems.Sub_Utility;
 import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
@@ -63,7 +64,8 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    configureButtonBindings();        
+    configureButtonBindings();
+    s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
   }
 
   Trigger shooter_SpinFlywheels = new Trigger() {
