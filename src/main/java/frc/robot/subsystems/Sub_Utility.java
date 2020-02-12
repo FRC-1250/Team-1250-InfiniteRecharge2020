@@ -106,7 +106,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   public void setShuffleboard() {
     for (int i = 0; i < allTabs.length; i++) {
-      makeModeEntries(false)[i].setString(whatMode());
+      makeModeEntries(false)[i].setString(RobotContainer.s_stateManager.getRobotSubsystemState());
       for (int j = 0; j < 4; j++) {
         makeCommandEntries(false)[i][j].setString(whatCommand()[j]);
       }
