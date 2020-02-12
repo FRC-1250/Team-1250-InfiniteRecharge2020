@@ -29,12 +29,14 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.commands.shooter.Cmd_TurretGoHome;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
+import com.ctre.phoenix.music.Orchestra;
 
 public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   // Speed controllers created
@@ -105,12 +107,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   //
 
   boolean wasHomeFound = false;
-  int hoodCollisionAmps = 40;
+  int hoodCollisionAmps = 15;
   double interpolatedHoodPosition;
 
   double hoodP = 0.1;
   double hoodI = 0;
   double hoodD = 0;
+
+  Orchestra tunes;
 
   //TODO: Config pid for hood and pidf for wheel
   //pid for hood will be realllllllly slow (config max)
@@ -124,6 +128,10 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
    turretTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
    turretTalon.configFeedbackNotContinuous(true, 10);
+
+   hoodNeo.setOpenLoopRampRate(0.4);
+
+
   }
 
   public void setShuffleboard() {
@@ -227,6 +235,17 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  public void loadMusic(){
+    tunes = new Orchestra();
+    tunes.addInstrument(flywheelFalconLeft);
+    tunes.loadMusic("Test.chrp");
+  }
+
+  public void playMusic(){
+    SmartDashboard.putBoolean("is it playin", tunes.isPlaying());
+    tunes.play();
+  }
+
   public void hoodNEOGoHome() {
     //New Hood Stuff
     //Auto Home Detect TODO: Find the value for hoodCollisionAmps
@@ -269,7 +288,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       spinFlywheelMotors(0);
       goHome();
     }
+    if (Gamepad2.getRawButton(7)) {
+      
+    }
+
   }
+
+
+
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();

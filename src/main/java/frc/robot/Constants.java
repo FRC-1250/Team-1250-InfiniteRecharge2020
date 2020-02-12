@@ -28,7 +28,7 @@ public final class Constants {
     public static final int DRV_LEFT_FRONT = 12;
     public static final int DRV_LEFT_BACK = 13;
     public static final int DRV_PIGEON = 50;
-    public static final int CLM_SOL_PTO = 1;
+    public static final int CLM_SOL_PTO = 2;
 
     //Sub_Shooter
     public static final int SHOOT_FALCON_0 = 14;
@@ -38,7 +38,7 @@ public final class Constants {
 
     //Sub_Panel
     public static final int PANEL_MOTOR = 18;
-    public static final int PANEL_SOL = 0;
+    public static final int PANEL_SOL = 4;
     public static final I2C.Port PANEL_SENSOR_PORT = I2C.Port.kOnboard;
 
     //Sub_Intake
@@ -52,8 +52,8 @@ public final class Constants {
     public static final int HOP_ELE_SENS = 0;
 
     //Sub_Climber
-    public static final int CLM_SOL_EXTEND0 = 2;
-    public static final int CLM_SOL_EXTEND1 = 4;
+    public static final int CLM_SOL_EXTEND0 = 0;
+    public static final int CLM_SOL_EXTEND1 = 1;
     
     //Constants--------------------------------------------
     public static final double DRV_GEAR_RATIO = 10;
