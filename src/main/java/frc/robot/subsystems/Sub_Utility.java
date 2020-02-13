@@ -12,9 +12,11 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.diagnostic.Cmd_RunFlywheels;
@@ -30,6 +32,7 @@ import frc.robot.utilities.CAN_Input;
 
 public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
+  Joystick Gamepad2 = new Joystick(2);
   public Sub_Utility() {
     makeModeEntries(true);
     makeCommandEntries(true);
@@ -172,6 +175,13 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic() {
+    if (Gamepad2.getRawButton(Constants.BTN_A)) {
+      if (RobotContainer.s_shooter.table.getEntry("ledMode").getDouble(0) == 1) {
+        RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(3);
+      } else {
+        RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(1);
+      }
+    }
     setShuffleboard();
     // makeTestCommands();
   }

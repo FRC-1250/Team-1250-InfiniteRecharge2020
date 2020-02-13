@@ -24,8 +24,8 @@ public class Cmd_ExtendCylinders extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_climb.extendPhase1Cylinder();
-    s_climb.extendPhase2Cylinder();
+    s_climb.extendTopCylinder();
+    s_climb.extendBottomCylinder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

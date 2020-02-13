@@ -51,6 +51,8 @@ public class RobotContainer {
   public static final Sub_Hopper s_hopper = new Sub_Hopper();
   public static final Sub_Utility s_util = new Sub_Utility();
 
+  public static String robotState = "collect";
+
   // Buttons
   private static Joystick Gamepad = new Joystick(0);
   private static JoystickButton x = new JoystickButton(Gamepad, 1);
@@ -73,6 +75,10 @@ public class RobotContainer {
     @Override
     public boolean get() { return shootMode.get(); }
   };
+  /* TODO: panelMode.whenHeld(new SetState("panel"));
+    shootMode.whenHeld(new SetState("shoot"));
+    climbMode.whenHeld(new SetState("climb"));
+    */
 
   Trigger shooter_Fire = new Trigger() {
     @Override
@@ -149,6 +155,10 @@ public class RobotContainer {
     // shootMode.and(a).whenActive(new Cmd_RunFlywheels(s_shooter));
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();
+  }
+
+  public static String getRobotState() {
+    return robotState;
   }
 
   public Command getAutonomousCommand() {

@@ -25,34 +25,34 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   public Sub_Climber() {
   }
 
-  Solenoid phaseOneSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND0);
-  Solenoid phaseTwoSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND1);
+  Solenoid phase1Solenoid = new Solenoid(Constants.CLM_SOL_EXTEND0);
+  Solenoid phase2Solenoid = new Solenoid(Constants.CLM_SOL_EXTEND1);
 
   ShuffleboardTab climbTab = Shuffleboard.getTab("Climber");
   public ShuffleboardTab getTab() { return climbTab; }
-  NetworkTableEntry phase1 = climbTab.add("Phase 1", "false").getEntry();
-  NetworkTableEntry phase2 = climbTab.add("Phase 2", "false").getEntry();
+  NetworkTableEntry Top = climbTab.add("Phase 1 (top)", "false").getEntry();
+  NetworkTableEntry Bottom = climbTab.add("Phase 2 (btm)", "false").getEntry();
   Joystick Gamepad2 = new Joystick(2);
 
-  public void extendPhase1Cylinder() {
-    phaseOneSolenoid.set(true);
+  public void extendTopCylinder() {
+    phase1Solenoid.set(true);
   }
 
-  public void retractPhase1Cylinder() {
-    phaseOneSolenoid.set(false);
+  public void retractTopCylinder() {
+    phase1Solenoid.set(false);
   }
 
-  public void extendPhase2Cylinder() {
-    phaseTwoSolenoid.set(true);
+  public void extendBottomCylinder() {
+    phase2Solenoid.set(true);
   }
 
-  public void retractPhase2Cylinder() {
-    phaseTwoSolenoid.set(false);
+  public void retractBottomCylinder() {
+    phase2Solenoid.set(false);
   }
 
   public void setShuffleboard() {
-    phase1.setString(Boolean.toString(phaseOneSolenoid.get()));
-    phase2.setString(Boolean.toString(phaseTwoSolenoid.get()));
+    Top.setString(Boolean.toString(phase1Solenoid.get()));
+    Bottom.setString(Boolean.toString(phase2Solenoid.get()));
     // next stage
   }
 
@@ -60,13 +60,14 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   public void periodic() {
     setShuffleboard();
     if (Gamepad2.getRawButton(7)) {
-      extendPhase1Cylinder();
-    } else if (Gamepad2.getRawButton(8)) {
-      extendPhase2Cylinder();
+      extendTopCylinder();
+      extendBottomCylinder();
+    //} else if (Gamepad2.getRawButton(8)) {
+    //  extendBottomCylinder();
     } else if (Gamepad2.getRawButton(5)){
-      retractPhase1Cylinder();
+      retractTopCylinder();
     } else if (Gamepad2.getRawButton(6)) {
-      retractPhase2Cylinder();
+      retractBottomCylinder();
     }
   }
   

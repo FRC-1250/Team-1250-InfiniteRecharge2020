@@ -62,15 +62,17 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   // Shuffleboard
   ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
-  NetworkTableEntry lRPM = driveTab.add("Left RPM", 0).getEntry();
-  NetworkTableEntry rRPM = driveTab.add("Right RPM", 0).getEntry();
+  NetworkTableEntry lRPM = driveTab.add("Left RPM", 0).withPosition(0, 1).getEntry();
+  NetworkTableEntry rRPM = driveTab.add("Right RPM", 0).withPosition(2, 1).getEntry();
   NetworkTableEntry lCurrentDraw = driveTab.add("Left Cur Draw", 0)
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 0, "max", 100))
+    .withPosition(0, 0)
     .getEntry();
   NetworkTableEntry rCurrentDraw = driveTab.add("Right Cur Draw", 0)
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 0, "max", 100))
+    .withPosition(2, 0)
     .getEntry();
   
   public ShuffleboardTab getTab() { return driveTab; }
@@ -257,8 +259,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     linearDrivingAmpControl();
     if (Gamepad.getRawButton(12)){
       driveArcade(Gamepad);
-    }
-    else{
+    } else {
       drive(Gamepad);
     }
     setShuffleboard();

@@ -101,10 +101,6 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     }
   }
 
-  // public void initDefaultCommand() {
-  //   setDefaultCommand(new Cmd_HopperManagement(this));
-  // }
-
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
     myCanDevices.add(new CAN_DeviceFaults(leftMotor));
