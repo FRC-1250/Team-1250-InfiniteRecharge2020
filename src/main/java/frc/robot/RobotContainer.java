@@ -19,6 +19,7 @@ import frc.robot.commands.diagnostic.Cmd_RunHood;
 import frc.robot.commands.hopper.Cmd_ShootCells;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.shooter.Cmd_Track;
+import frc.robot.state.Cmd_StateChange;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
 import frc.robot.commands.intake.Cmd_UnjamHopper;
@@ -30,15 +31,17 @@ import frc.robot.subsystems.Sub_Hopper;
 import frc.robot.subsystems.Sub_Intake;
 import frc.robot.subsystems.Sub_Panel;
 import frc.robot.subsystems.Sub_Shooter;
+import frc.robot.state.Sub_StateManager;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
@@ -50,6 +53,7 @@ public class RobotContainer {
   public static final Sub_Climber s_climb = new Sub_Climber();
   public static final Sub_Hopper s_hopper = new Sub_Hopper();
   public static final Sub_Utility s_util = new Sub_Utility();
+  public static final Sub_StateManager s_stateManager = new Sub_StateManager();
 
   public static String robotState = "collect";
 
@@ -63,17 +67,25 @@ public class RobotContainer {
   public static JoystickButton panelMode = new JoystickButton(Gamepad, Constants.PANEL_MODE); // start button
   public static JoystickButton shootMode = new JoystickButton(Gamepad, Constants.SHOOT_MODE); // back button
   public static JoystickButton climbMode = new JoystickButton(Gamepad, Constants.CLIMB_MODE); // lt button
+
+  enum RobotSubsystemState {
+    SHOOT_MODE, CLIMB_MODE, COLLECT_MODE, PANEL_MODE
+  }
+
   /**
-   * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     configureButtonBindings();
     s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
+    s_stateManager.setDefaultCommand(new Cmd_StateChange(s_stateManager, RobotSubsystemState.COLLECT_MODE.toString()));
   }
 
   Trigger shooter_SpinFlywheels = new Trigger() {
     @Override
-    public boolean get() { return shootMode.get(); }
+    public boolean get() {
+      return shootMode.get() && x.get();
+    }
   };
   /* TODO: panelMode.whenHeld(new SetState("panel"));
     shootMode.whenHeld(new SetState("shoot"));
@@ -82,7 +94,9 @@ public class RobotContainer {
 
   Trigger shooter_Fire = new Trigger() {
     @Override
-    public boolean get() { return shootMode.get() && b.get(); }
+    public boolean get() {
+      return shootMode.get() && b.get();
+    }
   };
 
   Trigger shooter_Track = new Trigger() {
@@ -92,54 +106,80 @@ public class RobotContainer {
 
   Trigger panel_SpinThrice = new Trigger() {
     @Override
-    public boolean get() { return panelMode.get() && x.get(); }
+    public boolean get() {
+      return panelMode.get() && x.get();
+    }
   };
 
   Trigger panel_StopOnColor = new Trigger() {
     @Override
-    public boolean get() { return panelMode.get() && b.get(); }
+    public boolean get() {
+      return panelMode.get() && b.get();
+    }
   };
 
   Trigger panel_DeployCylinder = new Trigger() {
     @Override
-    public boolean get() { return panelMode.get() && y.get(); }
+    public boolean get() {
+      return panelMode.get() && y.get();
+    }
   };
 
   Trigger collect_Collect = new Trigger() {
     @Override
-    public boolean get() { return !panelMode.get() && !shootMode.get() && !climbMode.get() && x.get(); }
+    public boolean get() {
+      return !panelMode.get() && !shootMode.get() && !climbMode.get() && x.get();
+    }
   };
 
   Trigger collect_StopCollect = new Trigger() {
     @Override
-    public boolean get() { return !panelMode.get() && !shootMode.get() && !climbMode.get() && b.get(); }
+    public boolean get() {
+      return !panelMode.get() && !shootMode.get() && !climbMode.get() && b.get();
+    }
   };
 
   Trigger collect_Unjam = new Trigger() {
     @Override
-    public boolean get() { return !panelMode.get() && !shootMode.get() && !climbMode.get() && y.get(); }
+    public boolean get() {
+      return !panelMode.get() && !shootMode.get() && !climbMode.get() && y.get();
+    }
   };
 
   Trigger climb_Extend = new Trigger() {
     @Override
-    public boolean get() { return climbMode.get() && x.get(); }
+    public boolean get() {
+      return climbMode.get() && x.get();
+    }
   };
 
   Trigger climb_Retract = new Trigger() {
     @Override
-    public boolean get() { return climbMode.get() && y.get(); }
+    public boolean get() {
+      return climbMode.get() && y.get();
+    }
   };
 
   Trigger climb_EngagePTO = new Trigger() {
     @Override
-    public boolean get() { return climbMode.get() && b.get(); }
+    public boolean get() {
+      return climbMode.get() && b.get();
+    }
+  };
+
+  // Use that s_stateManager instance to get the current robot state.
+  Trigger examplePanelStateTrigger = new Trigger() {
+    @Override
+    public boolean get() {
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.PANEL_MODE.toString()) && b.get();
+    }
   };
 
   /**
-   * Use this method to define your button->command mappings.  Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-   * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by instantiating a {@link GenericHID} or one of its subclasses
+   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
     // shooter_SpinFlywheels.whenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper, 1), false);
@@ -155,6 +195,14 @@ public class RobotContainer {
     // shootMode.and(a).whenActive(new Cmd_RunFlywheels(s_shooter));
     // climb_Retract.whenActive();
     // climb_EngagePTO.whenActive();
+
+    /*
+     * Change the allow interrupt flag to change function. FALSE = First button
+     * pressed wins TRUE = Last button pressed wins
+     */
+    panelMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotSubsystemState.PANEL_MODE.toString()), false);
+    shootMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotSubsystemState.SHOOT_MODE.toString()), false);
+    climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotSubsystemState.CLIMB_MODE.toString()), false);
   }
 
   public static String getRobotState() {
