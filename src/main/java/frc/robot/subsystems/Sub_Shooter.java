@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import java.util.Map;
 import java.util.Vector;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -94,7 +95,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 12, "max", 629))
     .withSize(3, 1)
-    .withPosition(7, 0)
+    .withPosition(8, 0)
     .getEntry();
   NetworkTableEntry xOffset = llLayout.add("X Offset Angle (degrees)", 0)
     .withWidget(BuiltInWidgets.kDial)
@@ -113,6 +114,11 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   double hoodI = 0;
   double hoodD = 0;
 
+  double flywheelP = 1;
+  double flywheelI = 0;
+  double flywheelD = 0;
+  double flywheelF = 0.05115;
+
   //TODO: Config pid for hood and pidf for wheel
   //pid for hood will be realllllllly slow (config max)
   public Sub_Shooter() {
@@ -123,8 +129,13 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
    hoodPID.setI(hoodI);
    hoodPID.setD(hoodD);
 
+   flywheelFalconLeft.config_kP(0, flywheelP);
+   flywheelFalconLeft.config_kI(0, flywheelI);
+   flywheelFalconLeft.config_kD(0, flywheelD);
+   flywheelFalconLeft.config_kF(0, flywheelF);
+
    turretTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-   turretTalon.configFeedbackNotContinuous(true, 10);
+   turretTalon.configFeedbackNotContinuous(true, 10); // important for absolute encoders not to jump ticks randomly
 
    hoodNeo.setOpenLoopRampRate(0.4);
 
@@ -157,6 +168,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     hoodNeo.set(speed);
   }
   //
+  public void setFlywheelVelocityControl(double rpm) {
+    flywheelFalconLeft.set(ControlMode.Velocity, rpm);
+  }
 
   public void updateLimelight() {
     table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -270,11 +284,11 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
-    if (Gamepad0.getRawButton(Constants.SHOOT_MODE)) {
+    if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (Gamepad0.getRawButton(Constants.SHOOT_MODE))) {
+      setFlywheelVelocityControl(20000);
       track();
-      spinFlywheelMotors(1);
     } else {
-      spinFlywheelMotors(0);
+      setFlywheelVelocityControl(0);
       goHome();
     }
   }

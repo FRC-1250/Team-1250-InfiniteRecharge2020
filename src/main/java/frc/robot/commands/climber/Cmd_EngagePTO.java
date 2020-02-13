@@ -8,6 +8,7 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Sub_Climber;
 import frc.robot.subsystems.Sub_Drivetrain;
 
 public class Cmd_EngagePTO extends CommandBase {
@@ -15,15 +16,18 @@ public class Cmd_EngagePTO extends CommandBase {
    * Creates a new Cmd_EngagePTO.
    */
   private final Sub_Drivetrain s_drive;
-  public Cmd_EngagePTO(Sub_Drivetrain drive) {
+  private final Sub_Climber s_climb;
+  public Cmd_EngagePTO(Sub_Drivetrain drive, Sub_Climber climb) {
     // Use addRequirements() here to declare subsystem dependencies.
     s_drive = drive;
+    s_climb = climb;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     s_drive.engagePTO();
+    s_climb.retractTopCylinder();
     s_drive.driveSpeed = 0.3;
   }
 
