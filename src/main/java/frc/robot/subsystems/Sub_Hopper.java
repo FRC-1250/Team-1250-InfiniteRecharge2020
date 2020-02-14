@@ -89,6 +89,12 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     setShuffleboard();
+
+    /*
+
+    TODO: Remove in future commit. The default command is now set in the RobotContainer 
+    and this logic has been moved to the command Cmd_HopperManagement and Cmd_ShootCells.
+
     if ((Gamepad.getRawButton(Constants.SHOOT_MODE)) && (Gamepad.getRawButton(Constants.BTN_X))) {
       spinHopperMotors(0.4);
       spinUptakeMotor(1);
@@ -99,6 +105,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
       spinHopperMotors(0);
       spinUptakeMotor(0);
     }
+    */
   }
 
   public Vector<CAN_DeviceFaults> input() {

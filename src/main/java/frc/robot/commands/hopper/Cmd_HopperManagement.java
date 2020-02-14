@@ -24,7 +24,13 @@ public class Cmd_HopperManagement extends CommandBase {
 
   @Override
   public void execute() {
-    
+    if (!s_hopper.getSensor()) {
+      s_hopper.spinHopperMotors(0.4);
+      s_hopper.spinUptakeMotor(0.4);
+    } else {
+      s_hopper.spinHopperMotors(0.2);
+      s_hopper.spinUptakeMotor(0);
+    }
   }
 
   @Override
