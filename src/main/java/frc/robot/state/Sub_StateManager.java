@@ -17,7 +17,7 @@ public class Sub_StateManager extends SubsystemBase {
     robotSubsystemState = "";
   }
 
-  public String getRobotSubsystemState() {
+  public String getRobotState() {
     return robotSubsystemState;
   }
 

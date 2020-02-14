@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -15,6 +16,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -33,6 +35,10 @@ import frc.robot.utilities.CAN_Input;
 public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   Joystick Gamepad2 = new Joystick(2);
+
+  ArrayList<ArrayList<String>> stateButtons = new ArrayList<ArrayList<String>>();
+  public String[] buttons = {"X", "A", "B", "Y"};
+
   public Sub_Utility() {
     makeModeEntries(true);
     makeCommandEntries(true);
@@ -89,7 +95,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   public NetworkTableEntry[][] makeCommandEntries(boolean initialize) {
     if (initialize) {
-      String[] buttons = {"X", "A", "B", "Y"};
       for (int tab = 0; tab < allTabs.length; tab++) {
         for (int button = 0; button < buttons.length; button++) {
         allCommandEntries[tab][button] = allTabs[tab].add(buttons[button], "none")
@@ -132,7 +137,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   public void setShuffleboard() {
     for (int i = 0; i < allTabs.length; i++) {
-      makeModeEntries(false)[i].setString(RobotContainer.s_stateManager.getRobotSubsystemState());
+      makeModeEntries(false)[i].setString(RobotContainer.s_stateManager.getRobotState());
       for (int j = 0; j < 4; j++) {
         makeCommandEntries(false)[i][j].setString(whatCommand()[j]);
       }
@@ -140,37 +145,68 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   }
   
   public String whatMode() {
-    String mode;
-    if (RobotContainer.panelMode.get()) {
-      mode = "Panel";
-    } else if (RobotContainer.shootMode.get()) {
-      mode = "Shoot";
-    } else if (RobotContainer.climbMode.get()) {
-      mode = "Climb";
-    } else {
-      mode = "Collect";
+    return RobotContainer.s_stateManager.getRobotState();
+  }
+
+  public void setStateButton(String mode, String cmd, String btn) {
+    ArrayList<String> modeAndBtn = new ArrayList<String>();
+    switch (btn) { // This could probably be optimized
+      case "x":
+        btn = "1";
+        break;
+      case "a":
+        btn = "2";
+      case "b":
+        btn = "3";
+      case "y":
+        btn = "4";
+      default:
+        btn = "0";
+        break;
     }
-    return mode;
+    modeAndBtn.add(mode);
+    modeAndBtn.add(btn);
+    modeAndBtn.add(cmd);
+    stateButtons.add(modeAndBtn);
   }
 
   public String[] whatCommand() {
-    String[] cmd = {"none", "none", "none", "none"};
-    if (whatMode() == "Panel") {
-      cmd[0] = "Spin Thrice";
-      cmd[2] = "Stop on Color";
-      cmd[3] = "Deploy Cylinder";
-    } else if (whatMode() == "Shoot") {
-      cmd[2] = "Fire";
-    } else if (whatMode() == "Climb") {
-      cmd[0] = "Extend";
-      cmd[2] = "Engage PTO";
-      cmd[3] = "Retract";
-    } else {
-      cmd[0] = "Collect";
-      cmd[3] = "Unjam";
+    String[] cmds = {"none", "none", "none", "none"};
+    String mode = RobotContainer.s_stateManager.getRobotState();
+
+    // iterates through all the commands created (stateButtons.size()) and then checks if the first
+    // item in every stateButton array (the mode) is equal to the current robot mode
+    // then adds to the cmds array with the button number (since 'x' is actually '1' cmds[1] would equal
+    // the command on the x button)
+    // [mode, button, command]
+    for (int i = 0; i < stateButtons.size(); i++) {
+      for (int j = 0; j < buttons.length; j++) {
+        if (mode == stateButtons.get(i).get(0)) {
+          cmds[Integer.parseInt(stateButtons.get(i).get(1))] = stateButtons.get(i).get(2);
+        }
+      }
     }
-    return cmd;
+    return cmds;
   }
+
+  // public String[] whatCommand() {
+  //   String[] cmd = {"none", "none", "none", "none"};
+  //   if (whatMode() == "PANEL_MODE") {
+  //     cmd[0] = "Spin Thrice";
+  //     cmd[2] = "Stop on Color";
+  //     cmd[3] = "Deploy Cylinder";
+  //   } else if (whatMode() == "SHOOT_MODE") {
+  //     cmd[2] = "Fire";
+  //   } else if (whatMode() == "CLIMB_MODE") {
+  //     cmd[0] = "Extend";
+  //     cmd[2] = "Engage PTO";
+  //     cmd[3] = "Retract";
+  //   } else if (whatMode() == "COLLECT_MODE") {
+  //     cmd[0] = "Collect";
+  //     cmd[3] = "Unjam";
+  //   }
+  //   return cmd;
+  // }
   //
 
   @Override
