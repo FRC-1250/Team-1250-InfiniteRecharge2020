@@ -23,7 +23,7 @@ import frc.robot.commands.shooter.Cmd_Track;
 import frc.robot.state.Cmd_StateChange;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
-import frc.robot.commands.intake.Cmd_UnjamHopper;
+import frc.robot.commands.hopper.Cmd_UnjamHopper;
 import frc.robot.commands.hopper.Cmd_HopperManagement;
 import frc.robot.subsystems.Sub_Utility;
 import frc.robot.subsystems.Sub_Climber;
