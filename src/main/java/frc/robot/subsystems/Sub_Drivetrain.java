@@ -53,8 +53,6 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   public static double accumError = 0;
 	//private final double AUTO_TURN_RATE = 0.3;
-	private final double pSimpleStraight = Constants.DRV_KP_SIMPLE_STRAIT;
-	private final double pSimple = Constants.DRV_KP_SIMPLE;
   //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
 
@@ -213,7 +211,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   //Configures a proportional gain for the driving stright during auto
   private double getGainP(double setpoint, double current, double kP){ 	
     double error = setpoint - current;  		
-    return pSimple * error;
+    return Constants.DRV_KP_SIMPLE * error;
   }
 
   //Linear ramp control for driving, accepts an upper and lower value
@@ -228,7 +226,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   //Executes the driving of the robot for auton
   public void driveToPos( double upperSpeed, double lowerSpeed){	
-    double offset = getGainP(0,this.getGyroAngle(),pSimpleStraight);
+    double offset = getGainP(0,this.getGyroAngle(),Constants.DRV_KP_SIMPLE_STRAIT);
     double sign = Math.signum(driveSetpoint);
     
     diffDriveGroup.arcadeDrive(linearRamp(upperSpeed,lowerSpeed) * sign, 0 + offset);
