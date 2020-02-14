@@ -23,11 +23,7 @@ public class Cmd_ToggleLL extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (s_shooter.table.getEntry("ledMode").getDouble(0) == 1) {
-      s_shooter.table.getEntry("ledMode").setNumber(3);
-    } else {
-      s_shooter.table.getEntry("ledMode").setNumber(1);
-    }
+    s_shooter.table.getEntry("ledMode").setNumber(3);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,6 +34,7 @@ public class Cmd_ToggleLL extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    s_shooter.table.getEntry("ledMode").setNumber(1);
   }
 
   // Returns true when the command should end.

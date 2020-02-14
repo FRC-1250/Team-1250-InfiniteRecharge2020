@@ -58,7 +58,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   //private final double KI_SIMPLE = 0.03;
   public double driveSetpoint = 0;
 
-  public double driveSpeed = 1;
+  public boolean isPTOEngaged = false;
 
   // Shuffleboard
   ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
@@ -107,12 +107,20 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   //Actual Drive Method
   public void drive(double left, double right){
-    diffDriveGroup.tankDrive(left * driveSpeed, right * driveSpeed); // driveSpeed changes value as PTO engages
+    if (isPTOEngaged) {
+      diffDriveGroup.tankDrive(Math.abs(left) * 0.5, Math.abs(right) * 0.5);
+    } else {
+      diffDriveGroup.tankDrive(left, right);
+    }
   }
 
   //The drive method that passes the joystick values (Overloaded)
   public void drive(Joystick joy){
-    drive(joy.getY() * driveSpeed, joy.getThrottle() * driveSpeed);
+    if (isPTOEngaged) {
+      drive(Math.abs(joy.getY()) * 0.5, Math.abs(joy.getThrottle()) * 0.5);
+    } else {
+      drive(joy.getY(), joy.getThrottle());
+    }
   }
 
   //Arcade drive method

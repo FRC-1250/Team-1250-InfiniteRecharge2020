@@ -28,7 +28,7 @@ public class Cmd_EngagePTO extends CommandBase {
   public void initialize() {
     s_drive.engagePTO();
     s_climb.retractTopCylinder();
-    s_drive.driveSpeed = 0.3;
+    s_drive.isPTOEngaged = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

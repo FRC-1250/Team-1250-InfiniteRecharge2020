@@ -8,16 +8,14 @@
 package frc.robot.commands.climb;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Sub_Climber;
 
 public class CmdSG_ExtendPhases extends SequentialCommandGroup {
 
   public CmdSG_ExtendPhases(Sub_Climber s_climber) {
     super(
-      new CmdI_ExtendPhaseOne(s_climber), 
-      new WaitCommand(0.2), 
-      new CmdI_ExtendPhaseTwo(s_climber)
+      new CmdI_ExtendTopCylinder(s_climber), 
+      new CmdI_ExtendBottomCylinder(s_climber)
       );
   }
 }

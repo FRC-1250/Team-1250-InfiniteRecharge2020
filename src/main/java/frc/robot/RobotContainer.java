@@ -18,6 +18,7 @@ import frc.robot.commands.diagnostic.Cmd_RunFlywheels;
 import frc.robot.commands.diagnostic.Cmd_RunHood;
 import frc.robot.commands.hopper.Cmd_ShootCells;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
+import frc.robot.commands.shooter.Cmd_ToggleLL;
 import frc.robot.commands.shooter.Cmd_Track;
 import frc.robot.state.Cmd_StateChange;
 import frc.robot.commands.intake.Cmd_Collect;
@@ -55,8 +56,6 @@ public class RobotContainer {
   public static final Sub_Utility s_util = new Sub_Utility();
   public static final Sub_StateManager s_stateManager = new Sub_StateManager();
 
-  public static String robotState = "collect";
-
   // Buttons
   private static Joystick Gamepad = new Joystick(0);
   private static JoystickButton x = new JoystickButton(Gamepad, 1);
@@ -84,94 +83,82 @@ public class RobotContainer {
   Trigger shooter_SpinFlywheels = new Trigger() {
     @Override
     public boolean get() {
-      return shootMode.get() && x.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.SHOOT_MODE.toString()) && x.get();
     }
   };
-  /* TODO: panelMode.whenHeld(new SetState("panel"));
-    shootMode.whenHeld(new SetState("shoot"));
-    climbMode.whenHeld(new SetState("climb"));
-    */
 
   Trigger shooter_Fire = new Trigger() {
     @Override
     public boolean get() {
-      return shootMode.get() && b.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.SHOOT_MODE.toString()) && b.get();
     }
   };
 
   Trigger shooter_Track = new Trigger() {
     @Override
-    public boolean get() { return shootMode.get(); }
+    public boolean get() { return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.SHOOT_MODE.toString()); }
   };
 
   Trigger panel_SpinThrice = new Trigger() {
     @Override
     public boolean get() {
-      return panelMode.get() && x.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.PANEL_MODE.toString()) && x.get();
     }
   };
 
   Trigger panel_StopOnColor = new Trigger() {
     @Override
     public boolean get() {
-      return panelMode.get() && b.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.PANEL_MODE.toString()) && b.get();
     }
   };
 
   Trigger panel_DeployCylinder = new Trigger() {
     @Override
     public boolean get() {
-      return panelMode.get() && y.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.PANEL_MODE.toString()) && y.get();
     }
   };
 
   Trigger collect_Collect = new Trigger() {
     @Override
     public boolean get() {
-      return !panelMode.get() && !shootMode.get() && !climbMode.get() && x.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.COLLECT_MODE.toString()) && x.get();
     }
   };
 
   Trigger collect_StopCollect = new Trigger() {
     @Override
     public boolean get() {
-      return !panelMode.get() && !shootMode.get() && !climbMode.get() && b.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.COLLECT_MODE.toString()) && b.get();
     }
   };
 
   Trigger collect_Unjam = new Trigger() {
     @Override
     public boolean get() {
-      return !panelMode.get() && !shootMode.get() && !climbMode.get() && y.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.COLLECT_MODE.toString()) && y.get();
     }
   };
 
   Trigger climb_Extend = new Trigger() {
     @Override
     public boolean get() {
-      return climbMode.get() && x.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.CLIMB_MODE.toString()) && x.get();
     }
   };
 
   Trigger climb_Retract = new Trigger() {
     @Override
     public boolean get() {
-      return climbMode.get() && y.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.CLIMB_MODE.toString()) && y.get();
     }
   };
 
   Trigger climb_EngagePTO = new Trigger() {
     @Override
     public boolean get() {
-      return climbMode.get() && b.get();
-    }
-  };
-
-  // Use that s_stateManager instance to get the current robot state.
-  Trigger examplePanelStateTrigger = new Trigger() {
-    @Override
-    public boolean get() {
-      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.PANEL_MODE.toString()) && b.get();
+      return (s_stateManager.getRobotSubsystemState() == RobotSubsystemState.CLIMB_MODE.toString()) && b.get();
     }
   };
 
@@ -185,6 +172,7 @@ public class RobotContainer {
     // shooter_SpinFlywheels.whenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper, 1), false);
     // shooter_Track.whenActive(new Cmd_Track(s_shooter), false);
     // shooter_Fire.whenActive(new Cmd_ShootCells(s_hopper), false);
+    shooter_Track.whenActive(new Cmd_ToggleLL(s_shooter), true);
     panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
     panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel), true);
     panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel, s_shooter), false);
@@ -205,8 +193,13 @@ public class RobotContainer {
     climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotSubsystemState.CLIMB_MODE.toString()), false);
   }
 
-  public static String getRobotState() {
-    return robotState;
+  public String[] s_whenActive(Trigger trger, Command cmd, String btn, boolean interruptible) {
+    trger.whenActive(cmd, interruptible);
+    String sendCmd = cmd.toString();
+    String[] toSend = {sendCmd, btn};
+    return toSend;
+    // TODO: make association between trigger and actual button pressed
+    // create own trigger class where you specify what button to pass as variable
   }
 
   public Command getAutonomousCommand() {

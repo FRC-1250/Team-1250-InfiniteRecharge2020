@@ -135,8 +135,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    // s_shooter.playMusic();
-
   }
 
   @Override

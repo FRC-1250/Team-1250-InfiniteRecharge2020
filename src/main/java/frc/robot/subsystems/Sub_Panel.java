@@ -175,7 +175,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   }
 
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
-    if (getProximity() > 140) {
+    if (isProximityGood()) {
       if (color == getSensorColor()) {
         return true;
       }

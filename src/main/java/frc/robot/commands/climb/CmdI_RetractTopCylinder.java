@@ -10,16 +10,20 @@ package frc.robot.commands.climb;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Sub_Climber;
 
-public class CmdI_RetractPhaseTwo extends InstantCommand {
-
-  private final Sub_Climber s_climber;
-
-  public CmdI_RetractPhaseTwo(Sub_Climber s_climber) {
-    this.s_climber = s_climber;
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// information, see:
+// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
+public class CmdI_RetractTopCylinder extends InstantCommand {
+  private final Sub_Climber s_climb;
+  public CmdI_RetractTopCylinder(Sub_Climber climb) {
+    s_climb = climb;
+    addRequirements(climb);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
+  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_climber.retractPhase2Cylinder();
+    s_climb.retractTopCylinder();
   }
 }
