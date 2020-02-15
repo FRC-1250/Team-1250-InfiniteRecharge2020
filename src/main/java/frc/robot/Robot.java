@@ -30,7 +30,6 @@ public class Robot extends TimedRobot {
 
   public static AddressableLED ledStrip;
   public static AddressableLEDBuffer ledStripBuffer;
-  long initTime;
   @Override
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -38,8 +37,8 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     RobotContainer.s_panel.retractCylinders();
 
+      /* LEDS */
     ledStrip = new AddressableLED(Constants.LED_PWM_PORT);
-
     // Reuse buffer
     // Default to a length of 60, start empty output
     // Length is expensive to set, so only set it once, then just update data
@@ -47,7 +46,8 @@ public class Robot extends TimedRobot {
     ledStrip.setLength(ledStripBuffer.getLength());
 
     halvesAroundPanel = 0;
-    initTime = System.currentTimeMillis();
+    RobotContainer.s_util.initTime = System.currentTimeMillis();
+
     ledStrip.start();
   }
 
@@ -65,15 +65,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    if (halvesAroundPanel > 7) {
-      halvesAroundPanel = 0;
-    }
 
-    // Timer set to pause CAN check for 3 seconds
-    if (System.currentTimeMillis() - initTime > 3000) {
-      RobotContainer.s_util.sortLEDByCAN();
+    if (RobotContainer.s_util.checkCAN()) {
       ledStrip.setData(ledStripBuffer);
-      initTime = System.currentTimeMillis();
     }
   }
 

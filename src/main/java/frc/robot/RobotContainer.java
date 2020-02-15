@@ -13,6 +13,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.commands.auto_actions.Cmd_DoNothing;
+import frc.robot.commands.climb.CmdSG_ExtendPhases;
+import frc.robot.commands.climb.CmdSG_RetractPhases;
+import frc.robot.commands.climber.Cmd_EngagePTO;
 import frc.robot.commands.climber.Cmd_ExtendCylinders;
 import frc.robot.commands.diagnostic.Cmd_RunFlywheels;
 import frc.robot.commands.diagnostic.Cmd_RunHood;
@@ -173,16 +177,13 @@ public class RobotContainer {
     // shooter_SpinFlywheels.whenActive(new Cmd_SpinFlywheels(s_shooter, s_hopper, 1), false);
     // shooter_Track.whenActive(new Cmd_Track(s_shooter), false);
     // shooter_Fire.whenActive(new Cmd_ShootCells(s_hopper), false);
-    shooter_Track.whenActive(new Cmd_ToggleLL(s_shooter), true);
-    panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
-    panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel), true);
-    panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel, s_shooter), false);
-    collect_Collect.whenActive(new Cmd_Collect(s_intake), true);
-    collect_Unjam.whenActive(new Cmd_UnjamHopper(s_hopper), false);
-    collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), true);
-
-    whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_ToggleLL(s_shooter), true);
-    // whenTriggerPressed(mode, button, command, interruptible);
+    // shooter_Track.whenActive(new Cmd_ToggleLL(s_shooter), true);
+    // panel_SpinThrice.whenActive(new Cmd_SpinThrice(s_panel), true);
+    // panel_StopOnColor.whenActive(new Cmd_StopOnColor(s_panel), true);
+    // panel_DeployCylinder.whenActive(new Cmd_DeployCylinder(s_panel), false);
+    // collect_Collect.whenActive(new Cmd_Collect(s_intake), true);
+    // collect_Unjam.whenActive(new Cmd_UnjamHopper(s_hopper), false);
+    // collect_StopCollect.whenActive(new Cmd_StopCollect(s_intake, s_hopper), true);
 
     // climb_Extend.whenActive(new Cmd_ExtendCylinders(s_climb), true);
     // shootMode.and(a).whenActive(new Cmd_RunFlywheels(s_shooter));
@@ -196,12 +197,51 @@ public class RobotContainer {
     panelMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.PANEL_MODE.toString()), false);
     shootMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
     climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
+
+    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_ToggleLL(s_shooter), true);
+    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
+    whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
+    whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
+    whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
+    whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
+    whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
+    whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
+    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
+    whenTriggerPressed(RobotState.COLLECT_MODE, y, new Cmd_UnjamHopper(s_hopper), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
+    // whenTriggerPressed(mode, button, command, interruptible);
+  }
+
+  // This method in place of the native Object toString() method because it returns crap
+  public String btnToString(JoystickButton btn) {
+    String str;
+    if (btn.equals(x)) {
+      str = "x";
+    } else if (btn.equals(a)) {
+      str = "a";
+    } else if (btn.equals(b)) {
+      str = "b";
+    } else if (btn.equals(y)) {
+      str = "y";
+    } else {
+      str = "ERROR, ONLY XABY AVAILABLE";
+    }
+    return str;
+  }
+
+  String getCmdString(Command cmd) {
+    return cmd.getName().substring(cmd.getName().indexOf("_") + 1); // everything after Cmd_
   }
 
   public void whenTriggerPressed(RobotState mode, JoystickButton btn, Command cmd, boolean interruptible) {
     StateTrigger trigger = new StateTrigger(mode, x);
     trigger.whenActive(cmd, interruptible);
-    s_util.setStateButton(mode.toString(), cmd.getName(), btn.toString());
+    if (btn != null) { // if the button is null, it should be something that activates just with the mode (and null objects shouldn't be added to the array this method adds to)
+      // System.out.println("##########" + mode.toString() + " " + btnToString(btn) + " " + getCmdString(cmd));
+      s_util.setStateButton(mode.toString(), getCmdString(cmd), btnToString(btn));
+    }
   }
 
   public Command getAutonomousCommand() {

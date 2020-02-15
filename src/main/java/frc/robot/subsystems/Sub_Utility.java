@@ -16,7 +16,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -35,9 +34,12 @@ import frc.robot.utilities.CAN_Input;
 public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   Joystick Gamepad2 = new Joystick(2);
+  public long initTime;
 
   ArrayList<ArrayList<String>> stateButtons = new ArrayList<ArrayList<String>>();
-  public String[] buttons = {"X", "A", "B", "Y"};
+  public String[] buttons = {"x", "a", "b", "y"};
+  String empty = "NONE";
+  String[] cmds = {empty, empty, empty, empty};
 
   public Sub_Utility() {
     makeModeEntries(true);
@@ -97,7 +99,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     if (initialize) {
       for (int tab = 0; tab < allTabs.length; tab++) {
         for (int button = 0; button < buttons.length; button++) {
-        allCommandEntries[tab][button] = allTabs[tab].add(buttons[button], "none")
+        allCommandEntries[tab][button] = allTabs[tab].add(buttons[button].toUpperCase(), "none")
           .withSize(1, 1)
           .withPosition(2+button, 3)
           .getEntry();
@@ -150,18 +152,21 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   public void setStateButton(String mode, String cmd, String btn) {
     ArrayList<String> modeAndBtn = new ArrayList<String>();
-    switch (btn) { // This could probably be optimized
+    switch (btn) {
       case "x":
-        btn = "1";
+        btn = "0";
         break;
       case "a":
-        btn = "2";
+        btn = "1";
+        break;
       case "b":
-        btn = "3";
+        btn = "2";
+        break;
       case "y":
-        btn = "4";
+        btn = "3";
+        break;
       default:
-        btn = "0";
+        btn = "ONLY XABY AVAILABLE";
         break;
     }
     modeAndBtn.add(mode);
@@ -171,43 +176,40 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   }
 
   public String[] whatCommand() {
-    String[] cmds = {"none", "none", "none", "none"};
     String mode = RobotContainer.s_stateManager.getRobotState();
 
     // iterates through all the commands created (stateButtons.size()) and then checks if the first
     // item in every stateButton array (the mode) is equal to the current robot mode
     // then adds to the cmds array with the button number (since 'x' is actually '1' cmds[1] would equal
     // the command on the x button)
-    // [mode, button, command]
+
+    // stateButtons = [mode, button, command]
     for (int i = 0; i < stateButtons.size(); i++) {
-      for (int j = 0; j < buttons.length; j++) {
-        if (mode == stateButtons.get(i).get(0)) {
-          cmds[Integer.parseInt(stateButtons.get(i).get(1))] = stateButtons.get(i).get(2);
-        }
+      if (mode == stateButtons.get(i).get(0)) {
+        cmds[Integer.parseInt(stateButtons.get(i).get(1))] = stateButtons.get(i).get(2);
       }
+      // System.out.println("### " + "i: " + i + " \nstateButtons.get(i).get(1): " + Integer.parseInt(stateButtons.get(i).get(1)) + " \nstateButtons.get(i).get(2): " + stateButtons.get(i).get(2));
     }
     return cmds;
   }
+  // TODO: ^ this is like 95% working, just the modes aren't grabbed or assigned properly
+  // (ctrl shift p, simulate, and open shuffleboard to see)
 
-  // public String[] whatCommand() {
-  //   String[] cmd = {"none", "none", "none", "none"};
-  //   if (whatMode() == "PANEL_MODE") {
-  //     cmd[0] = "Spin Thrice";
-  //     cmd[2] = "Stop on Color";
-  //     cmd[3] = "Deploy Cylinder";
-  //   } else if (whatMode() == "SHOOT_MODE") {
-  //     cmd[2] = "Fire";
-  //   } else if (whatMode() == "CLIMB_MODE") {
-  //     cmd[0] = "Extend";
-  //     cmd[2] = "Engage PTO";
-  //     cmd[3] = "Retract";
-  //   } else if (whatMode() == "COLLECT_MODE") {
-  //     cmd[0] = "Collect";
-  //     cmd[3] = "Unjam";
-  //   }
-  //   return cmd;
-  // }
-  //
+  public boolean checkCAN() {
+    // Timer set to pause CAN check for 3 seconds
+    if (System.currentTimeMillis() - initTime > 3000) {
+      RobotContainer.s_util.sortLEDByCAN();
+      initTime = System.currentTimeMillis();
+      return true;
+    }
+    return false;
+  }
+
+  public void checkSpinThrice() {
+    if (Robot.halvesAroundPanel > 7) {
+      Robot.halvesAroundPanel = 0;
+    }
+  }
 
   @Override
   public void periodic() {
@@ -219,6 +221,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
       }
     }
     setShuffleboard();
+    checkSpinThrice();
     // makeTestCommands();
   }
 }
