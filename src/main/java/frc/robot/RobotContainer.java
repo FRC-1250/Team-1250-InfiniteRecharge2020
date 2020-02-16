@@ -192,24 +192,24 @@ public class RobotContainer {
      * Change the allow interrupt flag to change function. FALSE = First button
      * pressed wins TRUE = Last button pressed wins
      */
-    // panelMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.PANEL_MODE.toString()), false);
-    // shootMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
-    // climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
+    panelMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.PANEL_MODE.toString()), false);
+    shootMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
+    climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
 
-    // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_ToggleLL(s_shooter), true);
-    // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
-    // whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
-    // whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
-    // whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
-    // whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
-    // whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
-    // whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
-    // whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
-    // whenTriggerPressed(RobotState.COLLECT_MODE, y, new Cmd_UnjamHopper(s_hopper), false);
-    // whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), false);
-    // whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
-    // whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
-    // whenTriggerPressed(RobotState.CLIMB_MODE, a, new Cmd_DoNothing(1), true);
+    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_ToggleLL(s_shooter), true);
+    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
+    whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
+    whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
+    whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
+    whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
+    whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
+    whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
+    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
+    whenTriggerPressed(RobotState.COLLECT_MODE, y, new Cmd_UnjamHopper(s_hopper), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, a, new Cmd_DoNothing(1), true);
     // whenTriggerPressed(mode, button, command, interruptible);
   }
 

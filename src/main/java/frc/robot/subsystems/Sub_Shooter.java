@@ -30,11 +30,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
-import frc.robot.commands.shooter.Cmd_TurretGoHome;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -58,7 +55,11 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public double turretHome = Constants.SHOOT_TURRET_HOME;
   public double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
   public double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
-  double turretDeadband = 50;
+
+  // Variables to keep track of the turret movement (if encoder gets unplugged and turret spins out of control, this is a backup procedure)
+  public long initTurretTime;
+  double prevTurretTicks;
+  boolean enabledTurret = true;
 
   // Used for limelight methods
   public NetworkTable table;
@@ -72,36 +73,33 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", turretLeftStop, "max", turretRightStop))
     .withSize(2, 1)
-    .withPosition(0, 0)
-    .getEntry();
+    .withPosition(0, 0).getEntry();
   NetworkTableEntry distFromHome = shooterTab.add("Turret Distance from Home (ticks)", 0)
     .withSize(2, 1)
-    .withPosition(2, 0)
-    .getEntry();
+    .withPosition(2, 0).getEntry();
   NetworkTableEntry hoodTemp = shooterTab.add("Hood Temp", 0)
-    .withPosition(4, 0)
-    .getEntry();
+    .withPosition(4, 0).getEntry();
   NetworkTableEntry hoodTicks = shooterTab.add("Hood Ticks", 0)
-    .withPosition(4, 1)
-    .getEntry();
+    .withPosition(4, 1).getEntry();
   NetworkTableEntry hoodCurrent = shooterTab.add("Hood Current", 0)
-    .withPosition(4, 2)
-    .getEntry();
+    .withPosition(4, 2).getEntry();
   NetworkTableEntry shootRPM = shooterTab.add("Shooter RPM", 0)
     .withWidget(BuiltInWidgets.kGraph)
-    .withPosition(5, 0)
-    .getEntry();
+    .withPosition(5, 0).getEntry();
   NetworkTableEntry distFromPort = shooterTab.add("Distance from Outer Port", 0)
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 12, "max", 629))
     .withSize(3, 1)
-    .withPosition(8, 0)
-    .getEntry();
+    .withPosition(8, 0).getEntry();
   NetworkTableEntry xOffset = llLayout.add("X Offset Angle (degrees)", 0)
-    .withWidget(BuiltInWidgets.kDial)
-    .getEntry();
-  NetworkTableEntry seeTarget = llLayout.add("Sees Target", "false").getEntry();
-  NetworkTableEntry homeFound = shooterTab.add("Home Found", "false").getEntry();
+    .withWidget(BuiltInWidgets.kDial).getEntry();
+  NetworkTableEntry seeTarget = llLayout.add("Sees Target?", "NO TARGET").getEntry();
+  NetworkTableEntry homeFound = shooterTab.add("Home Found", "false")
+    .withPosition(8, 1).getEntry();
+  NetworkTableEntry turretSpeed = shooterTab.add("Turrent Percent", -1)
+    .withPosition(8, 2).getEntry();
+  NetworkTableEntry turretMove = shooterTab.add("Can Turret Move?", "no data")
+    .withPosition(9, 2).getEntry();
 
   public ShuffleboardTab getTab() { return shooterTab; }
   //
@@ -138,8 +136,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
    turretTalon.configFeedbackNotContinuous(true, 10); // important for absolute encoders not to jump ticks randomly
 
    hoodNeo.setOpenLoopRampRate(0.4);
-
-
   }
 
   public void setShuffleboard() {
@@ -147,17 +143,27 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     hoodTicks.setDouble(hoodNeo.getEncoder().getPosition());
     shootRPM.setDouble(flywheelFalconLeft.getSelectedSensorVelocity());
     distFromHome.setDouble(turretDistFromHome());
-    seeTarget.setString(Boolean.toString(limelightSeesTarget()));
+    seeTarget.setString(isTarget());
     xOffset.setDouble(tx);
     hoodTemp.setDouble(hoodNeo.getMotorTemperature());
     distFromPort.setDouble(getPortDist());
     hoodCurrent.setDouble(hoodNEOCurrentDraw());
     homeFound.setString(Boolean.toString(wasHomeFound));
+    turretSpeed.setDouble(turretTalon.getMotorOutputPercent());
+    turretMove.setString(Boolean.toString(enabledTurret).toUpperCase());
   }
 
-  // Diagnostic methods
+  // Basic methods
+
   public void spinTurretMotor(double speed) {
-    turretTalon.set(speed);
+    // First check would usually determine the state of enabledTurret; however, the check will continue throughout
+    // the entire match just in case encoder is unplugged midway
+    if (shouldTurretMove() && enabledTurret) {
+      turretTalon.set(speed);
+    } else {
+      turretTalon.set(0);
+      enabledTurret = false;
+    }
   }
 
   public void spinFlywheelMotors(double speed) {
@@ -186,6 +192,30 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     tv = tableTv.getDouble(-1);
   }
 
+  public boolean updateTurretTicks() {
+    // Timer set to check turret every 3/4ths of a second
+    if (System.currentTimeMillis() - initTurretTime > 750) {
+      initTurretTime = System.currentTimeMillis();
+      prevTurretTicks = getTurretTicks();
+      return true;
+    }
+    return false;
+  }
+
+  public boolean shouldTurretMove() {
+    // If the motor is running but the tick count hasn't changed from the initialization of the robot, turret should stop moving
+    // If the motor is running and tick count has changed, continue moving
+    // If motor isn't running, turret is probably fine
+    if (turretTalon.getMotorOutputPercent() > 0) {
+      if (prevTurretTicks == getTurretTicks()) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    return true;
+  }
+
   public void track() {
     if (limelightSeesTarget()) {
       double heading_error = -tx; // in order to change the target offset (in degrees), add it here
@@ -196,25 +226,33 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       
       double xDiff = 0 - steering_adjust;
       double xCorrect = 0.05 * xDiff;
-      turretTalon.set(xCorrect);
+      spinTurretMotor(xCorrect);
     } else {
       goHome();
     }
   }
 
   public void goHome() {
-    if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > turretDeadband)) {
-      // If you're to the right of the center, move left until you're within 50 ticks
-      turretTalon.set(0.3);
-    } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -turretDeadband)) {
-      turretTalon.set(-0.3);
+    if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
+      // If you're to the right of the center, move left until you're within 50 ticks (turret deadband)
+      spinTurretMotor(0.3);
+    } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
+      // If you're to the left of the center, move right until you're within 50 ticks
+      spinTurretMotor(-0.3);
     } else {
-      turretTalon.set(0);
+      spinTurretMotor(0);
     }
   }
 
   public boolean limelightSeesTarget() {
     return tv == 1;
+  }
+
+  public String isTarget() {
+    if (limelightSeesTarget()) {
+      return "SEES TARGET";
+    }
+    return "NO TARGET";
   }
   
   public double turretDistFromHome() {
@@ -251,8 +289,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public void hoodNEOGoHome() {
-    //New Hood Stuff
-    //Auto Home Detect TODO: Find the value for hoodCollisionAmps
     //TODO: Create lookup table for interpolatedHoodPosition
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
@@ -268,10 +304,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
-  public void isTurretMoving() {
-    
-  }
-
   @Override
   public void periodic() {
     // Controls hood
@@ -284,20 +316,15 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     if (Gamepad2.getRawButton(Constants.BTN_Y)) {
       wasHomeFound = false;
     }
-
     updateLimelight();
-
     hardStopConfiguration();
     setShuffleboard();
-
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
-    // TODO: implement stopper when ticks aren't changing
+    // Spins flywheels in shoot mode and when Y is pressed (Joystick 0)
     if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (Gamepad0.getRawButton(Constants.SHOOT_MODE))) {
-      //if (isTurretMoving()) {
-        setFlywheelVelocityControl(20000);
-        track();
-      //}
+      setFlywheelVelocityControl(20000);
+      track();
     } else {
       setFlywheelVelocityControl(0);
       goHome();
