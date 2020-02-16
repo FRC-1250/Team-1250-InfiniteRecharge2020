@@ -61,6 +61,9 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   NetworkTableEntry curColor = panelTab.add("Cur Color", "U")
     .withPosition(4, 0)
     .getEntry();
+  NetworkTableEntry resetSensor = panelTab.add("Reset Sensor? (Y/N)", "false")
+    .withPosition(4, 1)
+    .getEntry();
   NetworkTableEntry gameData = panelTab.add("Game Data", "None received")
     .withPosition(5, 0)
     .getEntry();
@@ -79,6 +82,14 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     curColor.setString(Character.toString(getSensorColor()));
     halvRoundPanel.setDouble((double)Robot.halvesAroundPanel);
     gameData.setString(Character.toString(getDataFromField()));
+    resetSensor.setString(Boolean.toString(isSensorBroken()).toUpperCase());
+  }
+
+  public boolean isSensorBroken() {
+    if (getSensorColor() == 'U') {
+      return true;
+    }
+    return false;
   }
 
   public void extendCylinder() {
@@ -152,6 +163,12 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     } else {
       colorChar = 'U';
     }
+    /* 
+     * If the color is 'U' but proximity is working, try:
+     * 1. Power cycle (turn it off and on again)
+     * 2. Press the reset on roboRIO (but don't hold, otherwise it'll go into safe mode)
+     * 3. If nothing works, repeat steps 1-2 innumerable times until it resolves itself
+     */ 
     return colorChar;
   }
 

@@ -5,27 +5,30 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.climber;
+package frc.robot.commands.climb;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Climber;
+import frc.robot.subsystems.Sub_Drivetrain;
 
-public class Cmd_ExtendCylinders extends CommandBase {
+public class Cmd_EngagePTO extends CommandBase {
   /**
-   * Creates a new Cmd_ExtendCylinders.
+   * Creates a new Cmd_EngagePTO.
    */
+  private final Sub_Drivetrain s_drive;
   private final Sub_Climber s_climb;
-  public Cmd_ExtendCylinders(Sub_Climber climb) {
+  public Cmd_EngagePTO(Sub_Drivetrain drive, Sub_Climber climb) {
     // Use addRequirements() here to declare subsystem dependencies.
+    s_drive = drive;
     s_climb = climb;
-    addRequirements(s_climb);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_climb.extendTopCylinder();
-    s_climb.extendBottomCylinder();
+    s_drive.engagePTO();
+    s_climb.retractTopCylinder();
+    s_drive.isPTOEngaged = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -16,10 +16,7 @@ import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.commands.auto_actions.Cmd_DoNothing;
 import frc.robot.commands.climb.CmdSG_ExtendPhases;
 import frc.robot.commands.climb.CmdSG_RetractPhases;
-import frc.robot.commands.climber.Cmd_EngagePTO;
-import frc.robot.commands.climber.Cmd_ExtendCylinders;
-import frc.robot.commands.diagnostic.Cmd_RunFlywheels;
-import frc.robot.commands.diagnostic.Cmd_RunHood;
+import frc.robot.commands.climb.Cmd_EngagePTO;
 import frc.robot.commands.hopper.Cmd_ShootCells;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.shooter.Cmd_ToggleLL;
@@ -63,14 +60,15 @@ public class RobotContainer {
 
   // Buttons
   private static Joystick Gamepad = new Joystick(0);
+  private static Joystick Gamepad1 = new Joystick(1);
   private static JoystickButton x = new JoystickButton(Gamepad, 1);
   private static JoystickButton a = new JoystickButton(Gamepad, 2);
   private static JoystickButton b = new JoystickButton(Gamepad, 3);
   private static JoystickButton y = new JoystickButton(Gamepad, 4);
   private static JoystickButton rb = new JoystickButton(Gamepad, 6);
-  public static JoystickButton panelMode = new JoystickButton(Gamepad, Constants.PANEL_MODE); // start button
-  public static JoystickButton shootMode = new JoystickButton(Gamepad, Constants.SHOOT_MODE); // back button
-  public static JoystickButton climbMode = new JoystickButton(Gamepad, Constants.CLIMB_MODE); // lt button
+  public static JoystickButton panelMode = new JoystickButton(Gamepad1, Constants.PANEL_MODE); // start button
+  public static JoystickButton shootMode = new JoystickButton(Gamepad1, Constants.SHOOT_MODE); // back button
+  public static JoystickButton climbMode = new JoystickButton(Gamepad1, Constants.CLIMB_MODE); // lt button
 
   public enum RobotState {
     SHOOT_MODE, CLIMB_MODE, COLLECT_MODE, PANEL_MODE
@@ -81,7 +79,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureButtonBindings();
-    s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
+    // s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
     s_stateManager.setDefaultCommand(new Cmd_StateChange(s_stateManager, RobotState.COLLECT_MODE.toString()));
   }
 
@@ -194,23 +192,24 @@ public class RobotContainer {
      * Change the allow interrupt flag to change function. FALSE = First button
      * pressed wins TRUE = Last button pressed wins
      */
-    panelMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.PANEL_MODE.toString()), false);
-    shootMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
-    climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
+    // panelMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.PANEL_MODE.toString()), false);
+    // shootMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
+    // climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
 
-    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_ToggleLL(s_shooter), true);
-    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
-    whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
-    whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
-    whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
-    whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
-    whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
-    whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
-    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
-    whenTriggerPressed(RobotState.COLLECT_MODE, y, new Cmd_UnjamHopper(s_hopper), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
+    // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_ToggleLL(s_shooter), true);
+    // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
+    // whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
+    // whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
+    // whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
+    // whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
+    // whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
+    // whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
+    // whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
+    // whenTriggerPressed(RobotState.COLLECT_MODE, y, new Cmd_UnjamHopper(s_hopper), false);
+    // whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), false);
+    // whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
+    // whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
+    // whenTriggerPressed(RobotState.CLIMB_MODE, a, new Cmd_DoNothing(1), true);
     // whenTriggerPressed(mode, button, command, interruptible);
   }
 
@@ -237,7 +236,7 @@ public class RobotContainer {
 
   public void whenTriggerPressed(RobotState mode, JoystickButton btn, Command cmd, boolean interruptible) {
     StateTrigger trigger = new StateTrigger(mode, x);
-    trigger.whenActive(cmd, interruptible);
+    trigger.whileActiveOnce(cmd, interruptible);
     if (btn != null) { // if the button is null, it should be something that activates just with the mode (and null objects shouldn't be added to the array this method adds to)
       // System.out.println("##########" + mode.toString() + " " + btnToString(btn) + " " + getCmdString(cmd));
       s_util.setStateButton(mode.toString(), getCmdString(cmd), btnToString(btn));

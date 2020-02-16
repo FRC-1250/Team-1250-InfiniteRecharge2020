@@ -172,6 +172,10 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     flywheelFalconLeft.set(ControlMode.Velocity, rpm);
   }
 
+  public double getTurretTicks() {
+    return turretTalon.getSelectedSensorPosition();
+  }
+
   public void updateLimelight() {
     table = NetworkTableInstance.getDefault().getTable("limelight");
     tableTx = table.getEntry("tx");
@@ -264,6 +268,10 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  public void isTurretMoving() {
+    
+  }
+
   @Override
   public void periodic() {
     // Controls hood
@@ -284,9 +292,12 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
+    // TODO: implement stopper when ticks aren't changing
     if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (Gamepad0.getRawButton(Constants.SHOOT_MODE))) {
-      setFlywheelVelocityControl(20000);
-      track();
+      //if (isTurretMoving()) {
+        setFlywheelVelocityControl(20000);
+        track();
+      //}
     } else {
       setFlywheelVelocityControl(0);
       goHome();

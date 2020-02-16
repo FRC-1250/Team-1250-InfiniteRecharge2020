@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.*;
 
 public class Sub_Climber extends SubsystemBase implements CAN_Input {
@@ -32,6 +33,8 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   public ShuffleboardTab getTab() { return climbTab; }
   NetworkTableEntry Top = climbTab.add("Phase 1 (top)", "false").getEntry();
   NetworkTableEntry Bottom = climbTab.add("Phase 2 (btm)", "false").getEntry();
+
+  Joystick Gamepad0 = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
 
   public void extendTopCylinder() {
@@ -61,14 +64,28 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
     setShuffleboard();
     if (Gamepad2.getRawButton(7)) {
       extendTopCylinder();
+    } else if (Gamepad2.getRawButton(8)) {
       extendBottomCylinder();
-    //} else if (Gamepad2.getRawButton(8)) {
-    //  extendBottomCylinder();
     } else if (Gamepad2.getRawButton(5)){
       retractTopCylinder();
     } else if (Gamepad2.getRawButton(6)) {
       retractBottomCylinder();
+    } else if (Gamepad2.getRawButton(11)) {
+      extendTopCylinder();
+      extendBottomCylinder();
+    } else if (Gamepad2.getRawButton(12)) {
+      retractTopCylinder();
+      retractBottomCylinder();
     }
+    // if (RobotContainer.climbMode.get()) {
+    //   if (Gamepad0.getRawButton(Constants.BTN_X)) {
+    //     extendBottomCylinder();
+    //     extendTopCylinder();
+    //   } else if (Gamepad0.getRawButton(Constants.BTN_Y)) {
+    //     retractBottomCylinder();
+    //     retractTopCylinder();
+    //   }
+    // }
   }
   
   public Vector<CAN_DeviceFaults> input() {

@@ -21,7 +21,9 @@ public class Sub_StateManager extends SubsystemBase {
     return robotSubsystemState;
   }
 
-  void setRobotSubsystemState(String robotSubsystemState) {
+  public void setRobotSubsystemState(String robotSubsystemState) {
     this.robotSubsystemState = robotSubsystemState;
+    System.out.println("########### SHOULD BE: setRobotSubsystemState( " + robotSubsystemState + " )");
   }
+  
 }

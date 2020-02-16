@@ -35,7 +35,7 @@ public class StateTrigger {
         return trigger.get();
     }
 
-    public void whenActive(Command cmd, boolean interruptible) {
-        trigger.whenActive(cmd, interruptible);
+    public void whileActiveOnce(Command cmd, boolean interruptible) {
+        trigger.whileActiveOnce(cmd, interruptible);
     }
 }

@@ -77,6 +77,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     RobotContainer.s_drivetrain.idleMode(IdleMode.kCoast);
+    RobotContainer.s_drivetrain.disengagePTO();
   }
 
   @Override

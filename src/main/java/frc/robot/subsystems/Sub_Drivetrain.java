@@ -26,9 +26,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
-
 
 public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
@@ -49,6 +49,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   //Other devices
   PigeonIMU pigeon = new PigeonIMU(Constants.DRV_PIGEON);
   Joystick Gamepad = new Joystick(0);
+  Joystick Gamepad2 = new Joystick(2);
 
 
   public static double accumError = 0;
@@ -103,28 +104,25 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     solPTO.set(true);
   }
 
+  public void disengagePTO() {
+    solPTO.set(false);
+  }
+
   //Actual Drive Method
   public void drive(double left, double right){
-    if (isPTOEngaged) {
-      diffDriveGroup.tankDrive(Math.abs(left) * 0.5, Math.abs(right) * 0.5);
-    } else {
       diffDriveGroup.tankDrive(left, right);
-    }
   }
 
   //The drive method that passes the joystick values (Overloaded)
   public void drive(Joystick joy){
-    if (isPTOEngaged) {
-      drive(Math.abs(joy.getY()) * 0.5, Math.abs(joy.getThrottle()) * 0.5);
-    } else {
       drive(joy.getY(), joy.getThrottle());
-    }
   }
 
   //Arcade drive method
   public void driveArcade(Joystick joy){
-		diffDriveGroup.arcadeDrive(-joy.getThrottle(),joy.getZ());
+		diffDriveGroup.arcadeDrive(joy.getThrottle(),joy.getZ());
   }
+
 
   //Get velocity for any CANSparkMax in this subsys
   public double getVelocity(CANSparkMax motor){
@@ -265,8 +263,17 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     linearDrivingAmpControl();
     if (Gamepad.getRawButton(12)){
       driveArcade(Gamepad);
-    } else {
+    } 
+    else if (Gamepad2.getRawButton(Constants.BTN_X)){
+      diffDriveGroup.arcadeDrive(Math.abs(Gamepad.getY()) * 0.5, 0);
+    }
+    else {
       drive(Gamepad);
+    }
+    if (Gamepad2.getRawButton(Constants.BTN_B)) {
+      disengagePTO();
+    } else if (Gamepad2.getRawButton(Constants.BTN_X)) {
+      engagePTO();
     }
     setShuffleboard();
   }
