@@ -268,10 +268,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
-  public void isTurretMoving() {
-    
-  }
-
   @Override
   public void periodic() {
     // Controls hood
@@ -292,12 +288,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
-    // TODO: implement stopper when ticks aren't changing
     if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (Gamepad0.getRawButton(Constants.SHOOT_MODE))) {
-      //if (isTurretMoving()) {
-        setFlywheelVelocityControl(20000);
-        track();
-      //}
+      setFlywheelVelocityControl(20000);
+      track();
     } else {
       setFlywheelVelocityControl(0);
       goHome();

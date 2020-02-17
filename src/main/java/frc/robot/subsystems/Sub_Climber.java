@@ -62,18 +62,18 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     setShuffleboard();
-    if (Gamepad2.getRawButton(7)) {
+    if (Gamepad2.getRawButton(7)) { // LT
       extendTopCylinder();
-    } else if (Gamepad2.getRawButton(8)) {
+    } else if (Gamepad2.getRawButton(8)) { // RT
       extendBottomCylinder();
-    } else if (Gamepad2.getRawButton(5)){
+    } else if (Gamepad2.getRawButton(5)){ // LB
       retractTopCylinder();
-    } else if (Gamepad2.getRawButton(6)) {
+    } else if (Gamepad2.getRawButton(6)) { // RB
       retractBottomCylinder();
-    } else if (Gamepad2.getRawButton(11)) {
+    } else if (Gamepad2.getRawButton(11)) { // LEFT CLICK
       extendTopCylinder();
       extendBottomCylinder();
-    } else if (Gamepad2.getRawButton(12)) {
+    } else if (Gamepad2.getRawButton(12)) { // RIGHT CLICK
       retractTopCylinder();
       retractBottomCylinder();
     }

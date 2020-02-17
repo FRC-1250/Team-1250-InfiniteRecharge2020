@@ -59,7 +59,7 @@ public class RobotContainer {
   public static final Sub_StateManager s_stateManager = new Sub_StateManager();
 
   // Buttons
-  private static Joystick Gamepad = new Joystick(0);
+  public static Joystick Gamepad = new Joystick(0);
   private static Joystick Gamepad1 = new Joystick(1);
   private static JoystickButton x = new JoystickButton(Gamepad, 1);
   private static JoystickButton a = new JoystickButton(Gamepad, 2);
@@ -79,7 +79,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureButtonBindings();
-    // s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
+    s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
     s_stateManager.setDefaultCommand(new Cmd_StateChange(s_stateManager, RobotState.COLLECT_MODE.toString()));
   }
 

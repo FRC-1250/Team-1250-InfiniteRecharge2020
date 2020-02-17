@@ -240,8 +240,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     }
     return cmds;
   }
-  // TODO: ^ this is like 95% working, just Cmd_StateChange doesn't seem to update modes
-  // (ctrl shift p, simulate, and open shuffleboard to see)
 
   public boolean checkCAN() {
     // Timer set to pause CAN check for 3 seconds
