@@ -174,6 +174,10 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  public int getFlyWheelSpeed() {
+    return flywheelFalconLeft.getSelectedSensorVelocity();
+  }
+
   public void spinFlywheelMotors(double speed) {
     flywheelFalconLeft.set(speed);
   }
