@@ -269,11 +269,6 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
       drive(Gamepad);
     }
     
-    // if ((Gamepad.getRawButton(Constants.BTN_Y) && (mode == "CLIMB_MODE"))) {
-    //   engagePTO();
-    // } else if ((Gamepad.getRawButton(Constants.BTN_A) && (mode == "CLIMB_MODE"))) {
-    //   disengagePTO();
-    // }
     setShuffleboard();
   }
 

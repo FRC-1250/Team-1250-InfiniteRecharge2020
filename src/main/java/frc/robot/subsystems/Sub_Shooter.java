@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -229,7 +230,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public void track() {
-    if (limelightSeesTarget() && enabledTurret) {
+    if (limelightSeesTarget()) {
       double heading_error = -tx; // in order to change the target offset (in degrees), add it here
       // How much the limelight is looking away from the target (in degrees)
 
@@ -245,16 +246,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public void goHome() {
-    if (enabledTurret) {
-      if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
-        // If you're to the right of the center, move left until you're within 50 ticks (turret deadband)
-        spinTurretMotor(0.3);
-      } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
-        // If you're to the left of the center, move right until you're within 50 ticks
-        spinTurretMotor(-0.3);
-      } else {
-        spinTurretMotor(0);
-      }
+    if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
+      // If you're to the right of the center, move left until you're within 50 ticks (turret deadband)
+      spinTurretMotor(0.3);
+    } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
+      // If you're to the left of the center, move right until you're within 50 ticks
+      spinTurretMotor(-0.3);
+    } else {
+      spinTurretMotor(0);
     }
   }
 
@@ -306,28 +305,25 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     //TODO: Create lookup table for interpolatedHoodPosition
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
-        hoodNEOPercentControl(0.4);
+        hoodNEOPercentControl(0.2);
       } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
         hoodNEOPercentControl(0);
         hoodNEOResetPos();
         wasHomeFound = true;
       }
     } else if (wasHomeFound) {
-      // hoodPID.setReference(interpolatedHoodPosition, ControlType.kPosition);
-      hoodNEOPercentControl(0);
+      hoodNeo.set(Gamepad1.getX() * 0.4);
     }
   }
 
   @Override
   public void periodic() {
+    String mode = RobotContainer.s_stateManager.getRobotState();
     // Controls hood
-    spinHoodMotor(Gamepad2.getThrottle() * 0.4);
+    hoodNEOGoHome();
 
-    // Sets hood home
-    if (Gamepad2.getRawButton(Constants.BTN_X)) {
-      hoodNEOGoHome();
-    } // Resets the home found variable (so that^ button can work again)
-    if (Gamepad2.getRawButton(Constants.BTN_Y)) {
+    // Resets the home found variable (so that^ button can work again)
+    if (!Gamepad1.getRawButton(8)) {
       wasHomeFound = false;
     }
     updateLimelight();
@@ -336,12 +332,13 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
     // Spins flywheels in shoot mode and when Y is pressed (Joystick 0)
-    if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (Gamepad0.getRawButton(Constants.SHOOT_MODE))) {
+    if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (mode == "SHOOT_MODE")) {
       setFlywheelVelocityControl(20000);
       track();
     } else {
       goHome();
     }
+
     manualTurretControl();
   }
 
