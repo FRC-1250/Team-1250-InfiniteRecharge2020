@@ -44,8 +44,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   public CANPIDController hoodPID = new CANPIDController(hoodNeo);
 
-  Joystick Gamepad0 = new Joystick(0);
-  Joystick Gamepad2 = new Joystick(2);
+  Joystick Gamepad0 = new Joystick(0); // LOGITECH CONTROLLER
+  Joystick Gamepad1 = new Joystick(1); // BUTTON BOARD
+  Joystick Gamepad2 = new Joystick(2); // DEV
   
   double turretP = Constants.SHOOT_TURRET_P;
   double turretD = Constants.SHOOT_TURRET_D;
@@ -58,7 +59,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   // Variables to keep track of the turret movement (if encoder gets unplugged and turret spins out of control, this is a backup procedure)
   public long initTurretTime;
-  double prevTurretTicks;
+  double prevTurretTicks = -1;
   boolean enabledTurret = true;
 
   // Used for limelight methods
@@ -93,7 +94,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withPosition(8, 0).getEntry();
   NetworkTableEntry xOffset = llLayout.add("X Offset Angle (degrees)", 0)
     .withWidget(BuiltInWidgets.kDial).getEntry();
-  NetworkTableEntry seeTarget = llLayout.add("Sees Target?", "NO TARGET").getEntry();
+  NetworkTableEntry seeTarget = llLayout.add("Sees Target?", "no data").getEntry();
   NetworkTableEntry homeFound = shooterTab.add("Home Found", "false")
     .withPosition(8, 1).getEntry();
   NetworkTableEntry turretSpeed = shooterTab.add("Turrent Percent", -1)
@@ -166,6 +167,13 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  public void manualTurretControl() {
+    // Backup manual control for if the encoder unplugs
+    if (!enabledTurret) {
+      turretTalon.set(-Gamepad1.getY());
+    }
+  }
+
   public void spinFlywheelMotors(double speed) {
     flywheelFalconLeft.set(speed);
   }
@@ -192,14 +200,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     tv = tableTv.getDouble(-1);
   }
 
-  public boolean updateTurretTicks() {
-    // Timer set to check turret every 3/4ths of a second
-    if (System.currentTimeMillis() - initTurretTime > 750) {
-      initTurretTime = System.currentTimeMillis();
-      prevTurretTicks = getTurretTicks();
-      return true;
+  public void updateTurretTicks() {
+    // Timer set to check turret every 3/4ths of a second (if turret is moving)
+    if (turretTalon.getMotorOutputPercent() > 0) {
+      if (System.currentTimeMillis() - initTurretTime > 750) {
+        initTurretTime = System.currentTimeMillis();
+        prevTurretTicks = getTurretTicks();
+      }
     }
-    return false;
   }
 
   public boolean shouldTurretMove() {
@@ -217,7 +225,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public void track() {
-    if (limelightSeesTarget()) {
+    if (limelightSeesTarget() && enabledTurret) {
       double heading_error = -tx; // in order to change the target offset (in degrees), add it here
       // How much the limelight is looking away from the target (in degrees)
 
@@ -233,14 +241,16 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public void goHome() {
-    if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
-      // If you're to the right of the center, move left until you're within 50 ticks (turret deadband)
-      spinTurretMotor(0.3);
-    } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
-      // If you're to the left of the center, move right until you're within 50 ticks
-      spinTurretMotor(-0.3);
-    } else {
-      spinTurretMotor(0);
+    if (enabledTurret) {
+      if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
+        // If you're to the right of the center, move left until you're within 50 ticks (turret deadband)
+        spinTurretMotor(0.3);
+      } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
+        // If you're to the left of the center, move right until you're within 50 ticks
+        spinTurretMotor(-0.3);
+      } else {
+        spinTurretMotor(0);
+      }
     }
   }
 
@@ -329,6 +339,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       setFlywheelVelocityControl(0);
       goHome();
     }
+    manualTurretControl();
   }
 
   public Vector<CAN_DeviceFaults> input() {
