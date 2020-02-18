@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.FaultID;
 
+/** Class to handle the faults of every CAN item on the bus. Go to definition to see notes and tutorial on implementation. */
 public class CAN_DeviceFaults {
     public String stickyfault = "true";
     public int can_id;

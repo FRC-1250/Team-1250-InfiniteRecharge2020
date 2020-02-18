@@ -56,7 +56,6 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   public void setShuffleboard() {
     Top.setString(Boolean.toString(phase1Solenoid.get()));
     Bottom.setString(Boolean.toString(phase2Solenoid.get()));
-    // next stage
   }
 
   @Override
@@ -77,15 +76,6 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
       retractTopCylinder();
       retractBottomCylinder();
     }
-    // if (RobotContainer.climbMode.get()) {
-    //   if (Gamepad0.getRawButton(Constants.BTN_X)) {
-    //     extendBottomCylinder();
-    //     extendTopCylinder();
-    //   } else if (Gamepad0.getRawButton(Constants.BTN_Y)) {
-    //     retractBottomCylinder();
-    //     retractTopCylinder();
-    //   }
-    // }
   }
   
   public Vector<CAN_DeviceFaults> input() {

@@ -51,7 +51,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
 
-
+  String mode;
   public static double accumError = 0;
 	//private final double AUTO_TURN_RATE = 0.3;
   //private final double KI_SIMPLE = 0.03;
@@ -74,7 +74,9 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     .withPosition(2, 0)
     .getEntry();
   
-  public ShuffleboardTab getTab() { return driveTab; }
+  public ShuffleboardTab getTab() {
+     return driveTab; 
+  }
   //
 
   public Sub_Drivetrain(){
@@ -240,7 +242,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     if (sign > 0) {
       corrected = Math.min(upperSpeed * sign, corrected);
       corrected = Math.max(lowerSpeed * sign, corrected);
-    } else {
+    } 
+    else {
       corrected = Math.max(upperSpeed * sign, corrected);
       corrected = Math.min(lowerSpeed * sign, corrected);                    
     }
@@ -259,21 +262,22 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic(){
+    mode = RobotContainer.s_stateManager.getRobotState();
     Joystick Gamepad = new Joystick(0);
     linearDrivingAmpControl();
-    if (Gamepad.getRawButton(12)){
+    if (Gamepad.getRawButton(12)) {
       driveArcade(Gamepad);
-    } 
-    else if (Gamepad2.getRawButton(Constants.BTN_X)){
+    } else if ((mode == "CLIMB_MODE")){
       diffDriveGroup.arcadeDrive(Math.abs(Gamepad.getY()) * 0.5, 0);
-    }
-    else {
+    } 
+    else{
       drive(Gamepad);
     }
-    if (Gamepad2.getRawButton(Constants.BTN_B)) {
-      disengagePTO();
-    } else if (Gamepad2.getRawButton(Constants.BTN_X)) {
+    
+    if ((Gamepad.getRawButton(Constants.BTN_Y) && (mode == "CLIMB_MODE"))) {
       engagePTO();
+    } else if ((Gamepad.getRawButton(Constants.BTN_A) && (mode == "CLIMB_MODE"))) {
+      disengagePTO();
     }
     setShuffleboard();
   }

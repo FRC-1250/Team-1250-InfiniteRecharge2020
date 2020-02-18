@@ -16,7 +16,7 @@ public class CmdSG_RetractPhases extends SequentialCommandGroup {
   public CmdSG_RetractPhases(Sub_Climber s_climber) {
     super(
       new CmdI_RetractTopCylinder(s_climber),
-      new WaitCommand(0.2),
+      // new WaitCommand(0.2),
       new CmdI_RetractBottomCylinder(s_climber)
       );
   }

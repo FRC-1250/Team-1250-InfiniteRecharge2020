@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 
 /**
- * Add your docs here.
+ * Class that replaces Trigger to simplify the process of binding commands to buttons with the addition of modes.
  */
 public class StateTrigger {
 

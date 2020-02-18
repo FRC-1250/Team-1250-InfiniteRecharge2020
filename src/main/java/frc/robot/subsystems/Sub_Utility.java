@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
+  Joystick Gamepad1 = new Joystick(1);
   Joystick Gamepad2 = new Joystick(2);
   public long initTime;
 
@@ -45,6 +46,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   ArrayList<ArrayList<String>> stateButtons = new ArrayList<ArrayList<String>>();
   public String[] buttons = {"x", "a", "b", "y"};
 
+  /** For CAN and Shuffleboard (diagnostics in general) */
   public Sub_Utility() {
     makeModeEntries(true);
     makeCommandEntries(true);
@@ -170,6 +172,12 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     SmartDashboard.putData("Limelight Toggle", new Cmd_ToggleLL(RobotContainer.s_shooter));
   }
 
+  /**
+   * Makes the entries for robot states (collect, shoot, panel, climb)
+   *
+   * @param initialize   Should only be true when the method is called in the constructor
+   * @return             Array of NetworkTableEntry for use in conjunction with setShuffleboard()
+   */
   public NetworkTableEntry[] makeModeEntries(boolean initialize) {
     if (initialize) {
       for (int i = 0; i < allTabs.length; i++) {
@@ -223,14 +231,16 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     stateButtons.add(modeAndBtn);
   }
 
+  /** Iterates through all the commands created in RobotContainer and then checks if the first item
+   * in every stateButton array (1st item being the mode) is equal to the current robot mode, then adds
+   * to the "cmds" array with the button number. (Since 'x' is actually '1', cmds[1] would equal the command assigned to the x button)
+   * 
+   * @return  Array of commands to be assigned to buttons in shuffleboard
+   */
   public String[] whatCommand() {
     String empty = "NONE";
     String[] cmds = {empty, empty, empty, empty};
-    // iterates through all the commands created (stateButtons.size()) and then checks if the first
-    // item in every stateButton array (the mode) is equal to the current robot mode
-    // then adds to the cmds array with the button number (since 'x' is actually '1' cmds[1] would equal
-    // the command on the x button)
-
+    
     // stateButtons = [mode, button, command]
     for (int i = 0; i < stateButtons.size(); i++) {
       if (whatMode() == stateButtons.get(i).get(0)) {
@@ -241,8 +251,8 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     return cmds;
   }
 
+  /** Timer set to pause CAN check for 3 seconds */
   public boolean checkCAN() {
-    // Timer set to pause CAN check for 3 seconds
     if (System.currentTimeMillis() - initTime > 3000) {
       RobotContainer.s_util.sortLEDByCAN();
       initTime = System.currentTimeMillis();
@@ -259,13 +269,14 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic() {
-    if (Gamepad2.getRawButton(Constants.BTN_A)) {
-      if (RobotContainer.s_shooter.table.getEntry("ledMode").getDouble(0) == 1) {
-        RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(3);
-      } else {
-        RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(1);
-      }
-    }
+    // if (Gamepad1.getRawButton(6)) {
+    //   if (RobotContainer.s_shooter.table.getEntry("ledMode").getDouble(0) == 1) {
+    //     RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(3);
+    //   } else {
+    //     RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(1);
+    //   }
+    // }
+    RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(1);
     setShuffleboard();
     checkSpinThrice();
     // makeTestCommands();

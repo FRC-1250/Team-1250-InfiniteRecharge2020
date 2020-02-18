@@ -61,13 +61,13 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   public void periodic() {
     // This method will be called once per scheduler run
     setShuffleboard();
-    if (!Gamepad0.getRawButton(Constants.PANEL_MODE) && !Gamepad0.getRawButton(Constants.SHOOT_MODE) && !Gamepad0.getRawButton(Constants.CLIMB_MODE) && Gamepad0.getRawButton(Constants.BTN_X)) {
-      extendCylinder();
-      spinIntakeMotor(0.8);
-    } else {
-      retractCylinder();
-      spinIntakeMotor(0);
-    }
+    // if (!Gamepad0.getRawButton(Constants.PANEL_MODE) && !Gamepad0.getRawButton(Constants.SHOOT_MODE) && !Gamepad0.getRawButton(Constants.CLIMB_MODE) && Gamepad0.getRawButton(Constants.BTN_X)) {
+    //   extendCylinder();
+    //   spinIntakeMotor(0.8);
+    // } else {
+    //   retractCylinder();
+    //   spinIntakeMotor(0);
+    // }
   }
 
   public Vector<CAN_DeviceFaults> input() {

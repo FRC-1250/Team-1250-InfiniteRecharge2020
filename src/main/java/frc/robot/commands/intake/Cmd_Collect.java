@@ -22,7 +22,7 @@ public class Cmd_Collect extends CommandBase {
 
   @Override
   public void initialize() {
-    s_intake.spinIntakeMotor(0.3);
+    s_intake.spinIntakeMotor(0.8);
     s_intake.extendCylinder();
   }
 

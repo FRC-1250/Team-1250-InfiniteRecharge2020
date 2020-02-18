@@ -64,7 +64,7 @@ public final class Constants {
     public static final double SHOOT_TURRET_P = 0.6;
     public static final double SHOOT_TURRET_D = 0.0;
 
-    public static final double SHOOT_TURRET_HOME = 2390;
+    public static final double SHOOT_TURRET_HOME = 2390; /// TODO: backup plan for backup turret checker
     public static final double SHOOT_TURRET_LEFT_BOUND = 1120;
     public static final double SHOOT_TURRET_RIGHT_BOUND = 3560;
 
@@ -75,10 +75,9 @@ public final class Constants {
     public static final int LED_PWM_PORT = 9; // must be a PWM header
 
     // Buttons
-    public static final int CLIMB_MODE = 5; // LB
-    public static final int SHOOT_MODE = 9; // Back button
-    public static final int PANEL_MODE = 10; // Start button
-    public static final int COLLECT_MODE = 6;
+    public static final int CLIMB_MODE = 3;
+    public static final int SHOOT_MODE = 1;
+    public static final int PANEL_MODE = 2;
 
     public static final int BTN_X = 1;
     public static final int BTN_A = 2;

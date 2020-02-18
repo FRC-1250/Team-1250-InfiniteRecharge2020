@@ -288,11 +288,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
-    if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (Gamepad0.getRawButton(Constants.SHOOT_MODE))) {
-      setFlywheelVelocityControl(20000);
+    if (Gamepad0.getRawButton(Constants.SHOOT_MODE)) {
       track();
     } else {
-      setFlywheelVelocityControl(0);
       goHome();
     }
   }
