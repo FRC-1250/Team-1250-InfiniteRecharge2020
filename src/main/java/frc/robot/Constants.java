@@ -21,7 +21,6 @@ public final class Constants {
 
     //Robot Devices----------------------------------------
 
-    // ALL DEVICES WILL HAVE TO BE PUT IN ORDER OF PHYSICAL DAISY CHAIN (CHANGE THESE LATER)
     //Sub_Drivetrain
     public static final int DRV_RIGHT_FRONT = 10;
     public static final int DRV_RIGHT_BACK = 11;
@@ -90,4 +89,21 @@ public final class Constants {
     public static final int BACK = 9;
     public static final int START = 10;
     
+    // ALL DEVICES WILL HAVE TO BE PUT IN ORDER OF PHYSICAL DAISY CHAIN (FOR CAN DIAGNOSTICS)
+    /* 
+     * DRV_RIGHT_FRONT
+     * DRV_RIGHT_BACK
+     * PDP
+     * DRV_LEFT_BACK
+     * DRV_LEFT_FRONT
+     * PCM
+     * PANEL_MOTOR
+     * HOP_ELE_MOTOR
+     * HOP_FALCON_1
+     * SHOOT_TURRET
+     * HOP_FALCON_0
+     * SHOOT_HOOD
+     * SHOOT_FALCON_1
+     * SHOOT_FALCON_0
+     */
 }

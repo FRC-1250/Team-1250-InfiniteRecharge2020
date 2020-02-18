@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.Vector;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -42,6 +43,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   PowerDistributionPanel pdp = new PowerDistributionPanel();
   Compressor pcm = new Compressor();
+  // AnalogInput pressureSensor = AnalogInput(1);
 
   ArrayList<ArrayList<String>> stateButtons = new ArrayList<ArrayList<String>>();
   public String[] buttons = {"x", "a", "b", "y"};
@@ -269,14 +271,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic() {
-    // if (Gamepad1.getRawButton(6)) {
-    //   if (RobotContainer.s_shooter.table.getEntry("ledMode").getDouble(0) == 1) {
-    //     RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(3);
-    //   } else {
-    //     RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(1);
-    //   }
-    // }
-    RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(1);
     setShuffleboard();
     checkSpinThrice();
     // makeTestCommands();

@@ -76,6 +76,7 @@ public class Robot extends TimedRobot {
     if (RobotContainer.s_util.checkCAN()) {
       ledStrip.setData(ledStripBuffer);
     }
+    RobotContainer.s_shooter.updateTurretTicks();
   }
 
   /**

@@ -18,6 +18,7 @@ import frc.robot.commands.climb.CmdSG_ExtendPhases;
 import frc.robot.commands.climb.CmdSG_RetractPhases;
 import frc.robot.commands.climb.Cmd_EngagePTO;
 import frc.robot.commands.hopper.Cmd_ShootCells;
+import frc.robot.commands.shooter.Cmd_ShootNTimes;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.shooter.Cmd_ToggleLL;
 import frc.robot.commands.shooter.Cmd_Track;
@@ -121,10 +122,13 @@ public class RobotContainer {
     whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
     whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
     whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
-    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), true);
-    // whenTriggerPressed(RobotState.COLLECT_MODE, unjam, new Cmd_UnjamHopper(s_hopper), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), true);
-    whenTriggerPressed(RobotState.CLIMB_MODE, b, new CmdSG_RetractPhases(s_climb), true);
+    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
+    // whenTriggerPressed(RobotState.COLLECT_MODE, y, new Cmd_UnjamHopper(s_hopper), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
+    whenTriggerPressed(RobotState.CLIMB_MODE, a, new Cmd_DoNothing(1), true);
+    whenTriggerPressed(RobotState.COLLECT_MODE, a, new Cmd_ShootNTimes(s_shooter, s_hopper, 2), true);
     // whenTriggerPressed(mode, button, command, interruptible);
   }
 
