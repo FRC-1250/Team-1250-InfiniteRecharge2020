@@ -16,18 +16,15 @@ public class Cmd_EngagePTO extends CommandBase {
    * Creates a new Cmd_EngagePTO.
    */
   private final Sub_Drivetrain s_drive;
-  private final Sub_Climber s_climb;
-  public Cmd_EngagePTO(Sub_Drivetrain drive, Sub_Climber climb) {
+  public Cmd_EngagePTO(Sub_Drivetrain drive) {
     // Use addRequirements() here to declare subsystem dependencies.
     s_drive = drive;
-    s_climb = climb;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     s_drive.engagePTO();
-    s_climb.retractTopCylinder();
     s_drive.isPTOEngaged = true;
   }
 

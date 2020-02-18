@@ -43,7 +43,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   PowerDistributionPanel pdp = new PowerDistributionPanel();
   Compressor pcm = new Compressor();
-  // AnalogInput pressureSensor = AnalogInput(1);
+  AnalogInput pressureSensor = new AnalogInput(1);
 
   ArrayList<ArrayList<String>> stateButtons = new ArrayList<ArrayList<String>>();
   public String[] buttons = {"x", "a", "b", "y"};
@@ -74,6 +74,8 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     .withPosition(3, 1).withSize(2, 1).getEntry();
   NetworkTableEntry pcmSwitch = utilTab.add("PCM Pressure Switch", "false")
     .withPosition(5, 1).withSize(2, 1).getEntry();
+  NetworkTableEntry pressure = utilTab.add("Pressure Sensor", 0)
+    .withPosition(5, 2).getEntry();
   
   public ShuffleboardTab getTab() { return utilTab; }
 
@@ -85,6 +87,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     pcmFault.setString(Boolean.toString(pcm.getCompressorNotConnectedFault()));
     pcmSFault.setString(Boolean.toString(pcm.getCompressorNotConnectedStickyFault()));
     pcmSwitch.setString(Boolean.toString(pcm.getPressureSwitchValue()));
+    pressure.setDouble(getPressureSensor());
   }
   //
 
@@ -267,6 +270,10 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     if (Robot.halvesAroundPanel > 7) {
       Robot.halvesAroundPanel = 0;
     }
+  }
+
+  public double getPressureSensor() {
+    return pressureSensor.getValue();
   }
 
   @Override

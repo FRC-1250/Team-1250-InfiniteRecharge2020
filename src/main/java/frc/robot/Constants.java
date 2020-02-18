@@ -74,7 +74,7 @@ public final class Constants {
     public static final int LED_PWM_PORT = 9; // must be a PWM header
 
     // Buttons
-    public static final int CLIMB_MODE = 3;
+    public static final int CLIMB_MODE = 5;
     public static final int SHOOT_MODE = 1;
     public static final int PANEL_MODE = 2;
 

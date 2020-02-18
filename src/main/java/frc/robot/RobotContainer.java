@@ -14,6 +14,8 @@ import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.commands.auto_actions.Cmd_DoNothing;
+import frc.robot.commands.climb.CmdI_ExtendBottomCylinder;
+import frc.robot.commands.climb.CmdI_RetractBottomCylinder;
 import frc.robot.commands.climb.CmdSG_ExtendPhases;
 import frc.robot.commands.climb.CmdSG_RetractPhases;
 import frc.robot.commands.climb.Cmd_EngagePTO;
@@ -85,11 +87,6 @@ public class RobotContainer {
     public boolean get() { return !shootMode.get(); }
   };
 
-  Trigger climb = new Trigger() {
-    @Override
-    public boolean get() { return !climbMode.get(); }
-  };
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -113,9 +110,9 @@ public class RobotContainer {
      */
     panel.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.PANEL_MODE.toString()), false);
     shoot.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
-    climb.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
+    climbMode.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
 
-    // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
+    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
     whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
     whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
     whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
@@ -123,13 +120,12 @@ public class RobotContainer {
     whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
     whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
     whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
-    // whenTriggerPressed(RobotState.COLLECT_MODE, y, new Cmd_UnjamHopper(s_hopper), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
-    whenTriggerPressed(RobotState.CLIMB_MODE, a, new Cmd_DoNothing(1), true);
-    whenTriggerPressed(RobotState.COLLECT_MODE, a, new Cmd_ShootNTimes(s_shooter, s_hopper, 2), true);
+    whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), true);
+    // whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), true);
+    whenTriggerPressed(RobotState.CLIMB_MODE, b, new CmdSG_RetractPhases(s_drivetrain, s_climb), true);
     // whenTriggerPressed(mode, button, command, interruptible);
+    // x.whileActiveOnce(new CmdI_ExtendBottomCylinder(s_climb));
+    // b.whileActiveOnce(new CmdI_RetractBottomCylinder(s_drivetrain, s_climb));
   }
 
   /** This method in place of the native Object toString() method because it returns crap (this only works with XABY)
@@ -156,9 +152,9 @@ public class RobotContainer {
   }
 
   public void whenTriggerPressed(RobotState mode, JoystickButton btn, Command cmd, boolean interruptible) {
-    StateTrigger trigger = new StateTrigger(mode, x);
+    StateTrigger trigger = new StateTrigger(mode, btn);
     trigger.whileActiveOnce(cmd, interruptible);
-    if ((btn != null) || (btn != unjam)) {
+    if ((btn != null) && (btn != unjam)) {
       // if the button is null, it should be something that activates just with the mode (and null objects shouldn't be added to the array this method adds to)
       // unjam is also an exception (treated like a mode of sorts)
       s_util.setStateButton(mode.toString(), cmdToString(cmd), btnToString(btn));

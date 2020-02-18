@@ -47,7 +47,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   Solenoid solPTO = new Solenoid(Constants.CLM_SOL_PTO);
 
   //Other devices
-  AnalogGyro gyro = new AnalogGyro(1);
+  // AnalogGyro gyro = new AnalogGyro(2);
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
 
@@ -143,11 +143,11 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
 
   public double getGyroAngle() {
-    return gyro.getAngle();
+    return 0;
   }
 
   public void resetGyro() {
-    gyro.reset();
+    // gyro.reset();
   }
 
   //Configures the maximum amp draw of the drive motors based on temperature of the motors
@@ -262,18 +262,18 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     linearDrivingAmpControl();
     if (Gamepad.getRawButton(12)) {
       driveArcade(Gamepad);
-    } else if ((mode == "CLIMB_MODE")){
-      diffDriveGroup.arcadeDrive(Math.abs(Gamepad.getY()) * 0.5, 0);
-    } 
+    } else if (isPTOEngaged){
+      diffDriveGroup.arcadeDrive(Math.abs(Gamepad.getY()), 0);
+    }
     else{
       drive(Gamepad);
     }
     
-    if ((Gamepad.getRawButton(Constants.BTN_Y) && (mode == "CLIMB_MODE"))) {
-      engagePTO();
-    } else if ((Gamepad.getRawButton(Constants.BTN_A) && (mode == "CLIMB_MODE"))) {
-      disengagePTO();
-    }
+    // if ((Gamepad.getRawButton(Constants.BTN_Y) && (mode == "CLIMB_MODE"))) {
+    //   engagePTO();
+    // } else if ((Gamepad.getRawButton(Constants.BTN_A) && (mode == "CLIMB_MODE"))) {
+    //   disengagePTO();
+    // }
     setShuffleboard();
   }
 

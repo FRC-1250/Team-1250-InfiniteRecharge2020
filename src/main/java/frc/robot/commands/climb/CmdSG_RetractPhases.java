@@ -10,11 +10,13 @@ package frc.robot.commands.climb;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Sub_Climber;
+import frc.robot.subsystems.Sub_Drivetrain;
 
 public class CmdSG_RetractPhases extends SequentialCommandGroup {
 
-  public CmdSG_RetractPhases(Sub_Climber s_climber) {
+  public CmdSG_RetractPhases(Sub_Drivetrain s_drivetrain, Sub_Climber s_climber) {
     super(
+      new Cmd_EngagePTO(s_drivetrain),
       new CmdI_RetractTopCylinder(s_climber),
       // new WaitCommand(0.2),
       new CmdI_RetractBottomCylinder(s_climber)
