@@ -10,12 +10,12 @@ package frc.robot.subsystems;
 import java.util.Map;
 import java.util.Vector;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -47,7 +47,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   Solenoid solPTO = new Solenoid(Constants.CLM_SOL_PTO);
 
   //Other devices
-  PigeonIMU pigeon = new PigeonIMU(Constants.DRV_PIGEON);
+  AnalogGyro gyro = new AnalogGyro(1);
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
 
@@ -140,17 +140,12 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     fRightMotor.getEncoder().setPosition(0);
   }
 
-  //Returns the yaw from the pigeon IMU
-  public double getGyroAngle(){
-    double[] ypr = new double[3];
-    pigeon.getYawPitchRoll(ypr);
-    return ypr[0];
+  public double getGyroAngle() {
+    return gyro.getAngle();
   }
 
-  //Resets the angle of the gyro to 0
-  //TODO: Test this
-  public void resetGyro(){
-    pigeon.addYaw(-getGyroAngle());
+  public void resetGyro() {
+    gyro.reset();
   }
 
   //Configures the maximum amp draw of the drive motors based on temperature of the motors

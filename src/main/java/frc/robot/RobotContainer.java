@@ -18,6 +18,7 @@ import frc.robot.commands.climb.CmdSG_ExtendPhases;
 import frc.robot.commands.climb.CmdSG_RetractPhases;
 import frc.robot.commands.climb.Cmd_EngagePTO;
 import frc.robot.commands.hopper.Cmd_ShootCells;
+import frc.robot.commands.shooter.Cmd_ShootNTimes;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.shooter.Cmd_ToggleLL;
 import frc.robot.commands.shooter.Cmd_Track;
@@ -196,7 +197,6 @@ public class RobotContainer {
     shootMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
     climbMode.whenHeld(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
 
-    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_ToggleLL(s_shooter), true);
     whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
     whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
     whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
@@ -210,6 +210,7 @@ public class RobotContainer {
     whenTriggerPressed(RobotState.CLIMB_MODE, b, new Cmd_EngagePTO(s_drivetrain, s_climb), false);
     whenTriggerPressed(RobotState.CLIMB_MODE, y, new CmdSG_RetractPhases(s_climb), false);
     whenTriggerPressed(RobotState.CLIMB_MODE, a, new Cmd_DoNothing(1), true);
+    whenTriggerPressed(RobotState.COLLECT_MODE, a, new Cmd_ShootNTimes(s_shooter, s_hopper, 2), true);
     // whenTriggerPressed(mode, button, command, interruptible);
   }
 

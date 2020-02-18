@@ -7,6 +7,7 @@
 
 package frc.robot.commands.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Hopper;
 import frc.robot.subsystems.Sub_Shooter;
@@ -14,6 +15,8 @@ import frc.robot.subsystems.Sub_Shooter;
 public class Cmd_ShootNTimes extends CommandBase {
   double timesToShoot;
   double timesSeen;
+  boolean lastHopSens;
+  boolean changeSensor = false;
   private final Sub_Shooter s_shooter;
   private final Sub_Hopper s_hopper;
   public Cmd_ShootNTimes(Sub_Shooter shooter, Sub_Hopper hopper, int times) {
@@ -32,24 +35,29 @@ public class Cmd_ShootNTimes extends CommandBase {
     else{
      timesSeen = 0;
     }
+    lastHopSens = s_hopper.getSensor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     int speed = 20000; //speed = ticks/100ms
+    boolean speedWithinDeadband = s_shooter.getFlyWheelSpeed() > (speed - 500);
     s_shooter.setFlywheelVelocityControl(speed);
     s_shooter.track();
     //TODO: Implemet hood control here!!!!!
 
-    boolean lastHopSens = s_hopper.getSensor();
+    if (changeSensor) {
+      lastHopSens = s_hopper.getSensor();
+      changeSensor = false;
+    }
     //Value is later divided by 2 to account for ball entering and leaving chamber
-    //Also will this work or am I losing it????
     if(s_hopper.getSensor() != lastHopSens){
       //Value is double the true times shot
-     timesSeen++;
+      timesSeen++;
+      changeSensor = true;
     }
-    if((s_shooter.getFlyWheelSpeed() > (speed - 500)) && ((timesSeen / 2) < timesToShoot)){
+    if(speedWithinDeadband && ((timesSeen / 2) < timesToShoot)){
       s_hopper.spinUptakeMotor(1);
       s_hopper.spinHopperMotors(0.5);
     }
@@ -57,6 +65,7 @@ public class Cmd_ShootNTimes extends CommandBase {
       s_hopper.spinUptakeMotor(0);
       s_hopper.spinHopperMotors(0);
     }
+    // System.out.println("############## TIMES SEEN " + timesSeen);
   }
   
   // Called once the command ends or is interrupted.

@@ -257,30 +257,8 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     }
   }
 
-  public void updateRobotState() {
-    String state;
-    if (RobotContainer.panelMode.get()) {
-      state = "PANEL_MODE";
-    } else if (RobotContainer.climbMode.get()) {
-      state = "CLIMB_MODE";
-    } else if (RobotContainer.shootMode.get()) {
-      state = "SHOOT_MODE";
-    } else {
-      state = "COLLECT_MODE";
-    }
-    RobotContainer.s_stateManager.setRobotSubsystemState(state);
-  }
-
   @Override
   public void periodic() {
-    updateRobotState();
-    if (Gamepad2.getRawButton(Constants.BTN_A)) {
-      if (RobotContainer.s_shooter.table.getEntry("ledMode").getDouble(0) == 1) {
-        RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(3);
-      } else {
-        RobotContainer.s_shooter.table.getEntry("ledMode").setNumber(1);
-      }
-    }
     setShuffleboard();
     checkSpinThrice();
     // makeTestCommands();
