@@ -55,10 +55,8 @@ public final class Constants {
     public static final int CLM_SOL_EXTEND1 = 1;
     
     //Constants--------------------------------------------
-    public static final double DRV_GEAR_RATIO = 10;
-    public static final double DRV_WHEEL_SIZE = 6;
-    public static final double DRV_WHEEL_CIRCUMF = DRV_WHEEL_SIZE * Math.PI;
-    public static final double DRV_TICKS_TO_INCH = DRV_WHEEL_CIRCUMF / 42;
+
+    public static final double DRV_TICKS_TO_INCH = 0.532469;
 
     public static final double SHOOT_TURRET_P = 0.6;
     public static final double SHOOT_TURRET_D = 0.0;

@@ -43,7 +43,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   PowerDistributionPanel pdp = new PowerDistributionPanel();
   Compressor pcm = new Compressor();
-  AnalogInput pressureSensor = new AnalogInput(1);
+  // AnalogInput pressureSensor = new AnalogInput(1);
 
   ArrayList<ArrayList<String>> stateButtons = new ArrayList<ArrayList<String>>();
   public String[] buttons = {"x", "a", "b", "y"};
@@ -55,40 +55,40 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   }
 
   // Self Shuffleboard
-  ShuffleboardTab utilTab = Shuffleboard.getTab("Utility");
-  NetworkTableEntry pdpID = utilTab.add("PDP ID", -1)
-    .withPosition(0, 0).getEntry();
-  NetworkTableEntry pcmID = utilTab.add("PCM ID", -1)
-    .withPosition(0, 1).getEntry();
-  NetworkTableEntry pdpTCurrent = utilTab.add("PDP T Current", -1)
-    .withPosition(1, 0).getEntry();
-  NetworkTableEntry pdpTEnergy = utilTab.add("PDP T Energy", -1)
-    .withPosition(0, 0).getEntry();
-  NetworkTableEntry pdpVoltage = utilTab.add("PDP Voltage", -1)
-    .withPosition(1, 0).getEntry();
-  NetworkTableEntry pdpTPower = utilTab.add("PDP T Power", -1)
-    .withPosition(2, 0).getEntry();
-  NetworkTableEntry pcmSFault = utilTab.add("PCM (Sticky) Connected", "false")
-    .withPosition(1, 1).withSize(2, 1).getEntry();
-  NetworkTableEntry pcmFault = utilTab.add("PCM Connected", "false")
-    .withPosition(3, 1).withSize(2, 1).getEntry();
-  NetworkTableEntry pcmSwitch = utilTab.add("PCM Pressure Switch", "false")
-    .withPosition(5, 1).withSize(2, 1).getEntry();
-  NetworkTableEntry pressure = utilTab.add("Pressure Sensor", 0)
-    .withPosition(5, 2).getEntry();
+  // ShuffleboardTab utilTab = Shuffleboard.getTab("Utility");
+  // NetworkTableEntry pdpID = utilTab.add("PDP ID", -1)
+  //   .withPosition(0, 0).getEntry();
+  // NetworkTableEntry pcmID = utilTab.add("PCM ID", -1)
+  //   .withPosition(0, 1).getEntry();
+  // NetworkTableEntry pdpTCurrent = utilTab.add("PDP T Current", -1)
+  //   .withPosition(1, 0).getEntry();
+  // NetworkTableEntry pdpTEnergy = utilTab.add("PDP T Energy", -1)
+  //   .withPosition(0, 0).getEntry();
+  // NetworkTableEntry pdpVoltage = utilTab.add("PDP Voltage", -1)
+  //   .withPosition(1, 0).getEntry();
+  // NetworkTableEntry pdpTPower = utilTab.add("PDP T Power", -1)
+  //   .withPosition(2, 0).getEntry();
+  // NetworkTableEntry pcmSFault = utilTab.add("PCM (Sticky) Connected", "false")
+  //   .withPosition(1, 1).withSize(2, 1).getEntry();
+  // NetworkTableEntry pcmFault = utilTab.add("PCM Connected", "false")
+  //   .withPosition(3, 1).withSize(2, 1).getEntry();
+  // NetworkTableEntry pcmSwitch = utilTab.add("PCM Pressure Switch", "false")
+  //   .withPosition(5, 1).withSize(2, 1).getEntry();
+  // NetworkTableEntry pressure = utilTab.add("Pressure Sensor", 0)
+  //   .withPosition(5, 2).getEntry();
   
-  public ShuffleboardTab getTab() { return utilTab; }
+  // public ShuffleboardTab getTab() { return utilTab; }
 
-  public void utilDiagnostic() {
-    pdpTCurrent.setDouble(pdp.getTotalCurrent());
-    pdpTEnergy.setDouble(pdp.getTotalEnergy());
-    pdpVoltage.setDouble(pdp.getVoltage());
-    pdpTPower.setDouble(pdp.getTotalPower());
-    pcmFault.setString(Boolean.toString(pcm.getCompressorNotConnectedFault()));
-    pcmSFault.setString(Boolean.toString(pcm.getCompressorNotConnectedStickyFault()));
-    pcmSwitch.setString(Boolean.toString(pcm.getPressureSwitchValue()));
-    pressure.setDouble(getPressureSensor());
-  }
+  // public void utilDiagnostic() {
+  //   pdpTCurrent.setDouble(pdp.getTotalCurrent());
+  //   pdpTEnergy.setDouble(pdp.getTotalEnergy());
+  //   pdpVoltage.setDouble(pdp.getVoltage());
+  //   pdpTPower.setDouble(pdp.getTotalPower());
+  //   pcmFault.setString(Boolean.toString(pcm.getCompressorNotConnectedFault()));
+  //   pcmSFault.setString(Boolean.toString(pcm.getCompressorNotConnectedStickyFault()));
+  //   pcmSwitch.setString(Boolean.toString(pcm.getPressureSwitchValue()));
+  //   pressure.setDouble(getPressureSensor());
+  // }
   //
 
   // CAN
@@ -145,7 +145,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   // Shuffleboard
   ShuffleboardTab[] allTabs = {RobotContainer.s_shooter.getTab(), RobotContainer.s_panel.getTab(), RobotContainer.s_intake.getTab(),
-                                RobotContainer.s_hopper.getTab(), RobotContainer.s_drivetrain.getTab(), RobotContainer.s_climb.getTab(), this.getTab()}; // add more if more tabs are created
+                                RobotContainer.s_hopper.getTab(), RobotContainer.s_drivetrain.getTab(), RobotContainer.s_climb.getTab()}; // add more if more tabs are created
   NetworkTableEntry[] allModeEntries = new NetworkTableEntry[allTabs.length];
   NetworkTableEntry[][] allCommandEntries = new NetworkTableEntry[allTabs.length][4];
 
@@ -204,7 +204,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
         makeCommandEntries(false)[i][j].setString(whatCommand()[j]);
       }
     }
-    utilDiagnostic();
+    // utilDiagnostic();
   }
   
   public String whatMode() {
@@ -259,7 +259,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   /** Timer set to pause CAN check for 3 seconds */
   public boolean checkCAN() {
     if (System.currentTimeMillis() - initTime > 3000) {
-      RobotContainer.s_util.sortLEDByCAN();
+      // RobotContainer.s_util.sortLEDByCAN();
       initTime = System.currentTimeMillis();
       return true;
     }
@@ -273,12 +273,13 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   }
 
   public double getPressureSensor() {
-    return pressureSensor.getValue();
+    // return pressureSensor.getValue();
+    return 0;
   }
 
   @Override
   public void periodic() {
-    setShuffleboard();
+    // setShuffleboard();
     checkSpinThrice();
     // makeTestCommands();
   }

@@ -60,7 +60,7 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic() {
-    setShuffleboard();
+    // setShuffleboard();
     if (Gamepad2.getRawButton(7)) { // LT
       extendTopCylinder();
     } else if (Gamepad2.getRawButton(8)) { // RT

@@ -9,6 +9,7 @@ package frc.robot.commands.auto_actions;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.Cmd_AutoDrive;
+import frc.robot.commands.drive.Cmd_AutoTurn;
 import frc.robot.commands.shooter.Cmd_ShootNTimes;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Hopper;
@@ -25,7 +26,14 @@ public class CmdG_AutoAllianceTrench extends SequentialCommandGroup {
 
   public CmdG_AutoAllianceTrench(Sub_Drivetrain s_drive, Sub_Shooter s_shooter, Sub_Hopper s_hopper) {
 
-    super(new Cmd_AutoDrive(s_drive, 100, 1, 0.7), 
-          new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
+    super(new Cmd_AutoDrive(s_drive, 42, 0.5, 0.3).withTimeout(15),
+    new Cmd_DoNothing().withTimeout(0.5),
+    new Cmd_AutoTurn(s_drive, -45, 0.5, 0.5),
+    new Cmd_DoNothing().withTimeout(0.5),
+    new Cmd_AutoDrive(s_drive, 72, .8, .8),
+    new Cmd_DoNothing().withTimeout(0.5),
+    new Cmd_AutoTurn(s_drive, 40, 0.5, 0.5),
+    new Cmd_DoNothing().withTimeout(0.5),
+    new Cmd_AutoDrive(s_drive, 155, 0.6, 0.6));
   }
 }

@@ -60,7 +60,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setShuffleboard();
+    // setShuffleboard();
     // if (!Gamepad0.getRawButton(Constants.PANEL_MODE) && !Gamepad0.getRawButton(Constants.SHOOT_MODE) && !Gamepad0.getRawButton(Constants.CLIMB_MODE) && Gamepad0.getRawButton(Constants.BTN_X)) {
     //   extendCylinder();
     //   spinIntakeMotor(0.8);

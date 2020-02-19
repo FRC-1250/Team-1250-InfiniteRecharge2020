@@ -215,7 +215,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   }
 
   public void periodic() {
-    setShuffleboard();
+    // setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {

@@ -47,7 +47,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   Solenoid solPTO = new Solenoid(Constants.CLM_SOL_PTO);
 
   //Other devices
-  // AnalogGyro gyro = new AnalogGyro(2);
+  AnalogGyro gyro = new AnalogGyro(1);
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
 
@@ -63,6 +63,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
   NetworkTableEntry lRPM = driveTab.add("Left RPM", 0).withPosition(0, 1).getEntry();
   NetworkTableEntry rRPM = driveTab.add("Right RPM", 0).withPosition(2, 1).getEntry();
+  NetworkTableEntry leftTicks = driveTab.add("Left Ticks", -1).withPosition(1, 1).getEntry();
   NetworkTableEntry lCurrentDraw = driveTab.add("Left Cur Draw", 0)
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", 0, "max", 100))
@@ -73,6 +74,9 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     .withProperties(Map.of("min", 0, "max", 100))
     .withPosition(2, 0)
     .getEntry();
+  NetworkTableEntry gyroValue = driveTab.add("Gyro Angle", -1)
+    .withPosition(3, 0)
+    .getEntry();
   
   public ShuffleboardTab getTab() {
      return driveTab; 
@@ -81,17 +85,23 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   public Sub_Drivetrain(){
     //Ramp Rates
-    fRightMotor.setOpenLoopRampRate(0.2);
-    bRightMotor.setOpenLoopRampRate(0.2);
-    fLeftMotor.setOpenLoopRampRate(0.2);
-    bLeftMotor.setOpenLoopRampRate(0.2);
+    setRampRate(0.4);
   }
 
   public void setShuffleboard() {
     lRPM.setDouble(getVelocity(fLeftMotor));
     rRPM.setDouble(getVelocity(fRightMotor));
+    leftTicks.setDouble(fLeftMotor.getEncoder().getPosition());
     lCurrentDraw.setDouble(fLeftMotor.getOutputCurrent());
     rCurrentDraw.setDouble(fRightMotor.getOutputCurrent());
+    gyroValue.setDouble(getGyroAngle());
+  }
+
+  public void setRampRate(double rate) {
+    fRightMotor.setOpenLoopRampRate(rate);
+    bRightMotor.setOpenLoopRampRate(rate);
+    fLeftMotor.setOpenLoopRampRate(rate);
+    bLeftMotor.setOpenLoopRampRate(rate);
   }
   
   public void idleMode(IdleMode idleMode){
@@ -133,7 +143,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   //Get position for any CANSparkMax in this subsys
   public double getPosition(CANSparkMax motor){
-    return motor.getEncoder().getPosition();
+    return -motor.getEncoder().getPosition();
   }
 
   //Resets position of the motors referenced for auton
@@ -143,11 +153,11 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
 
   public double getGyroAngle() {
-    return 0;
+    return gyro.getAngle();
   }
 
   public void resetGyro() {
-    // gyro.reset();
+    gyro.reset();
   }
 
   //Configures the maximum amp draw of the drive motors based on temperature of the motors
@@ -223,8 +233,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   public void driveToPos( double upperSpeed, double lowerSpeed){	
     double offset = getGainP(0,this.getGyroAngle(),Constants.DRV_KP_SIMPLE_STRAIT);
     double sign = Math.signum(driveSetpoint);
-    
-    diffDriveGroup.arcadeDrive(linearRamp(upperSpeed,lowerSpeed) * sign, 0 + offset);
+
+    diffDriveGroup.arcadeDrive(-linearRamp(upperSpeed,lowerSpeed) * sign, 0 + -offset);
   }
 
   //Executes the turning of the robot for auton
@@ -242,7 +252,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
       corrected = Math.max(upperSpeed * sign, corrected);
       corrected = Math.min(lowerSpeed * sign, corrected);                    
     }
-    diffDriveGroup.arcadeDrive(0, corrected);
+    diffDriveGroup.arcadeDrive(0, -corrected);
   }
   
   //Stops driving---------------------

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
+import frc.robot.commands.auto_actions.CmdG_AutoAllianceTrench;
 import frc.robot.commands.auto_actions.Cmd_DoNothing;
 import frc.robot.commands.climb.CmdI_ExtendBottomCylinder;
 import frc.robot.commands.climb.CmdI_RetractBottomCylinder;
@@ -87,12 +88,17 @@ public class RobotContainer {
     public boolean get() { return !shootMode.get(); }
   };
 
+  Trigger dev6 = new Trigger() {
+    @Override
+    public boolean get() { return !Gamepad1.getRawButton(6); }
+  };
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     configureButtonBindings();
-    s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
+    // s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
     s_stateManager.setDefaultCommand(new Cmd_StateChange(s_stateManager, RobotState.COLLECT_MODE.toString()));
   }
 
@@ -112,9 +118,8 @@ public class RobotContainer {
     shoot.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
     climbMode.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
 
-    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_Track(s_shooter), false);
-    whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_SpinFlywheels(s_shooter, 1), false);
-    whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_ShootCells(s_hopper), false);
+    // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_SpinFlywheels(s_shooter, 1), true);
+    // whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_ShootCells(s_hopper), true);
     whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
     whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
     whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
@@ -126,6 +131,7 @@ public class RobotContainer {
     // whenTriggerPressed(mode, button, command, interruptible);
     // x.whileActiveOnce(new CmdI_ExtendBottomCylinder(s_climb));
     // b.whileActiveOnce(new CmdI_RetractBottomCylinder(s_drivetrain, s_climb));
+    dev6.whenActive(new CmdG_AutoAllianceTrench(s_drivetrain, s_shooter, s_hopper), false);
   }
 
   /** This method in place of the native Object toString() method because it returns crap (this only works with XABY)

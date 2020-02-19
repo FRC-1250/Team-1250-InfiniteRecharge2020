@@ -13,8 +13,7 @@ public class Cmd_DoNothing extends CommandBase {
   /**
    * Creates a new Cmd_DoNothing.
    */
-  public Cmd_DoNothing(int seconds) {
-    withTimeout(seconds);  
+  public Cmd_DoNothing() {
   }
 
   // Called when the command is initially scheduled.

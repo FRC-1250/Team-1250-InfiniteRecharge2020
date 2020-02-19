@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -87,7 +88,21 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic() {
+    String mode = RobotContainer.s_stateManager.getRobotState();
+
     setShuffleboard();
+    if (mode == "SHOOT_MODE" && Gamepad.getRawButton(Constants.BTN_X)) {
+      spinHopperMotors(1);
+      spinUptakeMotor(0.70);
+    } else {
+      if (!getSensor()) {
+        spinHopperMotors(0.4);
+        spinUptakeMotor(0.4);
+      } else {
+        spinHopperMotors(0);
+        spinUptakeMotor(0);
+      }
+    }
   }
 
   public Vector<CAN_DeviceFaults> input() {

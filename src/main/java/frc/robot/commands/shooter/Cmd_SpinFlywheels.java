@@ -28,6 +28,7 @@ public class Cmd_SpinFlywheels extends CommandBase {
   public void initialize() {
     _speed = _speed * 20000; // converting to ticks per 100 milliseconds
     s_shooter.setFlywheelVelocityControl(_speed);
+    s_shooter.track();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,7 +39,7 @@ public class Cmd_SpinFlywheels extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_shooter.setFlywheelVelocityControl(0);
+    s_shooter.spinFlywheelMotors(0);
   }
 
   // Returns true when the command should end.
