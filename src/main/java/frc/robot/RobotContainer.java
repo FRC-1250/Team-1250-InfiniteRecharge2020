@@ -153,7 +153,6 @@ public class RobotContainer {
 
   public void whenTriggerPressed(RobotState mode, JoystickButton btn, Command cmd, boolean interruptible) {
     StateTrigger trigger = new StateTrigger(mode, btn);
-    // TODO: ACCOUNT FOR NULL POINTER HERE (BUTTON CAN'T BE NULL AND ASSIGNED)
     trigger.whileActiveOnce(cmd, interruptible);
     if ((btn != null) && (btn != unjam)) {
       // if the button is null, it should be something that activates just with the mode (and null objects shouldn't be added to the array this method adds to)

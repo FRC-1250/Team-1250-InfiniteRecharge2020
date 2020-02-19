@@ -22,7 +22,11 @@ public class StateTrigger {
     public Trigger trigger = new Trigger() {
         @Override
         public boolean get() {
-            return (RobotContainer.s_stateManager.getRobotState() == mode) && button.get();
+            if (button != null) {
+                return (RobotContainer.s_stateManager.getRobotState() == mode) && button.get();
+            } else {
+                return (RobotContainer.s_stateManager.getRobotState() == mode);
+            }
         }
     };
 
