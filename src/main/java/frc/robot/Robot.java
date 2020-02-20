@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    RobotContainer.s_drivetrain.idleMode(IdleMode.kBrake);
+    RobotContainer.s_drivetrain.idleMode(IdleMode.kCoast);
   }
 
   /**
