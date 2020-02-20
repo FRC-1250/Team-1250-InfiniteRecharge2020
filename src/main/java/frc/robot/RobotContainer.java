@@ -20,7 +20,9 @@ import frc.robot.commands.climb.CmdI_RetractBottomCylinder;
 import frc.robot.commands.climb.CmdSG_ExtendPhases;
 import frc.robot.commands.climb.CmdSG_RetractPhases;
 import frc.robot.commands.climb.Cmd_EngagePTO;
+import frc.robot.commands.drive.Cmd_NewAutoDrive;
 import frc.robot.commands.hopper.Cmd_ShootCells;
+import frc.robot.commands.shooter.Cmd_HoodGoToPos;
 import frc.robot.commands.shooter.Cmd_ShootNTimes;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.shooter.Cmd_ToggleLL;
@@ -93,6 +95,11 @@ public class RobotContainer {
     public boolean get() { return !Gamepad1.getRawButton(6); }
   };
 
+  Trigger dev7 = new Trigger() {
+    @Override
+    public boolean get() { return !Gamepad1.getRawButton(7); }
+  };
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -131,7 +138,8 @@ public class RobotContainer {
     // whenTriggerPressed(mode, button, command, interruptible);
     // x.whileActiveOnce(new CmdI_ExtendBottomCylinder(s_climb));
     // b.whileActiveOnce(new CmdI_RetractBottomCylinder(s_drivetrain, s_climb));
-    dev6.whenActive(new CmdG_AutoAllianceTrench(s_drivetrain, s_shooter, s_hopper), false);
+    dev6.whenActive(new CmdG_AutoAllianceTrench(s_drivetrain, s_shooter, s_hopper, s_intake), false);
+    dev7.whenActive(new Cmd_NewAutoDrive(s_drivetrain, 100));
   }
 
   /** This method in place of the native Object toString() method because it returns crap (this only works with XABY)

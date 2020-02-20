@@ -42,7 +42,7 @@ public class Cmd_ShootNTimes extends CommandBase {
   @Override
   public void execute() {
     int speed = 20000; //speed = ticks/100ms
-    boolean speedWithinDeadband = s_shooter.getFlyWheelSpeed() > (speed - 500);
+    boolean speedWithinDeadband = s_shooter.getFlyWheelSpeed() > (speed - 2000);
     s_shooter.setFlywheelVelocityControl(speed);
     s_shooter.track();
     //TODO: Implemet hood control here!!!!!
@@ -59,7 +59,7 @@ public class Cmd_ShootNTimes extends CommandBase {
     }
     if(speedWithinDeadband && ((timesSeen / 2) < timesToShoot)){
       s_hopper.spinUptakeMotor(1);
-      s_hopper.spinHopperMotors(0.5);
+      s_hopper.spinHopperMotors(1);
     }
     else{
       s_hopper.spinUptakeMotor(0);

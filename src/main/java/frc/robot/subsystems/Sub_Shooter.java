@@ -112,7 +112,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   int hoodCollisionAmps = 15;
   double interpolatedHoodPosition;
 
-  double hoodP = 0.1;
+  double hoodP = 0.5;
   double hoodI = 0;
   double hoodD = 0;
 
@@ -193,6 +193,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   public double getTurretTicks() {
     return turretTalon.getSelectedSensorPosition();
+  }
+
+  public void hoodGoToPos(double ticks){
+    hoodPID.setReference(ticks, ControlType.kPosition);
+  }
+
+  public double hoodPos(){
+    return hoodNeo.getEncoder().getPosition();
   }
 
   public void updateLimelight() {

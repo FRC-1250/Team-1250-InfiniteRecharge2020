@@ -10,13 +10,16 @@ package frc.robot.subsystems;
 import java.util.Map;
 import java.util.Vector;
 
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -45,6 +48,11 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   private DifferentialDrive diffDriveGroup = new DifferentialDrive(gLeftSide, gRightSide);
   
   Solenoid solPTO = new Solenoid(Constants.CLM_SOL_PTO);
+
+  CANPIDController driveLeftPID = new CANPIDController(bLeftMotor);
+  CANPIDController driveRightPID = new CANPIDController(bRightMotor);
+
+
 
   //Other devices
   AnalogGyro gyro = new AnalogGyro(1);
@@ -86,6 +94,20 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   public Sub_Drivetrain(){
     //Ramp Rates
     setRampRate(0.4);
+    setCLRampRate(0.6);
+    fRightMotor.follow(bRightMotor);
+    fLeftMotor.follow(bLeftMotor);
+
+    driveRightPID.setP(0.05);
+    driveRightPID.setI(0.0);
+    driveRightPID.setD(0.0);
+
+    driveLeftPID.setP(0.05);
+    driveLeftPID.setI(0.0);
+    driveLeftPID.setD(0.0);
+
+
+
   }
 
   public void setShuffleboard() {
@@ -102,6 +124,13 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     bRightMotor.setOpenLoopRampRate(rate);
     fLeftMotor.setOpenLoopRampRate(rate);
     bLeftMotor.setOpenLoopRampRate(rate);
+  }
+
+  public void setCLRampRate(double rate) {
+    fRightMotor.setClosedLoopRampRate(rate);
+    bRightMotor.setClosedLoopRampRate(rate);
+    fLeftMotor.setClosedLoopRampRate(rate);
+    bLeftMotor.setClosedLoopRampRate(rate);
   }
   
   public void idleMode(IdleMode idleMode){
@@ -150,6 +179,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   public void drivePosReset(){
     fLeftMotor.getEncoder().setPosition(0);
     fRightMotor.getEncoder().setPosition(0);
+    bLeftMotor.getEncoder().setPosition(0);
+    bRightMotor.getEncoder().setPosition(0);
   }
 
   public double getGyroAngle() {
@@ -185,6 +216,10 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     bRightMotor.setSmartCurrentLimit(limit);
     fLeftMotor.setSmartCurrentLimit(limit);
     bLeftMotor.setSmartCurrentLimit(limit);
+  }
+
+  public double leftDriveTicks(){
+    return bLeftMotor.getEncoder().getPosition();
   }
 
   //Configures the setpoint var for auton
@@ -235,6 +270,12 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     double sign = Math.signum(driveSetpoint);
 
     diffDriveGroup.arcadeDrive(-linearRamp(upperSpeed,lowerSpeed) * sign, 0 + -offset);
+  }
+
+  public void newDriveTopos(double dist){
+    double ticks = dist * Constants.DRV_TICKS_TO_INCH;
+    driveRightPID.setReference(ticks, ControlType.kPosition);
+    driveLeftPID.setReference(-ticks, ControlType.kPosition);
   }
 
   //Executes the turning of the robot for auton

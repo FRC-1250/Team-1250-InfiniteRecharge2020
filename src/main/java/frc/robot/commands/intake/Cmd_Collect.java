@@ -32,12 +32,11 @@ public class Cmd_Collect extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    s_intake.spinIntakeMotor(0);
-    s_intake.retractCylinder();
+    
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
