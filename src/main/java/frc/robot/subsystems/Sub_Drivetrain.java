@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import java.util.Map;
 import java.util.Vector;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
@@ -17,9 +18,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -53,9 +52,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   CANPIDController driveRightPID = new CANPIDController(bRightMotor);
 
 
-
   //Other devices
-  AnalogGyro gyro = new AnalogGyro(1);
+  PigeonIMU pigeon = new PigeonIMU(1);
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
 
@@ -184,11 +182,13 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
 
   public double getGyroAngle() {
-    return gyro.getAngle();
+    double[] ypr = new double[3];
+    pigeon.getYawPitchRoll(ypr);
+    return ypr[0];
   }
 
   public void resetGyro() {
-    gyro.reset();
+    pigeon.addYaw(-getGyroAngle());
   }
 
   //Configures the maximum amp draw of the drive motors based on temperature of the motors
@@ -200,7 +200,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     int linearCorrect = (-4 * (int)currentTemp) + 220;
   
     if (currentTemp < 80){
-      motorCurrentConfig(100);
+      motorCurrentConfig(60);
     }
     else if (currentTemp > 100){
       motorCurrentConfig(20);    

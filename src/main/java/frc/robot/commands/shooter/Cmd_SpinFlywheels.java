@@ -8,6 +8,7 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Sub_Shooter;
 
 public class Cmd_SpinFlywheels extends CommandBase {
@@ -26,7 +27,7 @@ public class Cmd_SpinFlywheels extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    _speed = _speed * 20000; // converting to ticks per 100 milliseconds
+    _speed = _speed * 22000; // converting to ticks per 100 milliseconds
     s_shooter.setFlywheelVelocityControl(_speed);
     s_shooter.track();
   }

@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -56,6 +57,9 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   //
 
   public Sub_Hopper() {
+    SupplyCurrentLimitConfiguration limit = new SupplyCurrentLimitConfiguration(true, 20, 20, 1);
+    leftMotor.configSupplyCurrentLimit(limit);
+    rightMotor.configSupplyCurrentLimit(limit);
   }
 
   public void setShuffleboard() {

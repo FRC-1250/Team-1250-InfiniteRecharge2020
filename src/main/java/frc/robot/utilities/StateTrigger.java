@@ -17,8 +17,8 @@ import frc.robot.RobotContainer;
  */
 public class StateTrigger {
 
-    private final JoystickButton button;
-    private final String mode;
+    private JoystickButton button = null;
+    private String mode;
     public Trigger trigger = new Trigger() {
         @Override
         public boolean get() {

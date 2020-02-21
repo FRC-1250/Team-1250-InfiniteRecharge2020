@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.utilities.*;
 
 public class Sub_Climber extends SubsystemBase implements CAN_Input {
@@ -31,6 +30,7 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
 
   ShuffleboardTab climbTab = Shuffleboard.getTab("Climber");
   public ShuffleboardTab getTab() { return climbTab; }
+
   NetworkTableEntry Top = climbTab.add("Phase 1 (top)", "false").getEntry();
   NetworkTableEntry Bottom = climbTab.add("Phase 2 (btm)", "false").getEntry();
 

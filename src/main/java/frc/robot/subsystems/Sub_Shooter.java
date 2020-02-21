@@ -24,11 +24,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -58,10 +57,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
   public double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
 
-  // Variables to keep track of the turret movement (if encoder gets unplugged and turret spins out of control, this is a backup procedure)
-  public long initTurretTime;
-  double prevTurretTicks = -1;
-  boolean enabledTurret = true;
+  boolean goLeft = true;
+  boolean goRight = true;
 
   // Used for limelight methods
   public NetworkTable table;
@@ -100,9 +97,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withPosition(8, 1).getEntry();
   NetworkTableEntry turretSpeed = shooterTab.add("Turrent Percent", -1)
     .withPosition(8, 2).getEntry();
-  NetworkTableEntry turretMove = shooterTab.add("Can Turret Move?", "no data")
-    .withPosition(9, 2).getEntry();
-
+  
   public ShuffleboardTab getTab() {
     return shooterTab;
   }
@@ -152,26 +147,17 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     hoodCurrent.setDouble(hoodNEOCurrentDraw());
     homeFound.setString(Boolean.toString(wasHomeFound));
     turretSpeed.setDouble(turretTalon.getMotorOutputPercent());
-    turretMove.setString(Boolean.toString(enabledTurret).toUpperCase());
   }
 
   // Basic methods
 
   public void spinTurretMotor(double speed) {
-    // First check would usually determine the state of enabledTurret; however, the check will continue throughout
-    // the entire match just in case encoder is unplugged midway
-    if (shouldTurretMove() && enabledTurret) {
+    if (goLeft && speed < 0) {
+      turretTalon.set(speed);
+    } else if (goRight && speed > 0) {
       turretTalon.set(speed);
     } else {
       turretTalon.set(0);
-      enabledTurret = false;
-    }
-  }
-
-  public void manualTurretControl() {
-    // Backup manual control for if the encoder unplugs
-    if (!enabledTurret) {
-      turretTalon.set(-Gamepad1.getY());
     }
   }
 
@@ -211,30 +197,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     tx = tableTx.getDouble(-1);
     ty = tableTy.getDouble(-1);
     tv = tableTv.getDouble(-1);
-  }
-
-  public void updateTurretTicks() {
-    // Timer set to check turret every 3/4ths of a second (if turret is moving)
-    if (turretTalon.getMotorOutputPercent() > 0) {
-      if (System.currentTimeMillis() - initTurretTime > 750) {
-        initTurretTime = System.currentTimeMillis();
-        prevTurretTicks = getTurretTicks();
-      }
-    }
-  }
-
-  public boolean shouldTurretMove() {
-    // If the motor is running but the tick count hasn't changed from the initialization of the robot, turret should stop moving
-    // If the motor is running and tick count has changed, continue moving
-    // If motor isn't running, turret is probably fine
-    // if (turretTalon.getMotorOutputPercent() > 0) {
-    //   if (prevTurretTicks == getTurretTicks()) {
-    //     return false;
-    //   } else {
-    //     return true;
-    //   }
-    // }
-    return true;
   }
 
   public void track() {
@@ -298,14 +260,18 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   public void hardStopConfiguration() {
     if (turretTalon.getSelectedSensorPosition() > turretRightStop) {
-      turretTalon.configPeakOutputReverse(0, 10);
+      // turretTalon.configPeakOutputReverse(0, 10);
+      goRight = false;
     } else {
-      turretTalon.configPeakOutputReverse(-1, 10);
+      // turretTalon.configPeakOutputReverse(-1, 10);
+      goRight = true;
     }
     if (turretTalon.getSelectedSensorPosition() < turretLeftStop) {
-      turretTalon.configPeakOutputForward(0, 10);
+      // turretTalon.configPeakOutputForward(0, 10);
+      goLeft = false;
     } else {
-      turretTalon.configPeakOutputForward(1, 10);
+      // turretTalon.configPeakOutputForward(1, 10);
+      goLeft = true;
     }
   }
 
@@ -339,16 +305,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     setShuffleboard();
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
-    // Spins flywheels in shoot mode and when Y is pressed (Joystick 0)
-    // if ((Gamepad0.getRawButton(Constants.BTN_Y)) && (mode == "SHOOT_MODE")) {
-    //   setFlywheelVelocityControl(20000);
-    //   track();
-    // } else {
-    //   goHome();
-    // }
-
-    manualTurretControl();
-
     if (mode == "SHOOT_MODE") {
       setFlywheelVelocityControl(22000);
       track();
@@ -356,7 +312,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       spinFlywheelMotors(0);
       goHome();
     }
-
+    
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
   }
 

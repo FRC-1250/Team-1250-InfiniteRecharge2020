@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
@@ -127,6 +128,7 @@ public class RobotContainer {
 
     // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_SpinFlywheels(s_shooter, 1), true);
     // whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_ShootCells(s_hopper), true);
+    whenTriggerPressed(RobotState.CLIMB_MODE, null, new Cmd_DeployCylinder(s_panel), true);
     whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
     whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
     whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
