@@ -62,7 +62,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   public void periodic() {
     // This method will be called once per scheduler run
     // setShuffleboard();
-    if (RobotContainer.s_stateManager.getRobotState() == "COLLECT_MODE" && Gamepad0.getRawButton(Constants.M4)) {
+    if (RobotContainer.s_stateManager.getRobotState() == "COLLECT_MODE" && Gamepad0.getRawButton(Constants.LT)) {
       extendCylinder();
       spinIntakeMotor(0.8);
     } else {
