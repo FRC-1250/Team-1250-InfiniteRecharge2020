@@ -8,6 +8,12 @@
 package frc.robot.commands.auto_actions;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.drive.Cmd_AutoDrive;
+import frc.robot.commands.shooter.Cmd_HoodGoToPos;
+import frc.robot.commands.shooter.Cmd_ShootNTimes;
+import frc.robot.subsystems.Sub_Drivetrain;
+import frc.robot.subsystems.Sub_Hopper;
+import frc.robot.subsystems.Sub_Shooter;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -16,9 +22,12 @@ public class CmdG_AutoCrossAndShoot extends SequentialCommandGroup {
   /**
    * Creates a new CmdG_AutoCrossAndShoot.
    */
-  public CmdG_AutoCrossAndShoot() {
+  public CmdG_AutoCrossAndShoot(Sub_Drivetrain s_drive, Sub_Shooter s_shooter, Sub_Hopper s_hopper) {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
-    super();
+    super(new Cmd_AutoDrive(s_drive, 20, 0.8, 0.8).withTimeout(15),
+    new Cmd_HoodGoToPos(s_shooter, -127),
+    new Cmd_ShootNTimes(s_shooter, s_hopper, 3)
+    );
   }
 }

@@ -53,7 +53,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
 
   //Other devices
-  PigeonIMU pigeon = new PigeonIMU(1);
+  // PigeonIMU pigeon = new PigeonIMU(1);
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
 
@@ -91,7 +91,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   public Sub_Drivetrain(){
     //Ramp Rates
-    setRampRate(0.4);
+    setRampRate(0.8);
     setCLRampRate(0.6);
     fRightMotor.follow(bRightMotor);
     fLeftMotor.follow(bLeftMotor);
@@ -103,8 +103,6 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     driveLeftPID.setP(0.05);
     driveLeftPID.setI(0.0);
     driveLeftPID.setD(0.0);
-
-
 
   }
 
@@ -159,9 +157,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   //Arcade drive method
   public void driveArcade(Joystick joy){
-		diffDriveGroup.arcadeDrive(joy.getThrottle(),joy.getZ());
+		diffDriveGroup.arcadeDrive(-joy.getY(),-joy.getZ() * 0.8);
   }
-
 
   //Get velocity for any CANSparkMax in this subsys
   public double getVelocity(CANSparkMax motor){
@@ -182,13 +179,14 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
 
   public double getGyroAngle() {
-    double[] ypr = new double[3];
-    pigeon.getYawPitchRoll(ypr);
-    return ypr[0];
+    // double[] ypr = new double[3];
+    // pigeon.getYawPitchRoll(ypr);
+    // return ypr[0];
+    return 0;
   }
 
   public void resetGyro() {
-    pigeon.addYaw(-getGyroAngle());
+    // pigeon.addYaw(-getGyroAngle());
   }
 
   //Configures the maximum amp draw of the drive motors based on temperature of the motors
@@ -317,12 +315,12 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
       diffDriveGroup.arcadeDrive(Math.abs(Gamepad.getY()), 0);
     }
     else{
-      drive(Gamepad);
+      driveArcade(Gamepad);
     }
-    
+
     setShuffleboard();
   }
-
+ 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
     myCanDevices.add(new CAN_DeviceFaults(fRightMotor));

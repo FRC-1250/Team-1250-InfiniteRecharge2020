@@ -39,7 +39,8 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    RobotContainer.s_panel.retractCylinders();
+    RobotContainer.s_panel.retractCylinder();
+    RobotContainer.s_drivetrain.disengagePTO();
 
     autoChooser.setDefaultOption("Straight_Shot", "Straight_Shot");
     autoChooser.addOption("Whip", "Whip");
@@ -121,7 +122,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    RobotContainer.s_drivetrain.idleMode(IdleMode.kCoast);
+    RobotContainer.s_drivetrain.idleMode(IdleMode.kBrake);
   }
 
   /**

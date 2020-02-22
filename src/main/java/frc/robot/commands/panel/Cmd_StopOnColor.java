@@ -40,7 +40,7 @@ public class Cmd_StopOnColor extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     s_panel.spinPanelMotor(0);
-    s_panel.retractCylinders();
+    s_panel.retractCylinder();
   }
 
   // Returns true when the command should end.

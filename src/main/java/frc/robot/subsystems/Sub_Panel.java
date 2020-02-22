@@ -19,6 +19,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -38,6 +39,8 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   ColorMatch m_colorMatcher = new ColorMatch();
   ColorMatchResult match;
+
+  Joystick Gamepad1 = new Joystick(1);
 
   private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.46, 0.35);
   private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.53, 0.25);
@@ -61,8 +64,8 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   NetworkTableEntry curColor = panelTab.add("Cur Color", "U")
     .withPosition(4, 0)
     .getEntry();
-  NetworkTableEntry resetSensor = panelTab.add("Reset Sensor? (Y/N)", "false")
-    .withPosition(4, 1)
+  NetworkTableEntry resetSensor = panelTab.add("Reset Sensor?", "false")
+    .withPosition(6, 0)
     .getEntry();
   NetworkTableEntry gameData = panelTab.add("Game Data", "None received")
     .withPosition(5, 0)
@@ -96,7 +99,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     panelSol.set(true);
   }
 
-  public void retractCylinders() {
+  public void retractCylinder() {
     panelSol.set(false);
   }
 
@@ -133,7 +136,11 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   } 
 
   public void spinPanelMotor(double speed) {
-    panelMotor.set(speed);
+    if ((speed == 0) || (!isSensorBroken())) {
+      panelMotor.set(speed);
+    } else {
+      panelMotor.set(Gamepad1.getThrottle());
+    }
   }
 
   public void configureColors() {

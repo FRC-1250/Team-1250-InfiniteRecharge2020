@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.*;
 
 public class Sub_Climber extends SubsystemBase implements CAN_Input {
@@ -61,20 +62,31 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     // setShuffleboard();
-    if (Gamepad2.getRawButton(7)) { // LT
-      extendTopCylinder();
-    } else if (Gamepad2.getRawButton(8)) { // RT
-      extendBottomCylinder();
-    } else if (Gamepad2.getRawButton(5)){ // LB
-      retractTopCylinder();
-    } else if (Gamepad2.getRawButton(6)) { // RB
-      retractBottomCylinder();
-    } else if (Gamepad2.getRawButton(11)) { // LEFT CLICK
-      extendTopCylinder();
-      extendBottomCylinder();
-    } else if (Gamepad2.getRawButton(12)) { // RIGHT CLICK
-      retractTopCylinder();
-      retractBottomCylinder();
+    // if (Gamepad2.getRawButton(7)) { // LT
+    //   extendTopCylinder();
+    // } else if (Gamepad2.getRawButton(8)) { // RT
+    //   extendBottomCylinder();
+    // } else if (Gamepad2.getRawButton(5)){ // LB
+    //   retractTopCylinder();
+    // } else if (Gamepad2.getRawButton(6)) { // RB
+    //   retractBottomCylinder();
+    // } else if (Gamepad2.getRawButton(11)) { // LEFT CLICK
+    //   extendTopCylinder();
+    //   extendBottomCylinder();
+    // } else if (Gamepad2.getRawButton(12)) { // RIGHT CLICK
+    //   retractTopCylinder();
+    //   retractBottomCylinder();
+    // }
+    if (RobotContainer.s_stateManager.getRobotState() == "CLIMB_MODE") {
+      RobotContainer.s_panel.extendCylinder();
+      if (Gamepad0.getRawButton(Constants.BTN_X)) {
+        extendBottomCylinder();
+        extendTopCylinder();
+      } else if (Gamepad0.getRawButton(Constants.BTN_B)) {
+        retractBottomCylinder();
+        retractTopCylinder();
+        RobotContainer.s_drivetrain.engagePTO();
+      }
     }
   }
   

@@ -25,6 +25,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -279,15 +280,20 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     //TODO: Create lookup table for interpolatedHoodPosition
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
-        hoodNEOPercentControl(0.2);
+        hoodNEOPercentControl(0.3);
       } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
         hoodNEOPercentControl(0);
         hoodNEOResetPos();
         wasHomeFound = true;
       }
     } else if (wasHomeFound) {
-      hoodNeo.set(Gamepad1.getX() * 0.2);
+      hoodNeo.set(Gamepad1.getX() * 0.3);
     }
+  }
+
+  public void rumble(double intensity) {
+    Gamepad0.setRumble(RumbleType.kLeftRumble, intensity);
+      Gamepad0.setRumble(RumbleType.kRightRumble, intensity);
   }
 
   @Override
@@ -297,7 +303,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     hoodNEOGoHome();
 
     // Resets the home found variable (so that^ button can work again)
-    if (!Gamepad1.getRawButton(8)) {
+    if (!Gamepad1.getRawButton(7)) {
       wasHomeFound = false;
     }
     updateLimelight();
@@ -306,11 +312,17 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
     if (mode == "SHOOT_MODE") {
-      setFlywheelVelocityControl(22000);
+      setFlywheelVelocityControl(20000);
       track();
     } else {
       spinFlywheelMotors(0);
       goHome();
+    }
+
+    if (getFlyWheelSpeed() > 19090) {
+      rumble(1);
+    } else {
+      rumble(0);
     }
     
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
