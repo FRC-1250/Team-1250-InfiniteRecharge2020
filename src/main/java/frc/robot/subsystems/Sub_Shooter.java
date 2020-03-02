@@ -105,7 +105,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   //
 
   boolean wasHomeFound = false;
-  int hoodCollisionAmps = 15;
+  int hoodCollisionAmps = 22;
   double interpolatedHoodPosition;
 
   double hoodP = 0.5;
@@ -202,7 +202,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   public void track() {
     if (limelightSeesTarget()) {
-      double heading_error = -tx + 0.5; // in order to change the target offset (in degrees), add it here
+      double heading_error = -tx + 0; // in order to change the target offset (in degrees), add it here
       // How much the limelight is looking away from the target (in degrees)
 
       double steering_adjust = turretPIDController.calculate(heading_error);
@@ -277,17 +277,17 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   public void hoodNEOGoHome() {
-    //TODO: Create lookup table for interpolatedHoodPosition
+    //TODO: Create lookup table for interpolatedHoodPositions
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
-        hoodNEOPercentControl(0.3);
+        hoodNEOPercentControl(0.2);
       } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
         hoodNEOPercentControl(0);
         hoodNEOResetPos();
         wasHomeFound = true;
       }
     } else if (wasHomeFound) {
-      hoodNeo.set(Gamepad1.getX() * 0.3);
+      hoodNeo.set(Gamepad1.getX() * 0.2);
     }
   }
 

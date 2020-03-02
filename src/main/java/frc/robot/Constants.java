@@ -61,7 +61,7 @@ public final class Constants {
     public static final double SHOOT_TURRET_P = 0.6;
     public static final double SHOOT_TURRET_D = 0.0;
 
-    public static final double SHOOT_TURRET_HOME = 2390; /// TODO: backup plan for backup turret checker
+    public static final double SHOOT_TURRET_HOME = 2390;
     public static final double SHOOT_TURRET_LEFT_BOUND = 1120;
     public static final double SHOOT_TURRET_RIGHT_BOUND = 3560;
 
@@ -75,6 +75,7 @@ public final class Constants {
     public static final int CLIMB_MODE = 5;
     public static final int SHOOT_MODE = 1;
     public static final int PANEL_MODE = 2;
+    public static final int UNJAM_MODE = 3;
 
     public static final int BTN_X = 1;
     public static final int BTN_A = 2;
@@ -86,8 +87,8 @@ public final class Constants {
     public static final int RT = 8;
     public static final int BACK = 9;
     public static final int START = 10;
-    public static final int M3 = 0;
-    public static final int M4 = 1;
+    public static final int LCLICK = 11;
+    public static final int RCLICK = 12;
     
     // ALL DEVICES WILL HAVE TO BE PUT IN ORDER OF PHYSICAL DAISY CHAIN (FOR CAN DIAGNOSTICS)
     /* 

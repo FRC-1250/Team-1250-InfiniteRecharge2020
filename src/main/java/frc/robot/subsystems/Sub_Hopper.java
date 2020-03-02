@@ -34,6 +34,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   AnalogInput uptakeSensor = new AnalogInput(Constants.HOP_ELE_SENS);
 
   Joystick Gamepad = new Joystick(0);
+  Joystick Gamepad1 = new Joystick(1);
 
   // Shuffleboard
   ShuffleboardTab hopperTab = Shuffleboard.getTab("Hopper");
@@ -52,6 +53,9 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
   NetworkTableEntry sensorValue = hopperTab.add("Sensor Value", 0)
     .withPosition(4, 0)
     .getEntry();
+  NetworkTableEntry uptakeAmps = hopperTab.add("Uptake Amps", 0)
+    .withPosition(5, 0)
+    .getEntry();
 
   public ShuffleboardTab getTab() { return hopperTab; }
   //
@@ -68,6 +72,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     lCurrentDraw.setDouble(leftMotor.getSupplyCurrent());
     rCurrentDraw.setDouble(rightMotor.getSupplyCurrent());
     sensorValue.setDouble(uptakeSensor.getValue());
+    uptakeAmps.setDouble(getUptakeAmps());
   }
 
   public void spinHopperMotors(double speed) {
@@ -90,25 +95,30 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     return false;
   }
 
+  public double getUptakeAmps() {
+    return uptakeMotor.getSupplyCurrent();
+  }
+
   @Override
   public void periodic() {
     String mode = RobotContainer.s_stateManager.getRobotState();
 
     setShuffleboard();
-    if (mode == "SHOOT_MODE" && Gamepad.getRawButton(Constants.LT)) {
-      spinHopperMotors(1);
-      spinUptakeMotor(0.7);
+    if (mode == "SHOOT_MODE" && Gamepad.getRawButton(Constants.LT) && (RobotContainer.s_shooter.getFlyWheelSpeed() > 1)) {
+      spinHopperMotors(0.6);
+      spinUptakeMotor(0.4);
     } else {
 
-      if ((mode == "COLLECT_MODE") && (Gamepad.getRawButton(Constants.LT))) {
+      if (!Gamepad1.getRawButton(Constants.UNJAM_MODE)) {
         if (!getSensor()) {
           spinUptakeMotor(0.4);
+          spinHopperMotors(0.4);
         } else {
           spinUptakeMotor(0);
+          spinHopperMotors(0.4);
         }
-        spinHopperMotors(0.4);
       } else {
-        spinHopperMotors(0);
+        spinHopperMotors(0.1);
         spinUptakeMotor(0);
       }
 

@@ -77,17 +77,6 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
     //   retractTopCylinder();
     //   retractBottomCylinder();
     // }
-    if (RobotContainer.s_stateManager.getRobotState() == "CLIMB_MODE") {
-      RobotContainer.s_panel.extendCylinder();
-      if (Gamepad0.getRawButton(Constants.BTN_X)) {
-        extendBottomCylinder();
-        extendTopCylinder();
-      } else if (Gamepad0.getRawButton(Constants.BTN_B)) {
-        retractBottomCylinder();
-        retractTopCylinder();
-        RobotContainer.s_drivetrain.engagePTO();
-      }
-    }
   }
   
   public Vector<CAN_DeviceFaults> input() {

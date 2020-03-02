@@ -152,7 +152,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
   //The drive method that passes the joystick values (Overloaded)
   public void drive(Joystick joy){
-      drive(joy.getY(), joy.getThrottle());
+      drive(-joy.getRawAxis(3), -joy.getY());
   }
 
   //Arcade drive method
@@ -304,6 +304,11 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
   //----------------------------------
 
+  public void defenseMode() {
+    engagePTO();
+    drive(0, 0);
+  }
+
   @Override
   public void periodic(){
     mode = RobotContainer.s_stateManager.getRobotState();
@@ -312,10 +317,26 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     if (Gamepad.getRawButton(12)) {
       driveArcade(Gamepad);
     } else if (isPTOEngaged){
-      diffDriveGroup.arcadeDrive(Math.abs(Gamepad.getY()), 0);
+      diffDriveGroup.arcadeDrive(-Math.abs(Gamepad.getY()), 0);
     }
     else{
-      driveArcade(Gamepad);
+      drive(Gamepad);
+    }
+    if (RobotContainer.s_stateManager.getRobotState() == "CLIMB_MODE") {
+      RobotContainer.s_panel.extendCylinder();
+      if (Gamepad.getRawButton(Constants.BTN_X)) {
+        RobotContainer.s_climb.extendBottomCylinder();
+        RobotContainer.s_climb.extendTopCylinder();
+      } else if (Gamepad.getRawButton(Constants.BTN_B)) {
+        RobotContainer.s_climb.retractBottomCylinder();
+        RobotContainer.s_climb.retractTopCylinder();
+        engagePTO();
+        isPTOEngaged = true;
+      }
+    } else if (Gamepad.getRawButton(Constants.LCLICK)) {
+      defenseMode();
+    } else {
+      disengagePTO();
     }
 
     setShuffleboard();

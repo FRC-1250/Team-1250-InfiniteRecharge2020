@@ -73,10 +73,12 @@ public class RobotContainer {
   private static JoystickButton a = new JoystickButton(Gamepad, 2);
   private static JoystickButton b = new JoystickButton(Gamepad, 3);
   private static JoystickButton y = new JoystickButton(Gamepad, 4);
-  private static JoystickButton unjam = new JoystickButton(Gamepad1, 4);
+  private static JoystickButton unjam = new JoystickButton(Gamepad1, 3);
   public static JoystickButton panelMode = new JoystickButton(Gamepad1, Constants.PANEL_MODE);
   public static JoystickButton shootMode = new JoystickButton(Gamepad1, Constants.SHOOT_MODE);
   public static JoystickButton climbMode = new JoystickButton(Gamepad1, Constants.CLIMB_MODE);
+  public static JoystickButton unjamMode = new JoystickButton(Gamepad1, Constants.UNJAM_MODE);
+
 
   public enum RobotState {
     SHOOT_MODE, CLIMB_MODE, COLLECT_MODE, PANEL_MODE

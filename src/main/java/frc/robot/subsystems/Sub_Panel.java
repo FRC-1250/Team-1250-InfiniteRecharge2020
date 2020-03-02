@@ -179,8 +179,19 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     return colorChar;
   }
 
+  /** To account for possible flippage of colors underneath panel (comment out if unnecessary) */
+  public char[] reverseColors(char[] colors) {
+    for(int i = 0; i < colors.length/2; i++){
+      char temp = colors[i];
+      colors[i] = colors[colors.length - i - 1];
+      colors[colors.length - i - 1] = temp;
+    }
+    return colors;
+  }
+
   public char getFieldColor() {
     char[] colors = {'B', 'G', 'R', 'Y'};
+      colors = reverseColors(colors);
     char robot_sensor = getSensorColor();
     int color_index = findIndex(colors, robot_sensor) + 2;
     char real_color = colors[color_index % 4];
