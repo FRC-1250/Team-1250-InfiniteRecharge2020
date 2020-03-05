@@ -77,7 +77,7 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
 
   public void spinHopperMotors(double speed) {
     leftMotor.set(speed);
-    rightMotor.set(speed);
+    rightMotor.set(speed * 0.5);
   }
 
   public void spinUptakeMotor(double speed) {
@@ -105,8 +105,8 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
 
     setShuffleboard();
     if (mode == "SHOOT_MODE" && Gamepad.getRawButton(Constants.LT) && (RobotContainer.s_shooter.getFlyWheelSpeed() > 1)) {
-      spinHopperMotors(0.6);
-      spinUptakeMotor(0.4);
+      spinHopperMotors(1);
+      spinUptakeMotor(0.8);
     } else {
 
       if (!Gamepad1.getRawButton(Constants.UNJAM_MODE)) {
@@ -118,7 +118,8 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
           spinHopperMotors(0.4);
         }
       } else {
-        spinHopperMotors(0.1);
+        leftMotor.set(0.1);
+        rightMotor.set(0.1);
         spinUptakeMotor(0);
       }
 

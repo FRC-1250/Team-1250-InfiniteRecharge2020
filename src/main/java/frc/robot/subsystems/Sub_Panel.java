@@ -20,6 +20,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PWMSparkMax;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -32,7 +33,7 @@ import frc.robot.utilities.*;
 
 public class Sub_Panel extends SubsystemBase implements CAN_Input {
   // Speed controllers created
-  CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
+  PWMSparkMax panelMotor = new PWMSparkMax(Constants.PANEL_MOTOR);
   I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
   Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
 
@@ -76,7 +77,6 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   
   public Sub_Panel() {
     configureColors();
-    panelMotor.setIdleMode(IdleMode.kBrake);
   }
 
   public void setShuffleboard() {
@@ -238,7 +238,6 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
-    myCanDevices.add(new CAN_DeviceFaults(panelMotor));
     return myCanDevices;
   }
 }

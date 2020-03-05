@@ -36,7 +36,7 @@ public final class Constants {
     public static final int SHOOT_HOOD = 17;
 
     //Sub_Panel
-    public static final int PANEL_MOTOR = 18;
+    public static final int PANEL_MOTOR = 1; // on PWM
     public static final int PANEL_SOL = 4;
     public static final I2C.Port PANEL_SENSOR_PORT = I2C.Port.kOnboard;
 

@@ -118,7 +118,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     // Palette cleanser (cleanses with the color that the color sensor sees)
     int[] rgb = new int[3];
     for (int i = 0; i < rgb.length; i++) {
-      rgb[i] = (int)(RobotContainer.s_panel.getRGBValues()[i] * 255);
+      rgb[i] = (int)(RobotContainer.s_panel.getRGBValues()[i] * 120); // 255 is bright
     }
     for (int i = 0; i < Robot.ledStripBuffer.getLength(); i++) {
       if (RobotContainer.s_panel.getSensorColor() != 'U') {

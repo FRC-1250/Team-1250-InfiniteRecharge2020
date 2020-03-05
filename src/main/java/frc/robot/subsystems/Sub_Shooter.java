@@ -296,6 +296,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       Gamepad0.setRumble(RumbleType.kRightRumble, intensity);
   }
 
+  public double amazingQuadRegression(){
+    return((0.00575313 * Math.pow(getPortDist(), 2)) - (1.65056 * getPortDist()) + 39.357);
+  }
+
+  public void hoodGoToCorrectPos() {
+    hoodGoToPos(amazingQuadRegression());
+  }
+
   @Override
   public void periodic() {
     String mode = RobotContainer.s_stateManager.getRobotState();
@@ -314,9 +322,11 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     if (mode == "SHOOT_MODE") {
       setFlywheelVelocityControl(20000);
       track();
+      hoodGoToCorrectPos();
     } else {
       spinFlywheelMotors(0);
       goHome();
+      // hoodGoToPos(0);
     }
 
     if (getFlyWheelSpeed() > 19090) {
