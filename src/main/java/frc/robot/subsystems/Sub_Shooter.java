@@ -98,6 +98,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withPosition(8, 1).getEntry();
   NetworkTableEntry turretSpeed = shooterTab.add("Turrent Percent", -1)
     .withPosition(8, 2).getEntry();
+    NetworkTableEntry wantedDistane = shooterTab.add("WantedDis", 0)
+    .withPosition(8, 3).getEntry();
   
   public ShuffleboardTab getTab() {
     return shooterTab;
@@ -105,10 +107,10 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   //
 
   boolean wasHomeFound = false;
-  int hoodCollisionAmps = 22;
+  int hoodCollisionAmps = 27;
   double interpolatedHoodPosition;
 
-  double hoodP = 0.5;
+  double hoodP = 1;
   double hoodI = 0;
   double hoodD = 0;
 
@@ -120,6 +122,10 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public Sub_Shooter() {
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconRight.setInverted(InvertType.OpposeMaster);
+
+   flywheelFalconLeft.configPeakOutputReverse(0);
+   flywheelFalconRight.configPeakOutputReverse(0);
+
 
    hoodPID.setP(hoodP);
    hoodPID.setI(hoodI);
@@ -143,6 +149,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     distFromHome.setDouble(turretDistFromHome());
     // seeTarget.setString(isTarget());
     // xOffset.setDouble(tx);
+    wantedDistane.setDouble(amazingQuadRegression());
     hoodTemp.setDouble(hoodNeo.getMotorTemperature());
     distFromPort.setDouble(getPortDist());
     hoodCurrent.setDouble(hoodNEOCurrentDraw());
@@ -255,32 +262,36 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     return hoodNeo.getOutputCurrent();
   }
 
+  public void resetHomeHood(){
+   wasHomeFound = false;
+  }
+
   public void hoodNEOResetPos(){
     hoodNeo.getEncoder().setPosition(0);
   }
 
-  public void hardStopConfiguration() {
-    if (turretTalon.getSelectedSensorPosition() > turretRightStop) {
-      // turretTalon.configPeakOutputReverse(0, 10);
-      goRight = false;
-    } else {
-      // turretTalon.configPeakOutputReverse(-1, 10);
-      goRight = true;
-    }
-    if (turretTalon.getSelectedSensorPosition() < turretLeftStop) {
-      // turretTalon.configPeakOutputForward(0, 10);
-      goLeft = false;
-    } else {
-      // turretTalon.configPeakOutputForward(1, 10);
-      goLeft = true;
-    }
-  }
+  // public void hardStopConfiguration() {
+  //   if (turretTalon.getSelectedSensorPosition() > turretRightStop) {
+  //     // turretTalon.configPeakOutputReverse(0, 10);
+  //     goRight = false;
+  //   } else {
+  //     // turretTalon.configPeakOutputReverse(-1, 10);
+  //     goRight = true;
+  //   }
+  //   if (turretTalon.getSelectedSensorPosition() < turretLeftStop) {
+  //     // turretTalon.configPeakOutputForward(0, 10);
+  //     goLeft = false;
+  //   } else {
+  //     // turretTalon.configPeakOutputForward(1, 10);
+  //     goLeft = true;
+  //   }
+  // }
 
   public void hoodNEOGoHome() {
     //TODO: Create lookup table for interpolatedHoodPositions
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
-        hoodNEOPercentControl(0.2);
+        hoodNEOPercentControl(0.4);
       } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
         hoodNEOPercentControl(0);
         hoodNEOResetPos();
@@ -311,18 +322,18 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     hoodNEOGoHome();
 
     // Resets the home found variable (so that^ button can work again)
-    if (!Gamepad1.getRawButton(7)) {
+    if (!Gamepad1.getRawButton(7) || !Gamepad1.getRawButton(6)) {
       wasHomeFound = false;
     }
     updateLimelight();
-    hardStopConfiguration();
+    // hardStopConfiguration();
     setShuffleboard();
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
 
     if (mode == "SHOOT_MODE") {
       setFlywheelVelocityControl(20000);
       track();
-      hoodGoToCorrectPos();
+      hoodGoToPos(-68);
     } else {
       spinFlywheelMotors(0);
       goHome();

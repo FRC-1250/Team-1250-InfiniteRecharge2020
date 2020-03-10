@@ -30,6 +30,7 @@ import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.shooter.Cmd_ToggleLL;
 import frc.robot.commands.shooter.Cmd_Track;
 import frc.robot.state.Cmd_StateChange;
+import frc.robot.commands.intake.CmdI_Collect;
 import frc.robot.commands.intake.Cmd_Collect;
 import frc.robot.commands.intake.Cmd_StopCollect;
 import frc.robot.commands.hopper.Cmd_UnjamHopper;
@@ -104,6 +105,11 @@ public class RobotContainer {
     public boolean get() { return !Gamepad1.getRawButton(7); }
   };
 
+  Trigger dev8 = new Trigger() {
+    @Override
+    public boolean get() { return !Gamepad1.getRawButton(8); }
+  };
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -140,8 +146,11 @@ public class RobotContainer {
     // whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), true);
     // whenTriggerPressed(RobotState.CLIMB_MODE, b, new CmdSG_RetractPhases(s_drivetrain, s_climb), true);
     // whenTriggerPressed(mode, button, command, interruptible);
-    dev6.whenActive(new Cmd_HoodGoToPos(s_shooter, -150), false);
+    // dev6.whenActive(new Cmd_HoodGoToPos(s_shooter, -150), false);
     // dev7.whenActive(new Cmd_HoodGoToPos(s_shooter, -2), true);
+
+    dev8.whenActive(new Cmd_Collect(s_intake), false);
+    
   }
 
   /** This method in place of the native Object toString() method because it returns crap (this only works with XABY)
@@ -178,6 +187,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new CmdG_AutoCrossAndShoot(s_drivetrain, s_shooter, s_hopper);
+    return new CmdG_AutoAllianceTrench(s_drivetrain, s_shooter, s_hopper, s_intake);
   }
 }

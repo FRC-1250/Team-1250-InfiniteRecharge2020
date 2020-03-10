@@ -18,6 +18,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -53,6 +54,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
 
   //Other devices
+  AnalogGyro gyro = new AnalogGyro(1);
   // PigeonIMU pigeon = new PigeonIMU(1);
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
@@ -179,14 +181,11 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
 
   public double getGyroAngle() {
-    // double[] ypr = new double[3];
-    // pigeon.getYawPitchRoll(ypr);
-    // return ypr[0];
-    return 0;
+    return gyro.getAngle();
   }
 
   public void resetGyro() {
-    // pigeon.addYaw(-getGyroAngle());
+    gyro.reset(); 
   }
 
   //Configures the maximum amp draw of the drive motors based on temperature of the motors

@@ -7,37 +7,22 @@
 
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.Sub_Intake;
 
-public class Cmd_Collect extends CommandBase {
-  /**
-   * Creates a new Cmd_Collect.
-   */
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
+public class CmdI_Collect extends InstantCommand {
   private final Sub_Intake s_intake;
-  public Cmd_Collect(Sub_Intake intake) {
+  public CmdI_Collect(Sub_Intake intake) {
     s_intake = intake;
     addRequirements(intake);
-  }
+    }
 
+  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
- 
-  }
-
-  @Override
-  public void execute() {
     s_intake.spinIntakeMotor(0.8);
     s_intake.extendCylinder();
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    
-  }
-
-  @Override
-  public boolean isFinished() {
-    return true;
   }
 }

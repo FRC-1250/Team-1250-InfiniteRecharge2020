@@ -43,7 +43,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
 
   PowerDistributionPanel pdp = new PowerDistributionPanel();
   Compressor pcm = new Compressor();
-  AnalogInput pressureSensor = new AnalogInput(1);
+  // AnalogInput pressureSensor = new AnalogInput(1);
 
   ArrayList<ArrayList<String>> stateButtons = new ArrayList<ArrayList<String>>();
   public String[] buttons = {"x", "a", "b", "y"};
@@ -87,7 +87,7 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     pcmFault.setString(Boolean.toString(pcm.getCompressorNotConnectedFault()));
     pcmSFault.setString(Boolean.toString(pcm.getCompressorNotConnectedStickyFault()));
     pcmSwitch.setString(Boolean.toString(pcm.getPressureSwitchValue()));
-    pressure.setDouble(getPressureSensor());
+    // pressure.setDouble(getPressureSensor());
   }
   //
 
@@ -272,9 +272,9 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
     }
   }
 
-  public double getPressureSensor() {
-    return pressureSensor.getValue();
-  }
+  // public double getPressureSensor() {
+  //   return pressureSensor.getValue();
+  // }
 
   @Override
   public void periodic() {
