@@ -48,7 +48,7 @@ public class CmdG_AutoAllianceTrench extends SequentialCommandGroup {
     // new Cmd_ShootNTimes(s_shooter, s_hopper, 5)
     new Cmd_ShootNTimes(s_shooter, s_hopper, 3),
     new Cmd_Collect(s_intake),
-    new Cmd_AutoDrive(s_drive, 270, 0.5, 0.5).alongWith(new Cmd_Collect(s_intake)),
+    new Cmd_AutoDrive(s_drive, 270, 0.5, 0.5),
     new Cmd_StopCollect(s_intake, s_hopper),
     new Cmd_AutoDrive(s_drive, -200, 0.5, 0.5),
     new Cmd_ShootNTimes(s_shooter, s_hopper, 5)

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
@@ -64,6 +65,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   public void periodic() {
     // This method will be called once per scheduler run
     // setShuffleboard();
+    if (!Robot.isItAuto){
     if  ((!Gamepad1.getRawButton(Constants.UNJAM_MODE)) ||(!Gamepad1.getRawButton(4))) {
       extendCylinder();
       spinIntakeMotor(0.8);
@@ -72,6 +74,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
       spinIntakeMotor(0);
     }
   }
+}
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();

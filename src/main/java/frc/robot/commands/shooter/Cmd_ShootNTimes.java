@@ -49,7 +49,7 @@ public class Cmd_ShootNTimes extends CommandBase {
     s_shooter.track();
     s_shooter.setFlywheelVelocityControl(speed);
 
-    if (s_shooter.getFlyWheelSpeed() > 16000){
+    if (s_shooter.getFlyWheelSpeed() > 19000){
       withinDeadband = true;
     }
 
@@ -79,7 +79,7 @@ public class Cmd_ShootNTimes extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     //Flywheel is left running to maintain velocity, end at the end of auton with CmdI_StopFlyWheels
-    s_shooter.resetHomeHood();
+    s_shooter.hoodGoToPos(5);
   }
 
   // Returns true when the command should end.

@@ -19,6 +19,8 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import frc.robot.Robot;
+
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -291,7 +293,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     //TODO: Create lookup table for interpolatedHoodPositions
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
-        hoodNEOPercentControl(0.4);
+        hoodNEOPercentControl(0.2);
       } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
         hoodNEOPercentControl(0);
         hoodNEOResetPos();
@@ -321,6 +323,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     // Controls hood
     hoodNEOGoHome();
 
+    if (!Robot.isItAuto){
+
     // Resets the home found variable (so that^ button can work again)
     if (!Gamepad1.getRawButton(7) || !Gamepad1.getRawButton(6)) {
       wasHomeFound = false;
@@ -337,7 +341,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     } else {
       spinFlywheelMotors(0);
       goHome();
-      // hoodGoToPos(0);
+      hoodGoToPos(5);
     }
 
     if (getFlyWheelSpeed() > 19090) {
@@ -348,7 +352,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
   }
-
+  }
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
     myCanDevices.add(new CAN_DeviceFaults(turretTalon));
