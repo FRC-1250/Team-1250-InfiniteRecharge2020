@@ -26,7 +26,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -60,17 +59,20 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public double turretLeftStop = Constants.SHOOT_TURRET_LEFT_BOUND;
   public double turretRightStop = Constants.SHOOT_TURRET_RIGHT_BOUND;
 
+  //Bools for hardstop config
   boolean goLeft = true;
   boolean goRight = true;
 
-  // Used for limelight methods
+  //Bool that determines whether robot is ready to fire
+  public boolean readyToFire;
+
+  //Limelight data, used for Limelight methods
   public NetworkTable table;
   NetworkTableEntry tableTx, tableTy, tableTv;
   double tx, ty, tv;
 
-  // Shuffleboard
+  // Shuffleboard position and data config
   ShuffleboardTab shooterTab = Shuffleboard.getTab("Shooter");
-  // ShuffleboardLayout llLayout = shooterTab.getLayout("Limelight", BuiltInLayouts.kList).withSize(4, 2).withPosition(0, 1);
   NetworkTableEntry turPos = shooterTab.add("Turret Position (ticks)", 0)
     .withWidget(BuiltInWidgets.kNumberBar)
     .withProperties(Map.of("min", turretLeftStop, "max", turretRightStop))
@@ -93,9 +95,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withProperties(Map.of("min", 12, "max", 629))
     .withSize(3, 1)
     .withPosition(5, 2).getEntry();
-  // NetworkTableEntry xOffset = llLayout.add("X Offset Angle (degrees)", 0)
-  //  .withWidget(BuiltInWidgets.kDial).getEntry();
-  // NetworkTableEntry seeTarget = llLayout.add("Sees Target?", "no data").getEntry();
   NetworkTableEntry homeFound = shooterTab.add("Home Found", "false")
     .withPosition(8, 1).getEntry();
   NetworkTableEntry turretSpeed = shooterTab.add("Turrent Percent", -1)
@@ -106,51 +105,59 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public ShuffleboardTab getTab() {
     return shooterTab;
   }
-  //
 
-  boolean wasHomeFound = false;
-  int hoodCollisionAmps = 27;
-  double interpolatedHoodPosition;
+  //Hood Neo control
+  boolean wasHomeFound = false; //Starts robot in a "no home found" state
+  int hoodCollisionAmps = 25; //x amps to determine when a collision or home is hit
+  double interpolatedHoodPosition; //Deprecated for now
 
-  double hoodP = 1;
-  double hoodI = 0;
-  double hoodD = 0;
+  //Hood neo PID values
+  double hoodP = Constants.SHOOT_HOOD_P;
+  double hoodI = Constants.SHOOT_HOOD_I;
+  double hoodD = Constants.SHOOT_HOOD_D;
 
-  double flywheelP = 1;
-  double flywheelI = 0;
-  double flywheelD = 0;
-  double flywheelF = 0.05115;
+  //Flywheel PIDF values
+  double flywheelP = Constants.SHOOT_FLYWHEEL_P;
+  double flywheelI = Constants.SHOOT_FLYWHEEL_I;
+  double flywheelD = Constants.SHOOT_FLYWHEEL_D;
+  double flywheelF = Constants.SHOOT_FLYWHEEL_F;
 
   public Sub_Shooter() {
+   //Sets the right falcon to follow the opposite of that the left falcon is doing
+   //Right = follower Left = leader
    flywheelFalconRight.follow(flywheelFalconLeft);
    flywheelFalconRight.setInverted(InvertType.OpposeMaster);
 
+   //Stops flywheels from ever back driving
    flywheelFalconLeft.configPeakOutputReverse(0);
    flywheelFalconRight.configPeakOutputReverse(0);
 
-
+   //Configures PID for hood position control
    hoodPID.setP(hoodP);
    hoodPID.setI(hoodI);
    hoodPID.setD(hoodD);
 
+   //Configures PIDF for flywheel velocity control
+   //F VALUE WILL WORK FOR ALL FALCON 500s
    flywheelFalconLeft.config_kP(0, flywheelP);
    flywheelFalconLeft.config_kI(0, flywheelI);
    flywheelFalconLeft.config_kD(0, flywheelD);
    flywheelFalconLeft.config_kF(0, flywheelF);
 
+   //Configures the turret encoder to absolute (Armabot Turret 240)
    turretTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-   turretTalon.configFeedbackNotContinuous(true, 10); // important for absolute encoders not to jump ticks randomly
+   turretTalon.configFeedbackNotContinuous(true, 10); // Important for absolute encoders not to jump ticks randomly
 
+   //Ramp rate to make sure hood neo finds home cleanly
    hoodNeo.setOpenLoopRampRate(0.4);
   }
   
+  //Shuffleboard value update method
   public void setShuffleboard() {
     turPos.setDouble(turretTalon.getSelectedSensorPosition());
     hoodTicks.setDouble(hoodNeo.getEncoder().getPosition());
     shootRPM.setDouble(flywheelFalconLeft.getSelectedSensorVelocity());
     distFromHome.setDouble(turretDistFromHome());
-    // seeTarget.setString(isTarget());
-    // xOffset.setDouble(tx);
     wantedDistane.setDouble(amazingQuadRegression());
     hoodTemp.setDouble(hoodNeo.getMotorTemperature());
     distFromPort.setDouble(getPortDist());
@@ -160,7 +167,6 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   }
 
   // Basic methods
-
   public void spinTurretMotor(double speed) {
     if (goLeft && speed < 0) {
       turretTalon.set(speed);
@@ -171,34 +177,41 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  //Returns flywheel speed in ticks/100ms
   public int getFlyWheelSpeed() {
     return flywheelFalconLeft.getSelectedSensorVelocity();
   }
 
+  //Percent control of flywheel motors
   public void spinFlywheelMotors(double speed) {
     flywheelFalconLeft.set(speed);
   }
 
+  //Percent control of hood neo
   public void spinHoodMotor(double speed) {
     hoodNeo.set(speed);
   }
-  //
+  //Velocity control of flywheel
   public void setFlywheelVelocityControl(double rpm) {
     flywheelFalconLeft.set(ControlMode.Velocity, rpm);
   }
 
+  //Reurns position of the turret in ticks
   public double getTurretTicks() {
     return turretTalon.getSelectedSensorPosition();
   }
 
+  //Position control method of hood neo
   public void hoodGoToPos(double ticks){
     hoodPID.setReference(ticks, ControlType.kPosition);
   }
 
+  //Returns hood postion in ticks (Raw rotations of neo)
   public double hoodPos(){
     return hoodNeo.getEncoder().getPosition();
   }
 
+  // Void to updates the limelight values
   public void updateLimelight() {
     table = NetworkTableInstance.getDefault().getTable("limelight");
     tableTx = table.getEntry("tx");
@@ -209,6 +222,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     tv = tableTv.getDouble(-1);
   }
 
+  //Tracking method that points the turret towards the target, using a PID controller
   public void track() {
     if (limelightSeesTarget()) {
       double heading_error = -tx + 0; // in order to change the target offset (in degrees), add it here
@@ -225,6 +239,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  //Simple position control to send the turret home
   public void goHome() {
     if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
       // If you're to the right of the center, move left until you're within 50 ticks (turret deadband)
@@ -237,10 +252,12 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  //Based on tv from the limelight, returns a bool of whether a target is seen
   public boolean limelightSeesTarget() {
     return tv == 1;
   }
 
+  //Returns a string that determines whether or not a target is seen
   public String isTarget() {
     if (limelightSeesTarget()) {
       return "SEES TARGET";
@@ -248,49 +265,58 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     return "NO TARGET";
   }
   
+  //Returns how far the turret is from it's home position
   public double turretDistFromHome() {
     return Math.abs(turretCurrentPos - turretHome);
   }
 
+  //Converts ty of limelight to return distance to the outer port in inches
   public double getPortDist() {
     return 60.25/(Math.tan(Math.toRadians(26.85) + Math.toRadians(ty)));
   }
 
+  //Manual percent control of the hood neo
   public void hoodNEOPercentControl(double percent){
     hoodNeo.set(percent);
   }
 
+  //Returns current draw of the hood neo
   public double hoodNEOCurrentDraw(){
     return hoodNeo.getOutputCurrent();
   }
 
+  //Resets the bool that determines whether or not home was found
   public void resetHomeHood(){
    wasHomeFound = false;
   }
 
+  //Sets the tick count of the internal encoder of the neo to 0
+  //0 = home
   public void hoodNEOResetPos(){
     hoodNeo.getEncoder().setPosition(0);
   }
 
-  // public void hardStopConfiguration() {
-  //   if (turretTalon.getSelectedSensorPosition() > turretRightStop) {
-  //     // turretTalon.configPeakOutputReverse(0, 10);
-  //     goRight = false;
-  //   } else {
-  //     // turretTalon.configPeakOutputReverse(-1, 10);
-  //     goRight = true;
-  //   }
-  //   if (turretTalon.getSelectedSensorPosition() < turretLeftStop) {
-  //     // turretTalon.configPeakOutputForward(0, 10);
-  //     goLeft = false;
-  //   } else {
-  //     // turretTalon.configPeakOutputForward(1, 10);
-  //     goLeft = true;
-  //   }
-  // }
+  //Determines based on boundries whether or not the turret is allowed to turn to the left or right
+  public void hardStopConfiguration() {
+    if (turretTalon.getSelectedSensorPosition() > turretRightStop) {
+      // turretTalon.configPeakOutputReverse(0, 10);
+      goRight = false;
+    } else {
+      // turretTalon.configPeakOutputReverse(-1, 10);
+      goRight = true;
+    }
+    if (turretTalon.getSelectedSensorPosition() < turretLeftStop) {
+      // turretTalon.configPeakOutputForward(0, 10);
+      goLeft = false;
+    } else {
+      // turretTalon.configPeakOutputForward(1, 10);
+      goLeft = true;
+    }
+  }
 
+  //Finds home of the hood by colliding the hood with the end of the track
+  //Looks at amount of amps drawn. When amps spike, home is assumed to be at that position
   public void hoodNEOGoHome() {
-    //TODO: Create lookup table for interpolatedHoodPositions
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
         hoodNEOPercentControl(0.2);
@@ -304,55 +330,67 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  //Test method to configure rumble
   public void rumble(double intensity) {
     Gamepad0.setRumble(RumbleType.kLeftRumble, intensity);
-      Gamepad0.setRumble(RumbleType.kRightRumble, intensity);
+    Gamepad0.setRumble(RumbleType.kRightRumble, intensity);
   }
 
+  //Quad equation to determin hood position 
+  //Deprecated
   public double amazingQuadRegression(){
     return((0.00575313 * Math.pow(getPortDist(), 2)) - (1.65056 * getPortDist()) + 39.357);
   }
 
+  //Method to set position to ticks determined by the quad equation
+  //Deprecated
   public void hoodGoToCorrectPos() {
     hoodGoToPos(amazingQuadRegression());
   }
 
   @Override
   public void periodic() {
-    String mode = RobotContainer.s_stateManager.getRobotState();
-    // Controls hood
+    //Periodic methods that are always needed for shooter to work-----------------------------
     hoodNEOGoHome();
-
-    if (!Robot.isItAuto){
-
-    // Resets the home found variable (so that^ button can work again)
-    if (!Gamepad1.getRawButton(7) || !Gamepad1.getRawButton(6)) {
-      wasHomeFound = false;
-    }
     updateLimelight();
-    // hardStopConfiguration();
+    hardStopConfiguration();
     setShuffleboard();
     turretCurrentPos = turretTalon.getSelectedSensorPosition();
-
-    if (mode == "SHOOT_MODE") {
-      setFlywheelVelocityControl(20000);
-      track();
-      hoodGoToPos(-68);
-    } else {
-      spinFlywheelMotors(0);
-      goHome();
-      hoodGoToPos(5);
-    }
-
-    if (getFlyWheelSpeed() > 19090) {
-      rumble(1);
-    } else {
-      rumble(0);
-    }
-    
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+    String mode = RobotContainer.s_stateManager.getRobotState();
+    //----------------------------------------------------------------------------------------
+
+    //Sets the bool readyToFire to true or false
+    //Determined by RPM and whether or not a ball is loaded
+    if(getFlyWheelSpeed() > 19000 && RobotContainer.s_hopper.getSensor()){
+      readyToFire = true;
+    }
+    else{
+      readyToFire = false;
+    }
+
+    //only works during teleop
+    if (!Robot.isItAuto){
+      // Resets the home found variable (so that button can work again)
+      if (!Gamepad1.getRawButton(7) || !Gamepad1.getRawButton(6)) {
+       wasHomeFound = false;
+      }
+      //When the shoot mode button is pressed
+      if (mode == "SHOOT_MODE") {
+        setFlywheelVelocityControl(20000);
+        track();
+        hoodGoToPos(-68);
+      } 
+      //When shootmode button is not pressed
+      else {
+        spinFlywheelMotors(0);
+        goHome();
+        hoodGoToPos(5);
+      }
+    }
   }
-  }
+
+  //Adding CAN devices for diagnostic LEDs
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
     myCanDevices.add(new CAN_DeviceFaults(turretTalon));

@@ -303,6 +303,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
   //----------------------------------
 
+  //2020 Robot specific 
+  //Actiates feet
   public void defenseMode() {
     engagePTO();
     drive(0, 0);
@@ -321,23 +323,32 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     else{
       drive(Gamepad);
     }
+
+    //Climber Logic
     if (RobotContainer.s_stateManager.getRobotState() == "CLIMB_MODE") {
       RobotContainer.s_panel.extendCylinder();
       if (Gamepad.getRawButton(Constants.BTN_X)) {
         RobotContainer.s_climb.extendBottomCylinder();
         RobotContainer.s_climb.extendTopCylinder();
-      } else if (Gamepad.getRawButton(Constants.BTN_B)) {
+      }
+      else if(Gamepad.getRawButton(Constants.BTN_Y)){
+        RobotContainer.s_climb.retractBottomCylinder();
+        RobotContainer.s_climb.retractTopCylinder();
+      }
+       else if (Gamepad.getRawButton(Constants.BTN_B)) {
         RobotContainer.s_climb.retractBottomCylinder();
         RobotContainer.s_climb.retractTopCylinder();
         engagePTO();
         isPTOEngaged = true;
       }
-    } else if (Gamepad.getRawButton(Constants.LCLICK)) {
+    } 
+    //Logic to deploy feet for defense
+    else if (Gamepad.getRawButton(Constants.LCLICK)) {
       defenseMode();
-    } else {
+    } 
+    else {
       disengagePTO();
     }
-
     setShuffleboard();
   }
  

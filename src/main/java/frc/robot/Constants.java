@@ -68,6 +68,14 @@ public final class Constants {
     public static final double DRV_KP_SIMPLE_STRAIT = 0.02;
     public static final double DRV_KP_SIMPLE = 0.05;
 
+    public static final double SHOOT_HOOD_P = 1;
+    public static final double SHOOT_HOOD_I = 0;
+    public static final double SHOOT_HOOD_D = 0;
+
+    public static final double SHOOT_FLYWHEEL_P = 1;
+    public static final double SHOOT_FLYWHEEL_I = 0;
+    public static final double SHOOT_FLYWHEEL_D = 0;
+    public static final double SHOOT_FLYWHEEL_F = 0.05115;
 
     public static final int LED_PWM_PORT = 9; // must be a PWM header
 
