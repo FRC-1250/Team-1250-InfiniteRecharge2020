@@ -46,12 +46,14 @@ public class CmdG_AutoAllianceTrench extends SequentialCommandGroup {
     // new Cmd_StopCollect(s_intake, s_hopper),
     // new Cmd_HoodGoToPos(s_shooter, -150),
     // new Cmd_ShootNTimes(s_shooter, s_hopper, 5)
+
     new Cmd_ShootNTimes(s_shooter, s_hopper, 3),
     new Cmd_Collect(s_intake),
-    new Cmd_AutoDrive(s_drive, 270, 0.5, 0.5),
+    new Cmd_AutoDrive(s_drive, 140, 0.7, 0.7),
+    new Cmd_DoNothing().withTimeout(0.2),
     new Cmd_StopCollect(s_intake, s_hopper),
-    new Cmd_AutoDrive(s_drive, -200, 0.5, 0.5),
-    new Cmd_ShootNTimes(s_shooter, s_hopper, 5)
+    new Cmd_AutoDrive(s_drive, -100, 0.7, 0.7),
+    new Cmd_ShootNTimes(s_shooter, s_hopper, 5).alongWith(new Cmd_Collect(s_intake))
     );
 
   }

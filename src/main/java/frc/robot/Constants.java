@@ -65,8 +65,8 @@ public final class Constants {
     public static final double SHOOT_TURRET_LEFT_BOUND = 1120;
     public static final double SHOOT_TURRET_RIGHT_BOUND = 3560;
 
-    public static final double DRV_KP_SIMPLE_STRAIT = 0.02;
-    public static final double DRV_KP_SIMPLE = 0.05;
+    public static final double DRV_KP_SIMPLE_STRAIT = 0.08;
+    public static final double DRV_KP_SIMPLE = 0.06;
 
     public static final double SHOOT_HOOD_P = 1;
     public static final double SHOOT_HOOD_I = 0;

@@ -150,6 +150,7 @@ public class RobotContainer {
     // dev7.whenActive(new Cmd_HoodGoToPos(s_shooter, -2), true);
 
     dev8.whenActive(new Cmd_Collect(s_intake), false);
+    dev7.whenActive(new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
     
   }
 
@@ -188,5 +189,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return new CmdG_AutoAllianceTrench(s_drivetrain, s_shooter, s_hopper, s_intake);
+    // return new Cmd_ShootNTimes(s_shooter, s_hopper, 3);
+    // return new CmdG_AutoCrossAndShoot(s_drivetrain, s_shooter, s_hopper);
   }
 }

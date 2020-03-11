@@ -64,7 +64,7 @@ public class Cmd_ShootNTimes extends CommandBase {
       timesSeen++;
       changeSensor = true;
     }
-    if(withinDeadband && ((timesSeen / 2) < timesToShoot)){
+    if(withinDeadband && ((timesSeen / 2) < timesToShoot - 1)){
       s_hopper.spinUptakeMotor(1);
       s_hopper.spinHopperMotors(1);
     }
@@ -79,7 +79,7 @@ public class Cmd_ShootNTimes extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     //Flywheel is left running to maintain velocity, end at the end of auton with CmdI_StopFlyWheels
-    s_shooter.hoodGoToPos(5);
+    // s_shooter.hoodGoToPos(-5);
   }
 
   // Returns true when the command should end.

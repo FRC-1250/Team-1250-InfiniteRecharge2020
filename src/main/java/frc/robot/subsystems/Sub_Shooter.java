@@ -108,7 +108,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
   //Hood Neo control
   boolean wasHomeFound = false; //Starts robot in a "no home found" state
-  int hoodCollisionAmps = 25; //x amps to determine when a collision or home is hit
+  int hoodCollisionAmps = 22; //x amps to determine when a collision or home is hit
   double interpolatedHoodPosition; //Deprecated for now
 
   //Hood neo PID values
@@ -319,7 +319,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public void hoodNEOGoHome() {
     if(!wasHomeFound) {
       if (hoodNEOCurrentDraw() < hoodCollisionAmps) {
-        hoodNEOPercentControl(0.2);
+        hoodNEOPercentControl(0.35);
       } else if (hoodNEOCurrentDraw() >= hoodCollisionAmps) {
         hoodNEOPercentControl(0);
         hoodNEOResetPos();
@@ -372,7 +372,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     //only works during teleop
     if (!Robot.isItAuto){
       // Resets the home found variable (so that button can work again)
-      if (!Gamepad1.getRawButton(7) || !Gamepad1.getRawButton(6)) {
+      if (!Gamepad1.getRawButton(6)) {
        wasHomeFound = false;
       }
       //When the shoot mode button is pressed
@@ -385,7 +385,9 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       else {
         spinFlywheelMotors(0);
         goHome();
-        hoodGoToPos(5);
+        if (wasHomeFound){
+        hoodGoToPos(-5);
+        }
       }
     }
   }

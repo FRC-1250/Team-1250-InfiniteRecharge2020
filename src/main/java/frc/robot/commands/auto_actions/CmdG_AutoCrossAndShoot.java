@@ -26,8 +26,10 @@ public class CmdG_AutoCrossAndShoot extends SequentialCommandGroup {
     // Add your commands in the super() call, e.g.
     // super(new FooCommand(), new BarCommand());
     super
-    (new Cmd_AutoDrive(s_drive, 20, 0.8, 0.8).withTimeout(15),
-    new Cmd_ShootNTimes(s_shooter, s_hopper, 3)
+    (
+      new Cmd_ShootNTimes(s_shooter, s_hopper, 3),
+      new Cmd_HoodGoToPos(s_shooter, -5),
+      new Cmd_AutoDrive(s_drive, 20, 0.8, 0.8).withTimeout(15)
     );
   }
 }

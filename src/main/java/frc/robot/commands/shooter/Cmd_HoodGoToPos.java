@@ -45,6 +45,6 @@ public class Cmd_HoodGoToPos extends CommandBase {
     double absPos = Math.abs(s_shooter.hoodPos());
     double absSetPoint = Math.abs(ticksToGo);
 
-    return ((absSetPoint - absPos) < 1);
+    return ((absPos - absSetPoint) <= 1);
   }
 }
