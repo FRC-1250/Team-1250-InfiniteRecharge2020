@@ -380,6 +380,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
         setFlywheelVelocityControl(20000);
         track();
         hoodGoToPos(-68);
+        System.out.println("SHOOTER CURRENT DRAW =" + flywheelFalconLeft.getSupplyCurrent());
       } 
       //When shootmode button is not pressed
       else {
