@@ -19,20 +19,38 @@ public class Sub_Recorder extends SubsystemBase {
   /**
    * Creates a new Sub_Recorder.
    */
-  Joystick Gamepad = new Joystick(0);
   public Sub_Recorder() {
 
   }
 
-  public void record() {
+  public FileWriter makeFile() {
     LocalDateTime date = LocalDateTime.now();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     String formattedDate = date.format(formatter);
     try {
-      FileWriter myWriter = new FileWriter("Recording-" + formattedDate + ".txt");
-      myWriter.write("Files in Java might be tricky, but it is fun enough!");
-      myWriter.close();
-      System.out.println("Successfully wrote to the file.");
+      FileWriter file = new FileWriter("Recording-" + formattedDate + ".txt");
+      return file;
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
+    return null;
+  }
+  
+  public void record(FileWriter file, Joystick joy) {
+    double lValue = -joy.getRawAxis(3);
+    double rValue = -joy.getY();
+    try {
+      file.write(lValue + "," + rValue + "\n");
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
+  }
+
+  public void closeFile(FileWriter file) {
+    try {
+      file.close();
     } catch (IOException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();
