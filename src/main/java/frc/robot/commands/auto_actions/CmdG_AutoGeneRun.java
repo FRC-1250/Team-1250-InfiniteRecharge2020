@@ -5,25 +5,20 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.panel;
+package frc.robot.commands.auto_actions;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Sub_Panel;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class CmdI_StopMotor extends InstantCommand {
-  private final Sub_Panel s_panel;
-  public CmdI_StopMotor(Sub_Panel subsystem) {
-    s_panel = subsystem;
-    addRequirements(subsystem);
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    s_panel.spinPanelMotor(0);
+public class CmdG_AutoGeneRun extends SequentialCommandGroup {
+  /**
+   * Creates a new CmdG_AutoGeneRun.
+   */
+  public CmdG_AutoGeneRun() {
+    // Add your commands in the super() call, e.g.
+    // super(new FooCommand(), new BarCommand());
+    super();
   }
 }

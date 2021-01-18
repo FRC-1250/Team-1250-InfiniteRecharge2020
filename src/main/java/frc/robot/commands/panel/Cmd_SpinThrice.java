@@ -30,7 +30,8 @@ public class Cmd_SpinThrice extends CommandBase {
   public void initialize() {
     pastColor = 'N';
     desiredColor = s_panel.getSensorColor();
-    s_panel.spinMotor(0.4);
+    s_panel.spinPanelMotor(0.4);
+    s_panel.extendCylinder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,8 +42,8 @@ public class Cmd_SpinThrice extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_panel.stopMotor();
-    s_panel.retractCylinders();
+    s_panel.spinPanelMotor(0);
+    s_panel.retractCylinder();
   }
 
   // Returns true when the command should end.
@@ -53,7 +54,7 @@ public class Cmd_SpinThrice extends CommandBase {
       if (currentColor == desiredColor && currentColor != pastColor) {
         Robot.halvesAroundPanel++;
       }
-      if (Robot.halvesAroundPanel == 7) {
+      if (Robot.halvesAroundPanel >= 7) {
         return true;
       }
       pastColor = currentColor;

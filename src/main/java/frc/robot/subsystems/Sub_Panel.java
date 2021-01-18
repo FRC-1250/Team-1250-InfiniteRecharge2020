@@ -19,6 +19,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PWMSparkMax;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -31,13 +33,15 @@ import frc.robot.utilities.*;
 
 public class Sub_Panel extends SubsystemBase implements CAN_Input {
   // Speed controllers created
-  CANSparkMax panelMotor = new CANSparkMax(Constants.PANEL_MOTOR, MotorType.kBrushless);
+  PWMSparkMax panelMotor = new PWMSparkMax(Constants.PANEL_MOTOR);
   I2C.Port i2cPort = Constants.PANEL_SENSOR_PORT;
   Solenoid panelSol = new Solenoid(Constants.PANEL_SOL);
 
   ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
   ColorMatch m_colorMatcher = new ColorMatch();
   ColorMatchResult match;
+
+  Joystick Gamepad1 = new Joystick(1);
 
   private final Color kBlueTarget = ColorMatch.makeColor(0.18, 0.46, 0.35);
   private final Color kGreenTarget = ColorMatch.makeColor(0.21, 0.53, 0.25);
@@ -55,11 +59,17 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   NetworkTableEntry isProximGood = panelTab.add("isProximityGood", "false")
     .withPosition(0, 0)
     .getEntry();
-  NetworkTableEntry curColor = panelTab.add("Cur Color", "U")
+  NetworkTableEntry halvRoundPanel = panelTab.add("Half Rnd Panel", 0)
     .withPosition(3, 0)
     .getEntry();
-  NetworkTableEntry halvRoundPanel = panelTab.add("Half Rnd Panel", 0)
+  NetworkTableEntry curColor = panelTab.add("Cur Color", "U")
     .withPosition(4, 0)
+    .getEntry();
+  NetworkTableEntry resetSensor = panelTab.add("Reset Sensor?", "false")
+    .withPosition(6, 0)
+    .getEntry();
+  NetworkTableEntry gameData = panelTab.add("Game Data", "None received")
+    .withPosition(5, 0)
     .getEntry();
 
   public ShuffleboardTab getTab() { return panelTab; }
@@ -67,7 +77,6 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   
   public Sub_Panel() {
     configureColors();
-    panelMotor.setIdleMode(IdleMode.kBrake);
   }
 
   public void setShuffleboard() {
@@ -75,13 +84,22 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     isProximGood.setString(Boolean.toString(isProximityGood()));
     curColor.setString(Character.toString(getSensorColor()));
     halvRoundPanel.setDouble((double)Robot.halvesAroundPanel);
+    gameData.setString(Character.toString(getDataFromField()));
+    resetSensor.setString(Boolean.toString(isSensorBroken()).toUpperCase());
+  }
+
+  public boolean isSensorBroken() {
+    if (getSensorColor() == 'U') {
+      return true;
+    }
+    return false;
   }
 
   public void extendCylinder() {
     panelSol.set(true);
   }
 
-  public void retractCylinders() {
+  public void retractCylinder() {
     panelSol.set(false);
   }
 
@@ -117,12 +135,12 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     return -1; 
   } 
 
-  public void spinMotor(double speed) {
-    panelMotor.set(speed);
-  }
-
-  public void stopMotor() {
-    panelMotor.set(0);
+  public void spinPanelMotor(double speed) {
+    if ((speed == 0) || (!isSensorBroken())) {
+      panelMotor.set(speed);
+    } else {
+      panelMotor.set(Gamepad1.getThrottle());
+    }
   }
 
   public void configureColors() {
@@ -152,11 +170,28 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
     } else {
       colorChar = 'U';
     }
+    /* 
+     * If the color is 'U' but proximity is working, try:
+     * 1. Power cycle (turn it off and on again)
+     * 2. Press the reset on roboRIO (but don't hold, otherwise it'll go into safe mode)
+     * 3. If nothing works, repeat steps 1-2 innumerable times until it resolves itself
+     */ 
     return colorChar;
+  }
+
+  /** To account for possible flippage of colors underneath panel (comment out if unnecessary) */
+  public char[] reverseColors(char[] colors) {
+    for(int i = 0; i < colors.length/2; i++){
+      char temp = colors[i];
+      colors[i] = colors[colors.length - i - 1];
+      colors[colors.length - i - 1] = temp;
+    }
+    return colors;
   }
 
   public char getFieldColor() {
     char[] colors = {'B', 'G', 'R', 'Y'};
+      colors = reverseColors(colors);
     char robot_sensor = getSensorColor();
     int color_index = findIndex(colors, robot_sensor) + 2;
     char real_color = colors[color_index % 4];
@@ -175,7 +210,7 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   }
 
   public boolean stopOnColor(char color) { // parameter for if you want to stop on a specific color
-    if (getProximity() > 140) {
+    if (isProximityGood()) {
       if (color == getSensorColor()) {
         return true;
       }
@@ -198,12 +233,11 @@ public class Sub_Panel extends SubsystemBase implements CAN_Input {
   }
 
   public void periodic() {
-    setShuffleboard();
+    // setShuffleboard();
   }
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();
-    myCanDevices.add(new CAN_DeviceFaults(panelMotor));
     return myCanDevices;
   }
 }

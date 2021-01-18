@@ -5,39 +5,25 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.intake;
+package frc.robot.state;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Sub_Intake;
+import frc.robot.state.Sub_StateManager;
 
-public class Cmd_Collect extends CommandBase {
-  /**
-   * Creates a new Cmd_Collect.
-   */
-  private final Sub_Intake s_intake;
-  public Cmd_Collect(Sub_Intake intake) {
-    s_intake = intake;
-    addRequirements(intake);
+public class Cmd_StateChange extends CommandBase {
+
+  private final String state;
+  private final Sub_StateManager s_stateManager;
+
+  public Cmd_StateChange(Sub_StateManager s_stateManager, String state) {
+    this.state = state;
+    this.s_stateManager = s_stateManager;
+    addRequirements(this.s_stateManager);
   }
 
   @Override
   public void initialize() {
- 
+    this.s_stateManager.setRobotSubsystemState(this.state);
   }
 
-  @Override
-  public void execute() {
-    s_intake.spinIntakeMotor(1);
-    s_intake.extendCylinder();
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    
-  }
-
-  @Override
-  public boolean isFinished() {
-    return true;
-  }
 }

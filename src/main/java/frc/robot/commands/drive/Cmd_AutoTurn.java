@@ -29,7 +29,6 @@ public class Cmd_AutoTurn extends CommandBase {
   @Override
   public void initialize() {
     s_drivetrain.resetGyro();
-    withTimeout(5);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,6 +41,7 @@ public class Cmd_AutoTurn extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     s_drivetrain.driveStop();
+    s_drivetrain.resetGyro();
   }
 
   // Returns true when the command should end.

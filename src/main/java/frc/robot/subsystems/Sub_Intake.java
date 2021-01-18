@@ -12,11 +12,14 @@ import java.util.Vector;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -26,12 +29,15 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
    */
   WPI_TalonFX intakeMotor = new WPI_TalonFX(Constants.INT_COL_MOTOR);
   Solenoid intakeSol = new Solenoid(Constants.INT_COL_SOL);
+  Joystick Gamepad0 = new Joystick(0);
+  Joystick Gamepad1 = new Joystick(1);
+
 
   // Shuffleboard
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-  NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
-  .withSize(2, 1)
-  .getEntry();
+  // NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
+  //   .withSize(2, 1)
+  //   .getEntry();
 
   public ShuffleboardTab getTab() { return intakeTab; }
   //
@@ -40,19 +46,11 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   }
 
   public void setShuffleboard() {
-    curDraw.setDouble(intakeMotor.getSupplyCurrent());
+    //curDraw.setDouble(intakeMotor.getSupplyCurrent());
   }
 
-  public void spinIntake() {
-    intakeMotor.set(0.5);
-  }
-
-  public void stopIntake() {
-    intakeMotor.set(0);
-  }
-
-  public void reverseIntake() {
-    intakeMotor.set(-0.5);
+  public void spinIntakeMotor(double speed) {
+    intakeMotor.set(-speed);
   }
 
   public void extendCylinder() {
@@ -66,8 +64,17 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setShuffleboard();
+    // setShuffleboard();
+    if (!Robot.isItAuto){
+    if  ((!Gamepad1.getRawButton(Constants.UNJAM_MODE)) ||(!Gamepad1.getRawButton(4))) {
+      extendCylinder();
+      spinIntakeMotor(0.8);
+    } else {
+      retractCylinder();
+      spinIntakeMotor(0);
+    }
   }
+}
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();

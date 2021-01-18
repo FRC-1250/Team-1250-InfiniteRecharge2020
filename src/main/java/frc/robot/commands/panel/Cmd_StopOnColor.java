@@ -15,9 +15,7 @@ public class Cmd_StopOnColor extends CommandBase {
    * Creates a new Cmd_StopOnColor.
    */
   private final Sub_Panel s_panel;
-  char color;
-  public Cmd_StopOnColor(Sub_Panel subsystem, char _color) {
-    color = _color;
+  public Cmd_StopOnColor(Sub_Panel subsystem) {
     s_panel = subsystem;
     addRequirements(subsystem);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -26,8 +24,11 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_panel.extendCylinder();
-    s_panel.spinMotor(0.15 * s_panel.bestSpinDirection(color));
+    char color = s_panel.getDataFromField();
+    if (color != 'N') {
+      s_panel.extendCylinder();
+      s_panel.spinPanelMotor(0.15 * s_panel.bestSpinDirection(color));
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,13 +39,13 @@ public class Cmd_StopOnColor extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_panel.stopMotor();
-    s_panel.retractCylinders();
+    s_panel.spinPanelMotor(0);
+    s_panel.retractCylinder();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return s_panel.stopOnColor(color);
+    return s_panel.stopOnColor(s_panel.getDataFromField());
   }
 }

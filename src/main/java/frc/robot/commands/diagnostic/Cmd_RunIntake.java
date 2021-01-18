@@ -5,31 +5,27 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.diagnostic;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.Sub_Shooter;
+import frc.robot.subsystems.Sub_Intake;
 
-public class Cmd_SpinFlywheels extends CommandBase {
-  private final Sub_Shooter s_shooter;
-  double _speed;
+public class Cmd_RunIntake extends CommandBase {
   /**
-   * @param speed Speed from 0 to 1 (1 being 100%)
+   * Creates a new Cmd_RunIntake.
    */
-  public Cmd_SpinFlywheels(Sub_Shooter shooter, double speed) {
+  private final Sub_Intake s_intake;
+  public Cmd_RunIntake(Sub_Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
-    _speed = speed;
-    s_shooter = shooter;
-    addRequirements(shooter);
+    withTimeout(1);
+    s_intake = intake;
+    addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    _speed = _speed * 22000; // converting to ticks per 100 milliseconds
-    s_shooter.setFlywheelVelocityControl(_speed);
-    s_shooter.track();
+    s_intake.spinIntakeMotor(0.3);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,7 +36,7 @@ public class Cmd_SpinFlywheels extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    s_shooter.spinFlywheelMotors(0);
+    s_intake.spinIntakeMotor(0);
   }
 
   // Returns true when the command should end.

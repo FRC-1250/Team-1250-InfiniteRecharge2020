@@ -21,14 +21,13 @@ public final class Constants {
 
     //Robot Devices----------------------------------------
 
-    // ALL DEVICES WILL HAVE TO BE PUT IN ORDER OF PHYSICAL DAISY CHAIN (CHANGE THESE LATER)
     //Sub_Drivetrain
     public static final int DRV_RIGHT_FRONT = 10;
     public static final int DRV_RIGHT_BACK = 11;
     public static final int DRV_LEFT_FRONT = 12;
     public static final int DRV_LEFT_BACK = 13;
     public static final int DRV_PIGEON = 50;
-    public static final int CLM_SOL_PTO = 1;
+    public static final int CLM_SOL_PTO = 2;
 
     //Sub_Shooter
     public static final int SHOOT_FALCON_0 = 14;
@@ -37,8 +36,8 @@ public final class Constants {
     public static final int SHOOT_HOOD = 17;
 
     //Sub_Panel
-    public static final int PANEL_MOTOR = 18;
-    public static final int PANEL_SOL = 0;
+    public static final int PANEL_MOTOR = 1; // on PWM
+    public static final int PANEL_SOL = 4;
     public static final I2C.Port PANEL_SENSOR_PORT = I2C.Port.kOnboard;
 
     //Sub_Intake
@@ -52,32 +51,68 @@ public final class Constants {
     public static final int HOP_ELE_SENS = 0;
 
     //Sub_Climber
-    public static final int CLM_SOL_EXTEND0 = 2;
-    public static final int CLM_SOL_EXTEND1 = 4;
+    public static final int CLM_SOL_EXTEND0 = 0;
+    public static final int CLM_SOL_EXTEND1 = 1;
     
     //Constants--------------------------------------------
-    public static final double DRV_GEAR_RATIO = 10;
-    public static final double DRV_WHEEL_SIZE = 6;
-    public static final double DRV_WHEEL_CIRCUMF = DRV_WHEEL_SIZE * Math.PI;
-    public static final double DRV_TICKS_TO_INCH = DRV_WHEEL_CIRCUMF / 42;
+
+    public static final double DRV_TICKS_TO_INCH = 0.532469;
 
     public static final double SHOOT_TURRET_P = 0.6;
     public static final double SHOOT_TURRET_D = 0.0;
 
-    public static final double SHOOT_TURRET_HOME = 2348;
+    public static final double SHOOT_TURRET_HOME = 2390;
     public static final double SHOOT_TURRET_LEFT_BOUND = 1120;
     public static final double SHOOT_TURRET_RIGHT_BOUND = 3560;
 
-    public static final double DRV_KP_SIMPLE_STRAIT = 0.01;
-    public static final double DRV_KP_SIMPLE = 0.05;
+    public static final double DRV_KP_SIMPLE_STRAIT = 0.08;
+    public static final double DRV_KP_SIMPLE = 0.06;
 
+    public static final double SHOOT_HOOD_P = 1;
+    public static final double SHOOT_HOOD_I = 0;
+    public static final double SHOOT_HOOD_D = 0;
+
+    public static final double SHOOT_FLYWHEEL_P = 1;
+    public static final double SHOOT_FLYWHEEL_I = 0;
+    public static final double SHOOT_FLYWHEEL_D = 0;
+    public static final double SHOOT_FLYWHEEL_F = 0.05115;
 
     public static final int LED_PWM_PORT = 9; // must be a PWM header
 
     // Buttons
-    public static final int CLIMB_MODE = 5; // LB
-    public static final int SHOOT_MODE = 9; // Back button
-    public static final int PANEL_MODE = 10; // Start button
-    public static final int COLLECT_MODE = 6;
+    public static final int CLIMB_MODE = 5;
+    public static final int SHOOT_MODE = 1;
+    public static final int PANEL_MODE = 2;
+    public static final int UNJAM_MODE = 3;
+
+    public static final int BTN_X = 1;
+    public static final int BTN_A = 2;
+    public static final int BTN_B = 3;
+    public static final int BTN_Y = 4;
+    public static final int LB = 5;
+    public static final int RB = 6;
+    public static final int LT = 7;
+    public static final int RT = 8;
+    public static final int BACK = 9;
+    public static final int START = 10;
+    public static final int LCLICK = 11;
+    public static final int RCLICK = 12;
     
+    // ALL DEVICES WILL HAVE TO BE PUT IN ORDER OF PHYSICAL DAISY CHAIN (FOR CAN DIAGNOSTICS)
+    /* 
+     * DRV_RIGHT_FRONT
+     * DRV_RIGHT_BACK
+     * PDP
+     * DRV_LEFT_BACK
+     * DRV_LEFT_FRONT
+     * PCM
+     * PANEL_MOTOR
+     * HOP_ELE_MOTOR
+     * HOP_FALCON_1
+     * SHOOT_TURRET
+     * HOP_FALCON_0
+     * SHOOT_HOOD
+     * SHOOT_FALCON_1
+     * SHOOT_FALCON_0
+     */
 }

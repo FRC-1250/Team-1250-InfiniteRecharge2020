@@ -9,11 +9,14 @@ package frc.robot.subsystems;
 
 import java.util.Vector;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utilities.*;
 
 public class Sub_Climber extends SubsystemBase implements CAN_Input {
@@ -23,35 +26,57 @@ public class Sub_Climber extends SubsystemBase implements CAN_Input {
   public Sub_Climber() {
   }
 
-  Solenoid phaseOneSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND0);
-  Solenoid phaseTwoSolenoid = new Solenoid(Constants.CLM_SOL_EXTEND1);
+  Solenoid phase1Solenoid = new Solenoid(Constants.CLM_SOL_EXTEND0);
+  Solenoid phase2Solenoid = new Solenoid(Constants.CLM_SOL_EXTEND1);
 
   ShuffleboardTab climbTab = Shuffleboard.getTab("Climber");
   public ShuffleboardTab getTab() { return climbTab; }
 
-  public void extendPhase1Cylinder() {
-    phaseOneSolenoid.set(true);
+  NetworkTableEntry Top = climbTab.add("Phase 1 (top)", "false").getEntry();
+  NetworkTableEntry Bottom = climbTab.add("Phase 2 (btm)", "false").getEntry();
+
+  Joystick Gamepad0 = new Joystick(0);
+  Joystick Gamepad2 = new Joystick(2);
+
+  public void extendTopCylinder() {
+    phase1Solenoid.set(true);
   }
 
-  public void retractPhase1Cylinder() {
-    phaseOneSolenoid.set(true);
+  public void retractTopCylinder() {
+    phase1Solenoid.set(false);
   }
 
-  public void extendPhase2Cylinder() {
-    phaseOneSolenoid.set(false);
+  public void extendBottomCylinder() {
+    phase2Solenoid.set(true);
   }
 
-  public void retractPhase2Cylinder() {
-    phaseOneSolenoid.set(false);
+  public void retractBottomCylinder() {
+    phase2Solenoid.set(false);
   }
 
   public void setShuffleboard() {
-    // add stuff
+    Top.setString(Boolean.toString(phase1Solenoid.get()));
+    Bottom.setString(Boolean.toString(phase2Solenoid.get()));
   }
 
   @Override
   public void periodic() {
-    setShuffleboard();
+    // setShuffleboard();
+    // if (Gamepad2.getRawButton(7)) { // LT
+    //   extendTopCylinder();
+    // } else if (Gamepad2.getRawButton(8)) { // RT
+    //   extendBottomCylinder();
+    // } else if (Gamepad2.getRawButton(5)){ // LB
+    //   retractTopCylinder();
+    // } else if (Gamepad2.getRawButton(6)) { // RB
+    //   retractBottomCylinder();
+    // } else if (Gamepad2.getRawButton(11)) { // LEFT CLICK
+    //   extendTopCylinder();
+    //   extendBottomCylinder();
+    // } else if (Gamepad2.getRawButton(12)) { // RIGHT CLICK
+    //   retractTopCylinder();
+    //   retractBottomCylinder();
+    // }
   }
   
   public Vector<CAN_DeviceFaults> input() {

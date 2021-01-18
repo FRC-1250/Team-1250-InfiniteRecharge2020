@@ -27,10 +27,10 @@ public class Cmd_AutoDrive extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    s_drivetrain.drivePosReset();
     s_drivetrain.resetGyro();
     s_drivetrain.setSetpointPos(distance);
     //Note in discord
-    withTimeout(15);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

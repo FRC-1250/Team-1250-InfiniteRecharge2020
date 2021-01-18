@@ -25,12 +25,13 @@ public class Cmd_StopCollect extends CommandBase {
 
   @Override
   public void initialize() {
-    s_intake.stopIntake();
-    s_intake.retractCylinder();
+   
   }
 
   @Override
   public void execute() {
+    s_intake.spinIntakeMotor(0);
+    s_intake.retractCylinder();
   }
 
   @Override
@@ -39,6 +40,6 @@ public class Cmd_StopCollect extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
