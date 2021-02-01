@@ -160,7 +160,7 @@ public class RobotContainer {
 
     dev8.whenActive(new Cmd_Collect(s_intake), false);
     dev7.whenActive(new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
-    lb.whenActive(new Cmd_StartAutoRecord(s_recorder));
+    lb.toggleWhenActive(new Cmd_StartAutoRecord(s_recorder));
     rb.whenActive(new Cmd_PlayAutoRecord(s_recorder, s_drivetrain));
     
   }

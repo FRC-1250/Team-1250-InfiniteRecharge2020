@@ -58,23 +58,29 @@ public class Cmd_PlayAutoRecord extends CommandBase {
     if (onTime) {
       try {
         line = reader.readLine();
-        nextMillis = Double.parseDouble(line.split(",")[2]);
+        if (line != null) {
+          nextMillis = Double.parseDouble(line.split(",")[2]);
+          // Line should look like "leftValue,rightValue,ms"
+        left = Double.parseDouble(line.split(",")[0]); // Splits line by comma and grabs the 0th item (which is leftValue)
+        right = Double.parseDouble(line.split(",")[1]);
+        }
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
     
-    t_delta = nextMillis - startTime;
+    //t_delta = nextMillis - (System.currentTimeMillis() - startTime);
+    t_delta = System.currentTimeMillis() - (startTime + nextMillis);
 
-    if (t_delta <= 0) {
-      // Line should look like "leftValue,rightValue,ms"
-      left = Double.parseDouble(line.split(",")[0]); // Splits line by comma and grabs the 0th item (which is leftValue)
-      right = Double.parseDouble(line.split(",")[1]);
-
-      s_drive.drive(left, right); // Since this command is executed every 20 ms, robot should drive based on values
+    s_drive.drive(left, right); // Since this command is executed every 20 ms, robot should drive based on values
+    
+    if (t_delta >= 0) {
       onTime = true;
-    } else { 
+      System.out.println("############ ONTIME IS TRUE " + "nextMillis: " + nextMillis + " t_delta: " + t_delta);
+
+    } else {
       onTime = false;
+      System.out.println("######################### ONTIME IS FALSE " + "nextMillis: " + nextMillis + " t_delta: " + t_delta);
     }
   
   }
@@ -92,6 +98,9 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (line != null) {
+      return false;
+    }
+    return true;
   }
 }

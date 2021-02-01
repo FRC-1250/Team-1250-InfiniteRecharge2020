@@ -20,6 +20,7 @@ public class Cmd_StartAutoRecord extends CommandBase {
   private Joystick Gamepad = new Joystick(0);
   private final Sub_Recorder s_recorder;
   private FileWriter file;
+  private long startTime;
   public Cmd_StartAutoRecord(Sub_Recorder recorder) {
     addRequirements(recorder);
     s_recorder = recorder;
@@ -29,13 +30,14 @@ public class Cmd_StartAutoRecord extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    startTime = System.currentTimeMillis();
     file = s_recorder.makeFile();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    s_recorder.record(file, Gamepad);
+    s_recorder.record(file, Gamepad, startTime);
   }
 
   // Called once the command ends or is interrupted.

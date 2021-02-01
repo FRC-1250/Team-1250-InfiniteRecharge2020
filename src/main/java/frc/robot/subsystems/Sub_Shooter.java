@@ -351,7 +351,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     //Periodic methods that are always needed for shooter to work-----------------------------
-    hoodNEOGoHome();
+    //hoodNEOGoHome();
     updateLimelight();
     hardStopConfiguration();
     setShuffleboard();

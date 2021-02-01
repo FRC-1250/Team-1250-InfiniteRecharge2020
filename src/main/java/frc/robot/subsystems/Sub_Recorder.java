@@ -16,9 +16,8 @@ public class Sub_Recorder extends SubsystemBase {
   /**
    * Creates a new Sub_Recorder.
    */
-  long startTime;
   public Sub_Recorder() {
-    startTime = System.currentTimeMillis();
+
   }
 
   public FileWriter makeFile() {
@@ -33,7 +32,7 @@ public class Sub_Recorder extends SubsystemBase {
   }
   
   // https://github.com/DennisMelamed/FRC-Play-Record-Macro/blob/master/FRC2220-Play-Record-Macro-DM/src/BTMacroRecord.java
-  public void record(FileWriter file, Joystick joy) {
+  public void record(FileWriter file, Joystick joy, long startTime) {
     double lValue = -joy.getRawAxis(3);
     double rValue = -joy.getY();
     try {
