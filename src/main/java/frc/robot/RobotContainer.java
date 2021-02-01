@@ -17,6 +17,8 @@ import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.commands.auto_actions.CmdG_AutoAllianceTrench;
 import frc.robot.commands.auto_actions.CmdG_AutoCrossAndShoot;
 import frc.robot.commands.auto_actions.Cmd_DoNothing;
+import frc.robot.commands.auto_actions.Cmd_PlayAutoRecord;
+import frc.robot.commands.auto_actions.Cmd_StartAutoRecord;
 import frc.robot.commands.climb.CmdI_ExtendBottomCylinder;
 import frc.robot.commands.climb.CmdI_RetractBottomCylinder;
 import frc.robot.commands.climb.CmdSG_ExtendPhases;
@@ -41,6 +43,7 @@ import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Hopper;
 import frc.robot.subsystems.Sub_Intake;
 import frc.robot.subsystems.Sub_Panel;
+import frc.robot.subsystems.Sub_Recorder;
 import frc.robot.subsystems.Sub_Shooter;
 import frc.robot.state.Sub_StateManager;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -66,6 +69,7 @@ public class RobotContainer {
   public static final Sub_Hopper s_hopper = new Sub_Hopper();
   public static final Sub_Utility s_util = new Sub_Utility();
   public static final Sub_StateManager s_stateManager = new Sub_StateManager();
+  public static final Sub_Recorder s_recorder = new Sub_Recorder();
 
   // Buttons
   public static Joystick Gamepad = new Joystick(0);
@@ -95,9 +99,14 @@ public class RobotContainer {
     public boolean get() { return !shootMode.get(); }
   };
 
-  Trigger dev6 = new Trigger() {
+  Trigger lb = new Trigger() {
     @Override
-    public boolean get() { return !Gamepad1.getRawButton(6); }
+    public boolean get() { return !Gamepad.getRawButton(5); }
+  };
+
+  Trigger rb = new Trigger() {
+    @Override
+    public boolean get() { return !Gamepad.getRawButton(6); }
   };
 
   Trigger dev7 = new Trigger() {
@@ -151,6 +160,8 @@ public class RobotContainer {
 
     dev8.whenActive(new Cmd_Collect(s_intake), false);
     dev7.whenActive(new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
+    lb.whenActive(new Cmd_StartAutoRecord(s_recorder));
+    rb.whenActive(new Cmd_PlayAutoRecord(s_recorder, s_drivetrain));
     
   }
 

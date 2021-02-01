@@ -9,26 +9,21 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Sub_Recorder extends SubsystemBase {
   /**
    * Creates a new Sub_Recorder.
    */
+  long startTime;
   public Sub_Recorder() {
-
+    startTime = System.currentTimeMillis();
   }
 
   public FileWriter makeFile() {
-    LocalDateTime date = LocalDateTime.now();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    String formattedDate = date.format(formatter);
     try {
-      FileWriter file = new FileWriter("Recording-" + formattedDate + ".txt");
+      FileWriter file = new FileWriter("/home/lvuser/autonrecord.txt");
       return file;
     } catch (IOException e) {
       System.out.println("An error occurred.");
@@ -37,11 +32,13 @@ public class Sub_Recorder extends SubsystemBase {
     return null;
   }
   
+  // https://github.com/DennisMelamed/FRC-Play-Record-Macro/blob/master/FRC2220-Play-Record-Macro-DM/src/BTMacroRecord.java
   public void record(FileWriter file, Joystick joy) {
     double lValue = -joy.getRawAxis(3);
     double rValue = -joy.getY();
     try {
-      file.write(lValue + "," + rValue + "\n");
+      // Writes motor values and millisecond difference between current and recording-start time
+      file.write(lValue + "," + rValue + "," + (System.currentTimeMillis()-startTime) + "\n");
     } catch (IOException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();

@@ -22,9 +22,16 @@ public class Cmd_PlayAutoRecord extends CommandBase {
    */
   private final Sub_Recorder s_recorder;
   private final Sub_Drivetrain s_drive;
+
   private BufferedReader reader;
   private String line;
   private double left, right;
+
+  private long startTime;
+  private double nextMillis;
+  private boolean onTime;
+  private double t_delta;
+
   public Cmd_PlayAutoRecord(Sub_Recorder recorder, Sub_Drivetrain drive) {
     addRequirements(recorder, drive);
     s_recorder = recorder;
@@ -35,30 +42,41 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    onTime = true;
+    startTime = System.currentTimeMillis();
     // Working with files necessitates try/catches basically everywhere
     try {
-      reader = new BufferedReader(new FileReader("filename.txt")); // TODO: give command a file from roboRIO
+      reader = new BufferedReader(new FileReader("/home/lvuser/autonrecord.txt"));
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+  // https://github.com/DennisMelamed/FRC-Play-Record-Macro/blob/master/FRC2220-Play-Record-Macro-DM/src/BTMacroPlay.java
   @Override
   public void execute() {
-    // https://www.journaldev.com/709/java-read-file-line-by-line
-    try {
-      line = reader.readLine();
+    if (onTime) {
+      try {
+        line = reader.readLine();
+        nextMillis = Double.parseDouble(line.split(",")[2]);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    
+    t_delta = nextMillis - startTime;
 
-      System.out.println(line); // TODO: shuffleboard alternative for println?
-      // Line should look like "leftValue,rightValue"
+    if (t_delta <= 0) {
+      // Line should look like "leftValue,rightValue,ms"
       left = Double.parseDouble(line.split(",")[0]); // Splits line by comma and grabs the 0th item (which is leftValue)
       right = Double.parseDouble(line.split(",")[1]);
 
       s_drive.drive(left, right); // Since this command is executed every 20 ms, robot should drive based on values
-    } catch (IOException e) {
-      e.printStackTrace();
+      onTime = true;
+    } else { 
+      onTime = false;
     }
+  
   }
 
   // Called once the command ends or is interrupted.
