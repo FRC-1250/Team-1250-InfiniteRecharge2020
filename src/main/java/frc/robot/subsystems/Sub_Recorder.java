@@ -12,10 +12,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.revrobotics.CANSparkMax;
+
 public class Sub_Recorder extends SubsystemBase {
   /**
    * Creates a new Sub_Recorder.
    */
+  private double[] motorVoltages = {0, 0, 0, 0};
   public Sub_Recorder() {
 
   }
@@ -32,12 +35,13 @@ public class Sub_Recorder extends SubsystemBase {
   }
   
   // https://github.com/DennisMelamed/FRC-Play-Record-Macro/blob/master/FRC2220-Play-Record-Macro-DM/src/BTMacroRecord.java
-  public void record(FileWriter file, Joystick joy, long startTime) {
-    double lValue = -joy.getRawAxis(3);
-    double rValue = -joy.getY();
+  public void record(FileWriter file, CANSparkMax[] motors, long startTime) {
+    for (int i = 0; i < motors.length; i++) {
+      motorVoltages[i] = motors[i].get();
+    }
     try {
       // Writes motor values and millisecond difference between current and recording-start time
-      file.write(lValue + "," + rValue + "," + (System.currentTimeMillis()-startTime) + "\n");
+      file.write(motorVoltages[0] + "," + motorVoltages[1] + "," + motorVoltages[2] + "," + motorVoltages[3] + "," + (System.currentTimeMillis()-startTime) + "\n");
     } catch (IOException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();

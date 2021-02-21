@@ -18,18 +18,22 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.drive.Cmd_TankDrive;
 import frc.robot.utilities.CAN_DeviceFaults;
 import frc.robot.utilities.CAN_Input;
 
@@ -54,7 +58,9 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
 
 
   //Other devices
+  // AnalogGyro gyro = new AnalogGyro(1);
   AnalogGyro gyro = new AnalogGyro(1);
+  // Gyro gyro = new ADXRS450_Gyro();
   // PigeonIMU pigeon = new PigeonIMU(1);
   Joystick Gamepad = new Joystick(0);
   Joystick Gamepad2 = new Joystick(2);
@@ -105,6 +111,8 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     driveLeftPID.setP(0.05);
     driveLeftPID.setI(0.0);
     driveLeftPID.setD(0.0);
+
+    setDefaultCommand(new Cmd_TankDrive(this));
 
   }
 
@@ -311,10 +319,33 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
   }
 
   @Override
+  public void setDefaultCommand(Command defaultCommand) {
+    super.setDefaultCommand(defaultCommand);
+  }
+
+  public double getVoltage(CANSparkMax spark) {
+    return spark.getBusVoltage();
+  }
+
+  public void setVoltage(CANSparkMax spark, double voltage) {
+    spark.setVoltage(voltage);
+  }
+
+  public CANSparkMax[] getMotors() {
+    CANSparkMax[] motors = {fRightMotor, bRightMotor, fLeftMotor, bLeftMotor};
+    return motors;
+  }
+
+  public void setMotorSpeed(CANSparkMax spark, double speed) {
+    spark.set(speed);
+  }
+
+  @Override
   public void periodic(){
     mode = RobotContainer.s_stateManager.getRobotState();
     Joystick Gamepad = new Joystick(0);
     linearDrivingAmpControl();
+    /*
     if (Gamepad.getRawButton(12)) {
       driveArcade(Gamepad);
     } else if (isPTOEngaged){
@@ -323,7 +354,7 @@ public class Sub_Drivetrain extends SubsystemBase implements CAN_Input {
     else{
       drive(Gamepad);
     }
-
+    */
     //Climber Logic
     if (RobotContainer.s_stateManager.getRobotState() == "CLIMB_MODE") {
       RobotContainer.s_panel.extendCylinder();

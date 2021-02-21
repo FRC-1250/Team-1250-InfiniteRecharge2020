@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Recorder;
@@ -25,7 +27,8 @@ public class Cmd_PlayAutoRecord extends CommandBase {
 
   private BufferedReader reader;
   private String line;
-  private double left, right;
+  private double[] motorVoltages = {0, 0, 0, 0};
+  private CANSparkMax[] motors;
 
   private long startTime;
   private double nextMillis;
@@ -34,9 +37,12 @@ public class Cmd_PlayAutoRecord extends CommandBase {
 
   public Cmd_PlayAutoRecord(Sub_Recorder recorder, Sub_Drivetrain drive) {
     addRequirements(recorder, drive);
+    /* Although this command doesn't actually use the recorder subsystem,
+      putting it here makes it so it interrupts and stops the StartAutoRecord
+      command if necessary (if driver forgets to press button to stop recording) */
     s_recorder = recorder;
     s_drive = drive;
-    // Use addRequirements() here to declare subsystem dependencies.
+    motors = s_drive.getMotors();
   }
 
   // Called when the command is initially scheduled.
@@ -59,10 +65,10 @@ public class Cmd_PlayAutoRecord extends CommandBase {
       try {
         line = reader.readLine();
         if (line != null) {
-          nextMillis = Double.parseDouble(line.split(",")[2]);
-          // Line should look like "leftValue,rightValue,ms"
-        left = Double.parseDouble(line.split(",")[0]); // Splits line by comma and grabs the 0th item (which is leftValue)
-        right = Double.parseDouble(line.split(",")[1]);
+          nextMillis = Double.parseDouble(line.split(",")[4]);
+          for (int i = 0; i < motors.length; i++) {
+            motorVoltages[i] = Double.parseDouble(line.split(",")[i]);
+          }
         }
       } catch (IOException e) {
         e.printStackTrace();
@@ -72,8 +78,10 @@ public class Cmd_PlayAutoRecord extends CommandBase {
     //t_delta = nextMillis - (System.currentTimeMillis() - startTime);
     t_delta = System.currentTimeMillis() - (startTime + nextMillis);
 
-    s_drive.drive(left, right); // Since this command is executed every 20 ms, robot should drive based on values
-    
+    for (int i = 0; i < motors.length; i++) {
+      s_drive.setMotorSpeed(motors[i], motorVoltages[i]);
+    }
+
     if (t_delta >= 0) {
       onTime = true;
       System.out.println("############ ONTIME IS TRUE " + "nextMillis: " + nextMillis + " t_delta: " + t_delta);
