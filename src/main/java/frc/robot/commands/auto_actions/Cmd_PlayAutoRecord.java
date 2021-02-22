@@ -22,8 +22,8 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   /**
    * Creates a new Cmd_PlayAutoRecord.
    */
-  private final Sub_Recorder s_recorder;
   private final Sub_Drivetrain s_drive;
+  private final Sub_Recorder s_recorder;
 
   private BufferedReader reader;
   private String line;
@@ -35,14 +35,17 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   private boolean onTime;
   private double t_delta;
 
+  private String filename;
+  private String fullfile;
+
   public Cmd_PlayAutoRecord(Sub_Recorder recorder, Sub_Drivetrain drive) {
     addRequirements(recorder, drive);
-    /* Although this command doesn't actually use the recorder subsystem,
-      putting it here makes it so it interrupts and stops the StartAutoRecord
-      command if necessary (if driver forgets to press button to stop recording) */
-    s_recorder = recorder;
     s_drive = drive;
+    s_recorder = recorder;
+
     motors = s_drive.getMotors();
+    filename = s_recorder.getFilenameToPlay();
+    fullfile = s_recorder.getDirPath() + filename + ".txt";
   }
 
   // Called when the command is initially scheduled.
@@ -50,11 +53,12 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   public void initialize() {
     onTime = true;
     startTime = System.currentTimeMillis();
-    // Working with files necessitates try/catches basically everywhere
+
     try {
-      reader = new BufferedReader(new FileReader("/home/lvuser/autonrecord.txt"));
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      // Working with files necessitates try/catches basically everywhere
+      reader = new BufferedReader(new FileReader(fullfile));
+    } catch (Exception e) {
+      end(true);
     }
   }
 
@@ -75,7 +79,6 @@ public class Cmd_PlayAutoRecord extends CommandBase {
       }
     }
     
-    //t_delta = nextMillis - (System.currentTimeMillis() - startTime);
     t_delta = System.currentTimeMillis() - (startTime + nextMillis);
 
     for (int i = 0; i < motors.length; i++) {
@@ -84,11 +87,9 @@ public class Cmd_PlayAutoRecord extends CommandBase {
 
     if (t_delta >= 0) {
       onTime = true;
-      System.out.println("############ ONTIME IS TRUE " + "nextMillis: " + nextMillis + " t_delta: " + t_delta);
 
     } else {
       onTime = false;
-      System.out.println("######################### ONTIME IS FALSE " + "nextMillis: " + nextMillis + " t_delta: " + t_delta);
     }
   
   }
@@ -101,6 +102,7 @@ public class Cmd_PlayAutoRecord extends CommandBase {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    s_recorder.setLastPlayed(filename);
   }
 
   // Returns true when the command should end.

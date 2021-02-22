@@ -9,7 +9,6 @@ package frc.robot.commands.auto_actions;
 
 import java.io.FileWriter;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Recorder;
@@ -22,18 +21,24 @@ public class Cmd_StartAutoRecord extends CommandBase {
   private final Sub_Drivetrain s_drive;
   private FileWriter file;
   private long startTime;
+
+  private String filename;
+  private String fullfile;
+
   public Cmd_StartAutoRecord(Sub_Recorder recorder, Sub_Drivetrain drive) {
     addRequirements(recorder);
     s_recorder = recorder;
     s_drive = drive;
-    // Use addRequirements() here to declare subsystem dependencies.
+
+    filename = recorder.getFilenameToMake();
+    fullfile = recorder.getDirPath() + recorder.getFilenameToMake() + ".txt";
   }
   
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     startTime = System.currentTimeMillis();
-    file = s_recorder.makeFile();
+    file = s_recorder.makeFile(fullfile);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,6 +51,7 @@ public class Cmd_StartAutoRecord extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     s_recorder.closeFile(file);
+    s_recorder.updateFileChooserOptions(filename);
   }
 
   // Returns true when the command should end.
