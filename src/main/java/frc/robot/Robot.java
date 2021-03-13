@@ -10,16 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import java.io.File;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
@@ -42,10 +35,6 @@ public class Robot extends TimedRobot {
   public static AddressableLEDBuffer ledStripBuffer;
 
   SendableChooser<String> autoChooser = new SendableChooser<String>();
-  public static SendableChooser<String> fileChooser = new SendableChooser<>();
-  ShuffleboardTab recorderTab = Shuffleboard.getTab("Recorder");
-  ComplexWidget toPlayFilename = recorderTab.add("File Name (To Play Next)", Robot.fileChooser).withWidget(BuiltInWidgets.kComboBoxChooser)
-  .withPosition(0, 2).withSize(3, 1);
 
   @Override
   public void robotInit() {
@@ -57,11 +46,6 @@ public class Robot extends TimedRobot {
 
     autoChooser.setDefaultOption("Straight_Shot", "Straight_Shot");
     autoChooser.addOption("Whip", "Whip");
-    SmartDashboard.putData(autoChooser);
-
-    /* Auton Playback */
-    addFileChooserOptions();
-    SmartDashboard.putData(fileChooser);
 
       /* LEDS */
     ledStrip = new AddressableLED(Constants.LED_PWM_PORT);
@@ -75,30 +59,6 @@ public class Robot extends TimedRobot {
     RobotContainer.s_util.initTime = System.currentTimeMillis();
 
     ledStrip.start();
-  }
-
-  // Happens on startup; adds pre-existing files to Shuffleboard chooser
-  public void addFileChooserOptions() {
-    File folder = new File(RobotContainer.s_recorder.getDirPath());
-    String[] listOfFiles = folder.list();
-    for (String file : listOfFiles) {
-      Robot.fileChooser.addOption(file, file);
-    }
-    Robot.fileChooser.addOption("manualtest", "manualtest");
-  }
-
-  // Called when StartAutoRecord ends; adds the newly recorded file as a Shuffleboard option
-  public static void updateFileChooserOptions(String filename) {
-    Robot.fileChooser.addOption(filename, filename);
-
-    // If the user doesn't select a dropdown option, this should by default play the last recorded file
-    Robot.fileChooser.setDefaultOption("", filename);
-  }
-
-  // Used to play back file in PlayAutoRecord; if the "toPlay" filename is left blank in Shuffleboard, the last recorded file is played
-  public static String getFilenameToPlay() {
-    return Robot.fileChooser.getSelected();
-    //return "test0";
   }
 
   /**

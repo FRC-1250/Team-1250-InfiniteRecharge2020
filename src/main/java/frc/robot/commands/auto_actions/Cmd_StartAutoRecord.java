@@ -10,7 +10,6 @@ package frc.robot.commands.auto_actions;
 import java.io.FileWriter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Recorder;
 
@@ -32,14 +31,14 @@ public class Cmd_StartAutoRecord extends CommandBase {
     s_drive = drive;
 
     filename = recorder.getFilenameToMake();
-    fullfile = recorder.getDirPath() + recorder.getFilenameToMake();
+    fullfile = recorder.getDirPath() + recorder.getFilenameToMake() + ".txt";
   }
   
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     startTime = System.currentTimeMillis();
-    file = s_recorder.makeFile(filename);
+    file = s_recorder.makeFile(fullfile);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,7 +51,7 @@ public class Cmd_StartAutoRecord extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     s_recorder.closeFile(file);
-    Robot.updateFileChooserOptions(filename);
+    s_recorder.updateFileChooserOptions(filename);
   }
 
   // Returns true when the command should end.

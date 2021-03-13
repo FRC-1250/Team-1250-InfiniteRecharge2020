@@ -15,7 +15,6 @@ import java.io.IOException;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.subsystems.Sub_Drivetrain;
 import frc.robot.subsystems.Sub_Recorder;
 
@@ -45,8 +44,8 @@ public class Cmd_PlayAutoRecord extends CommandBase {
     s_recorder = recorder;
 
     motors = s_drive.getMotors();
-    filename = Robot.getFilenameToPlay();
-    fullfile = s_recorder.getDirPath() + filename;
+    filename = s_recorder.getFilenameToPlay();
+    fullfile = s_recorder.getDirPath() + filename + ".txt";
   }
 
   // Called when the command is initially scheduled.
@@ -54,11 +53,12 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   public void initialize() {
     onTime = true;
     startTime = System.currentTimeMillis();
+
     try {
       // Working with files necessitates try/catches basically everywhere
       reader = new BufferedReader(new FileReader(fullfile));
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      end(true);
     }
   }
 
