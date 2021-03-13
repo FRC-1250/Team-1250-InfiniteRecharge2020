@@ -13,7 +13,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
+import frc.robot.commands.auto_actions.Cmd_DoNothing;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,24 +32,20 @@ public class Sub_Recorder extends SubsystemBase {
 
   private double[] motorVoltages = {0, 0, 0, 0};
 
-  SendableChooser<String> fileChooser = new SendableChooser<String>();
-
   ShuffleboardTab recorderTab = Shuffleboard.getTab("Recorder");
   NetworkTableEntry toRecordFilename = recorderTab.add("File Name (To Record Next)", "untitled")
     .withPosition(0, 0).withSize(3, 1).getEntry();
   NetworkTableEntry lastPlayedFilename = recorderTab.add("File Name (Last Played)", "")
     .withPosition(0, 1).withSize(3, 1).getEntry();
-  ComplexWidget toPlayFilename = recorderTab.add("File Name (To Play Next)", fileChooser).withWidget(BuiltInWidgets.kComboBoxChooser)
-    .withPosition(0, 2).withSize(3, 1);
+  //ComplexWidget toPlayFilename = recorderTab.add("File Name (To Play Next)", Robot.fileChooser).withWidget(BuiltInWidgets.kComboBoxChooser)
+  //  .withPosition(0, 2).withSize(3, 1);
   
   public Sub_Recorder() {
-    addFileChooserOptions();
   }
 
-  // TODO: create "auton_record" folder in the RIO
   public FileWriter makeFile(String filename) {
     try {
-      FileWriter file = new FileWriter(getDirPath() + filename + ".txt");
+      FileWriter file = new FileWriter(getDirPath() + filename);
       return file;
     } catch (IOException e) {
       System.out.println("An error occurred.");
@@ -83,9 +83,10 @@ public class Sub_Recorder extends SubsystemBase {
   }
 
   // Used to play back file in PlayAutoRecord; if the "toPlay" filename is left blank in Shuffleboard, the last recorded file is played
-  public String getFilenameToPlay() {
-    return fileChooser.getSelected();
-  }
+  // public String getFilenameToPlay() {
+  //   return Robot.fileChooser.getSelected();
+  //   //return "test0";
+  // }
 
   // Updates the "File Name (Last Played)" on Shuffleboard
   public void setLastPlayed(String filename) {
@@ -96,22 +97,23 @@ public class Sub_Recorder extends SubsystemBase {
     return "/home/lvuser/auton_record/";
   }
 
-  // Happens on startup; adds pre-existing files to Shuffleboard chooser
-  public void addFileChooserOptions() {
-    File folder = new File(getDirPath());
-    String[] listOfFiles = folder.list();
-    for (String file : listOfFiles) {
-      fileChooser.addOption(file, file);
-    }
-  }
+  // // Happens on startup; adds pre-existing files to Shuffleboard chooser
+  // public void addFileChooserOptions() {
+  //   File folder = new File(getDirPath());
+  //   String[] listOfFiles = folder.list();
+  //   for (String file : listOfFiles) {
 
-  // Called when StartAutoRecord ends; adds the newly recorded file as a Shuffleboard option
-  public void updateFileChooserOptions(String filename) {
-    fileChooser.addOption(filename, filename);
+  //     Robot.fileChooser.addOption(file, file);
+  //   }
+  // }
 
-    // If the user doesn't select a dropdown option, this should by default play the last recorded file
-    fileChooser.setDefaultOption("", filename);
-  }
+  // // Called when StartAutoRecord ends; adds the newly recorded file as a Shuffleboard option
+  // public void updateFileChooserOptions(String filename) {
+  //   Robot.fileChooser.addOption(filename, filename);
+
+  //   // If the user doesn't select a dropdown option, this should by default play the last recorded file
+  //   Robot.fileChooser.setDefaultOption("", filename);
+  // }
 
   @Override
   public void periodic() {
