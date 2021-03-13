@@ -11,11 +11,14 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.commands.panel.Cmd_DeployCylinder;
 import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.commands.auto_actions.CmdG_AutoAllianceTrench;
 import frc.robot.commands.auto_actions.CmdG_AutoCrossAndShoot;
+import frc.robot.commands.auto_actions.CmdI_StopRecord;
 import frc.robot.commands.auto_actions.Cmd_DoNothing;
 import frc.robot.commands.auto_actions.Cmd_PlayAutoRecord;
 import frc.robot.commands.auto_actions.Cmd_StartAutoRecord;
@@ -126,6 +129,12 @@ public class RobotContainer {
     configureButtonBindings();
     // s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
     s_stateManager.setDefaultCommand(new Cmd_StateChange(s_stateManager, RobotState.COLLECT_MODE.toString()));
+
+    ShuffleboardTab recorderTab = Shuffleboard.getTab("Recorder");
+    s_recorder.addFileChooserOptions();
+    recorderTab.add("Start record", new Cmd_StartAutoRecord(s_recorder, s_drivetrain)).withPosition(2, 0).withSize(2, 1);
+    recorderTab.add("Playback record", new Cmd_PlayAutoRecord(s_recorder, s_drivetrain)).withPosition(2, 1).withSize(2, 1);
+    recorderTab.add("Stop playback", new CmdI_StopRecord(s_recorder)).withPosition(2, 2).withSize(2, 1);
   }
 
   /**

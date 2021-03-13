@@ -32,14 +32,13 @@ public class Sub_Recorder extends SubsystemBase {
 
   ShuffleboardTab recorderTab = Shuffleboard.getTab("Recorder");
   NetworkTableEntry toRecordFilename = recorderTab.add("File Name (To Record Next)", "untitled")
-    .withPosition(0, 0).withSize(3, 1).getEntry();
+    .withPosition(0, 0).withSize(2, 1).getEntry();
   NetworkTableEntry lastPlayedFilename = recorderTab.add("File Name (Last Played)", "")
-    .withPosition(0, 1).withSize(3, 1).getEntry();
+    .withPosition(0, 1).withSize(2, 1).getEntry();
   ComplexWidget toPlayFilename = recorderTab.add("File Name (To Play Next)", fileChooser).withWidget(BuiltInWidgets.kComboBoxChooser)
-    .withPosition(0, 2).withSize(3, 1);
+    .withPosition(0, 2).withSize(2, 1);
   
   public Sub_Recorder() {
-    addFileChooserOptions();
   }
 
   // TODO: create "auton_record" folder in the RIO

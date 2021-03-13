@@ -21,22 +21,18 @@ public class Cmd_StartAutoRecord extends CommandBase {
   private final Sub_Drivetrain s_drive;
   private FileWriter file;
   private long startTime;
-
-  private String filename;
   private String fullfile;
 
   public Cmd_StartAutoRecord(Sub_Recorder recorder, Sub_Drivetrain drive) {
     addRequirements(recorder);
     s_recorder = recorder;
     s_drive = drive;
-
-    filename = recorder.getFilenameToMake();
-    fullfile = recorder.getDirPath() + recorder.getFilenameToMake() + ".txt";
   }
   
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    fullfile = s_recorder.getDirPath() + s_recorder.getFilenameToMake() + ".txt";
     startTime = System.currentTimeMillis();
     file = s_recorder.makeFile(fullfile);
   }
@@ -51,7 +47,7 @@ public class Cmd_StartAutoRecord extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     s_recorder.closeFile(file);
-    s_recorder.updateFileChooserOptions(filename);
+    s_recorder.addFileChooserOptions();
   }
 
   // Returns true when the command should end.

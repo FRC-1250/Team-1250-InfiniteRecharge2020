@@ -35,22 +35,20 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   private boolean onTime;
   private double t_delta;
 
-  private String filename;
   private String fullfile;
 
   public Cmd_PlayAutoRecord(Sub_Recorder recorder, Sub_Drivetrain drive) {
     addRequirements(recorder, drive);
     s_drive = drive;
     s_recorder = recorder;
-
-    motors = s_drive.getMotors();
-    filename = s_recorder.getFilenameToPlay();
-    fullfile = s_recorder.getDirPath() + filename + ".txt";
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    motors = s_drive.getMotors();
+    fullfile = s_recorder.getDirPath() + s_recorder.getFilenameToPlay() + ".txt";
+
     onTime = true;
     startTime = System.currentTimeMillis();
 
@@ -102,7 +100,7 @@ public class Cmd_PlayAutoRecord extends CommandBase {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    s_recorder.setLastPlayed(filename);
+    s_recorder.setLastPlayed(s_recorder.getFilenameToPlay());
   }
 
   // Returns true when the command should end.
