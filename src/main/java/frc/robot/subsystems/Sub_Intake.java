@@ -35,7 +35,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
 
   // Shuffleboard
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-  NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
+  NetworkTableEntry curDraw = intakeTab.add("Intake Speed", 0)
     .withSize(2, 1)
     .getEntry();
 
@@ -47,7 +47,7 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
   }
 
   public void setShuffleboard() {
-    curDraw.setDouble(intakeMotor.getSupplyCurrent());
+    curDraw.setDouble(intakeMotor.get());
   }
 
   public void spinIntakeMotor(double speed) {
@@ -64,18 +64,8 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // setShuffleboard();
-    if (!Robot.isItAuto){
-    if  ((!Gamepad1.getRawButton(Constants.UNJAM_MODE)) ||(!Gamepad1.getRawButton(4))) {
-      //extendCylinder();
-      //spinIntakeMotor(0.8);
-    } else {
-      // retractCylinder();
-      // spinIntakeMotor(0);
-    }
+    setShuffleboard();
   }
-}
 
   public Vector<CAN_DeviceFaults> input() {
     Vector<CAN_DeviceFaults> myCanDevices = new Vector<CAN_DeviceFaults>();

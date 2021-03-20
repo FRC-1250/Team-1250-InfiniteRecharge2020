@@ -16,7 +16,6 @@ import frc.robot.subsystems.Sub_Hopper;
 public class Cmd_HopperManagement extends CommandBase {
   
   private final Sub_Hopper s_hopper;
-  private Joystick Gamepad0 = RobotContainer.Gamepad;
   public Cmd_HopperManagement(Sub_Hopper hopper) {
     s_hopper = hopper;
     addRequirements(hopper);
@@ -28,29 +27,17 @@ public class Cmd_HopperManagement extends CommandBase {
 
   @Override
   public void execute() {
-    if (Gamepad0.getRawButton(Constants.BTN_X)) {
-      if (!s_hopper.getSensor()) {
-        s_hopper.spinHopperMotors(0.4);
-        s_hopper.spinUptakeMotor(0.4);
-      } else {
-        s_hopper.spinHopperMotors(0.2);
-        s_hopper.spinUptakeMotor(0);
-      }
+    if (s_hopper.getSensor()) {
+      s_hopper.alwaysSpinHopper();
+      s_hopper.spinUptakeMotor(0);
     } else {
-      if (!s_hopper.getSensor()) {
-        s_hopper.spinHopperMotors(0.4);
-        s_hopper.spinUptakeMotor(0.4);
-      } else {
-        s_hopper.alwaysSpinHopper();
-        s_hopper.spinUptakeMotor(0);
-      }
+      s_hopper.spinHopperMotors(0.2);
+      s_hopper.spinUptakeMotor(0.4);
     }
   }
 
   @Override
   public void end(boolean interrupted) {
-    s_hopper.spinHopperMotors(0);
-    s_hopper.spinUptakeMotor(0);
   }
 
   @Override

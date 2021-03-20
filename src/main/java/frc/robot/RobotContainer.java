@@ -176,9 +176,9 @@ public class RobotContainer {
     // dev7.whenActive(new Cmd_HoodGoToPos(s_shooter, -2), true);
 
     start.whileActiveOnce(new Cmd_SpinFlywheels(s_shooter, 1), true);
-    //start.whileActiveOnce(new Cmd_Track(s_shooter), true);
+
     back.whileActiveOnce(new Cmd_ShootCells(s_hopper), true);
-    //dev6.whenActive(new Cmd_Collect(s_intake), false);
+
     dev7.whenActive(new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
 
     // x.toggleWhenActive(new Cmd_Collect(s_intake), false);

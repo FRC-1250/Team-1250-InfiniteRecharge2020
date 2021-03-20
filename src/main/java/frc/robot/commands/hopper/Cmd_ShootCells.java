@@ -34,8 +34,6 @@ public class Cmd_ShootCells extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    s_hopper.spinHopperMotors(0);
-    s_hopper.spinUptakeMotor(0);
   }
 
   @Override
