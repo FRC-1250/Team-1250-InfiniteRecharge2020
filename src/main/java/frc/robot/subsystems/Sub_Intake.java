@@ -35,18 +35,19 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
 
   // Shuffleboard
   ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
-  // NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
-  //   .withSize(2, 1)
-  //   .getEntry();
+  NetworkTableEntry curDraw = intakeTab.add("Intake Current Draw", 0)
+    .withSize(2, 1)
+    .getEntry();
 
   public ShuffleboardTab getTab() { return intakeTab; }
   //
 
   public Sub_Intake() {
+    retractCylinder();
   }
 
   public void setShuffleboard() {
-    //curDraw.setDouble(intakeMotor.getSupplyCurrent());
+    curDraw.setDouble(intakeMotor.getSupplyCurrent());
   }
 
   public void spinIntakeMotor(double speed) {
@@ -67,11 +68,11 @@ public class Sub_Intake extends SubsystemBase implements CAN_Input {
     // setShuffleboard();
     if (!Robot.isItAuto){
     if  ((!Gamepad1.getRawButton(Constants.UNJAM_MODE)) ||(!Gamepad1.getRawButton(4))) {
-      extendCylinder();
-      spinIntakeMotor(0.8);
+      //extendCylinder();
+      //spinIntakeMotor(0.8);
     } else {
-      retractCylinder();
-      spinIntakeMotor(0);
+      // retractCylinder();
+      // spinIntakeMotor(0);
     }
   }
 }

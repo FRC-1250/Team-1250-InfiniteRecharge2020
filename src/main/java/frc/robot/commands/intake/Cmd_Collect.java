@@ -33,11 +33,10 @@ public class Cmd_Collect extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    
   }
 
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

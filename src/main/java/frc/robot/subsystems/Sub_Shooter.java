@@ -351,7 +351,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     //Periodic methods that are always needed for shooter to work-----------------------------
-    //hoodNEOGoHome();
+    hoodNEOGoHome();
     updateLimelight();
     hardStopConfiguration();
     setShuffleboard();
@@ -362,12 +362,12 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
 
     //Sets the bool readyToFire to true or false
     //Determined by RPM and whether or not a ball is loaded
-    if(getFlyWheelSpeed() > 19000 && RobotContainer.s_hopper.getSensor()){
-      readyToFire = true;
-    }
-    else{
-      readyToFire = false;
-    }
+    // if(getFlyWheelSpeed() > 19000 && RobotContainer.s_hopper.getSensor()){
+    //   readyToFire = true;
+    // }
+    // else{
+    //   readyToFire = false;
+    // }
 
     //only works during teleop
     if (!Robot.isItAuto){
@@ -376,20 +376,20 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
        wasHomeFound = false;
       }
       //When the shoot mode button is pressed
-      if (mode == "SHOOT_MODE") {
-        setFlywheelVelocityControl(20000);
-        track();
-        hoodGoToPos(-68);
-        System.out.println("SHOOTER CURRENT DRAW =" + flywheelFalconLeft.getSupplyCurrent());
-      } 
-      //When shootmode button is not pressed
-      else {
-        spinFlywheelMotors(0);
-        goHome();
-        if (wasHomeFound){
-        hoodGoToPos(-5);
-        }
-      }
+      // if (mode == "SHOOT_MODE") {
+      //   setFlywheelVelocityControl(20000);
+      //   //track();
+      //   hoodGoToPos(-68);
+      //   System.out.println("SHOOTER CURRENT DRAW =" + flywheelFalconLeft.getSupplyCurrent());
+      // } 
+      // //When shootmode button is not pressed
+      // else {
+      //   spinFlywheelMotors(0);
+      //   goHome();
+      //   if (wasHomeFound){
+      //   hoodGoToPos(-5);
+      //   }
+      // }
     }
   }
 

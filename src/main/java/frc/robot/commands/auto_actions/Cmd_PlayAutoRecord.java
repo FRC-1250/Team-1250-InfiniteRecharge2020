@@ -8,7 +8,6 @@
 package frc.robot.commands.auto_actions;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -47,7 +46,7 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   @Override
   public void initialize() {
     motors = s_drive.getMotors();
-    fullfile = s_recorder.getDirPath() + s_recorder.getFilenameToPlay() + ".txt";
+    fullfile = s_recorder.getDirPath() + s_recorder.getFilenameToPlay();
 
     onTime = true;
     startTime = System.currentTimeMillis();
@@ -95,11 +94,6 @@ public class Cmd_PlayAutoRecord extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    try {
-      reader.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
     s_recorder.setLastPlayed(s_recorder.getFilenameToPlay());
   }
 

@@ -279,7 +279,6 @@ public class Sub_Utility extends SubsystemBase implements CAN_Input {
   @Override
   public void periodic() {
     setShuffleboard();
-    checkSpinThrice();
-    // makeTestCommands();
+    //checkSpinThrice();
   }
 }

@@ -41,10 +41,9 @@ public class Sub_Recorder extends SubsystemBase {
   public Sub_Recorder() {
   }
 
-  // TODO: create "auton_record" folder in the RIO
   public FileWriter makeFile(String filename) {
     try {
-      FileWriter file = new FileWriter(getDirPath() + filename + ".txt");
+      FileWriter file = new FileWriter(getDirPath() + filename);
       return file;
     } catch (IOException e) {
       System.out.println("An error occurred.");
@@ -92,7 +91,7 @@ public class Sub_Recorder extends SubsystemBase {
   }
 
   public String getDirPath() {
-    return "/home/lvuser/auton_record/";
+    return "/home/lvuser/auton_record/"; 
   }
 
   // Happens on startup; adds pre-existing files to Shuffleboard chooser
@@ -109,7 +108,7 @@ public class Sub_Recorder extends SubsystemBase {
     fileChooser.addOption(filename, filename);
 
     // If the user doesn't select a dropdown option, this should by default play the last recorded file
-    fileChooser.setDefaultOption("", filename);
+    fileChooser.setDefaultOption("Last Recorded", filename);
   }
 
   @Override

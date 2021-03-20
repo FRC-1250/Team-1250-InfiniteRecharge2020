@@ -40,6 +40,6 @@ public class Cmd_StopCollect extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

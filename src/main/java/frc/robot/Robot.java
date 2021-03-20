@@ -76,9 +76,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    if (RobotContainer.s_util.checkCAN()) {
-      ledStrip.setData(ledStripBuffer);
-    }
+    //if (RobotContainer.s_util.checkCAN()) {
+    //  ledStrip.setData(ledStripBuffer);
+    //}
   }
 
   /**
@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    RobotContainer.s_drivetrain.idleMode(IdleMode.kCoast);
+    RobotContainer.s_drivetrain.idleMode(IdleMode.kBrake);
   }
 
   @Override

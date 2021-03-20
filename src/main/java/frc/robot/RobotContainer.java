@@ -18,7 +18,6 @@ import frc.robot.commands.panel.Cmd_SpinThrice;
 import frc.robot.commands.panel.Cmd_StopOnColor;
 import frc.robot.commands.auto_actions.CmdG_AutoAllianceTrench;
 import frc.robot.commands.auto_actions.CmdG_AutoCrossAndShoot;
-import frc.robot.commands.auto_actions.CmdI_StopRecord;
 import frc.robot.commands.auto_actions.Cmd_DoNothing;
 import frc.robot.commands.auto_actions.Cmd_PlayAutoRecord;
 import frc.robot.commands.auto_actions.Cmd_StartAutoRecord;
@@ -34,6 +33,7 @@ import frc.robot.commands.shooter.Cmd_ShootNTimes;
 import frc.robot.commands.shooter.Cmd_SpinFlywheels;
 import frc.robot.commands.shooter.Cmd_ToggleLL;
 import frc.robot.commands.shooter.Cmd_Track;
+import frc.robot.commands.shooter.Cmd_TurretGoHome;
 import frc.robot.state.Cmd_StateChange;
 import frc.robot.commands.intake.CmdI_Collect;
 import frc.robot.commands.intake.Cmd_Collect;
@@ -81,6 +81,8 @@ public class RobotContainer {
   private static JoystickButton a = new JoystickButton(Gamepad, 2);
   private static JoystickButton b = new JoystickButton(Gamepad, 3);
   private static JoystickButton y = new JoystickButton(Gamepad, 4);
+  private static JoystickButton back = new JoystickButton(Gamepad, 9);
+  private static JoystickButton start = new JoystickButton(Gamepad, 10);
   private static JoystickButton unjam = new JoystickButton(Gamepad1, 3);
   public static JoystickButton panelMode = new JoystickButton(Gamepad1, Constants.PANEL_MODE);
   public static JoystickButton shootMode = new JoystickButton(Gamepad1, Constants.SHOOT_MODE);
@@ -117,6 +119,11 @@ public class RobotContainer {
     public boolean get() { return !Gamepad1.getRawButton(7); }
   };
 
+  Trigger dev6 = new Trigger() {
+    @Override
+    public boolean get() { return !Gamepad1.getRawButton(6); }
+  };
+
   Trigger dev8 = new Trigger() {
     @Override
     public boolean get() { return !Gamepad1.getRawButton(8); }
@@ -127,14 +134,13 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureButtonBindings();
-    // s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
+    s_hopper.setDefaultCommand(new Cmd_HopperManagement(s_hopper));
     s_stateManager.setDefaultCommand(new Cmd_StateChange(s_stateManager, RobotState.COLLECT_MODE.toString()));
 
     ShuffleboardTab recorderTab = Shuffleboard.getTab("Recorder");
     s_recorder.addFileChooserOptions();
     recorderTab.add("Start record", new Cmd_StartAutoRecord(s_recorder, s_drivetrain)).withPosition(2, 0).withSize(2, 1);
     recorderTab.add("Playback record", new Cmd_PlayAutoRecord(s_recorder, s_drivetrain)).withPosition(2, 1).withSize(2, 1);
-    recorderTab.add("Stop playback", new CmdI_StopRecord(s_recorder)).withPosition(2, 2).withSize(2, 1);
   }
 
   /**
@@ -153,24 +159,32 @@ public class RobotContainer {
     shoot.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.SHOOT_MODE.toString()), false);
     climbMode.whileActiveOnce(new Cmd_StateChange(s_stateManager, RobotState.CLIMB_MODE.toString()), false);
 
-    // whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_SpinFlywheels(s_shooter, 1), true);
-    // whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_ShootCells(s_hopper), true);
+
+    whenTriggerPressed(RobotState.SHOOT_MODE, null, new Cmd_SpinFlywheels(s_shooter, 1), true);
+    whenTriggerPressed(RobotState.SHOOT_MODE, x, new Cmd_ShootCells(s_hopper), true);
+    whenTriggerPressed(RobotState.SHOOT_MODE, b, new Cmd_TurretGoHome(s_shooter), true);
     // whenTriggerPressed(RobotState.CLIMB_MODE, null, new Cmd_DeployCylinder(s_panel), true);
-    whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
-    whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
-    whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
-    // whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
-    // whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
+    // whenTriggerPressed(RobotState.PANEL_MODE, x, new Cmd_SpinThrice(s_panel), false);
+    // whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
+    // whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
+    whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
+    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
     // whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), true);
     // whenTriggerPressed(RobotState.CLIMB_MODE, b, new CmdSG_RetractPhases(s_drivetrain, s_climb), true);
     // whenTriggerPressed(mode, button, command, interruptible);
     // dev6.whenActive(new Cmd_HoodGoToPos(s_shooter, -150), false);
     // dev7.whenActive(new Cmd_HoodGoToPos(s_shooter, -2), true);
 
-    dev8.whenActive(new Cmd_Collect(s_intake), false);
+    start.whileActiveOnce(new Cmd_SpinFlywheels(s_shooter, 1), true);
+    start.whileActiveOnce(new Cmd_Track(s_shooter), true);
+    back.whileActiveOnce(new Cmd_ShootCells(s_hopper), true);
+    //dev6.whenActive(new Cmd_Collect(s_intake), false);
     dev7.whenActive(new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
+
+    // x.toggleWhenActive(new Cmd_Collect(s_intake), false);
+    // b.whenActive(new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
     lb.toggleWhenActive(new Cmd_StartAutoRecord(s_recorder, s_drivetrain));
-    rb.whenActive(new Cmd_PlayAutoRecord(s_recorder, s_drivetrain));
+    rb.toggleWhenActive(new Cmd_PlayAutoRecord(s_recorder, s_drivetrain));
     
   }
 
