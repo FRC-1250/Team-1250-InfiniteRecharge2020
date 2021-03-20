@@ -41,6 +41,7 @@ public class Cmd_SpinFlywheels extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     s_shooter.spinFlywheelMotors(0);
+    s_shooter.spinTurretMotor(0);
   }
 
   // Returns true when the command should end.

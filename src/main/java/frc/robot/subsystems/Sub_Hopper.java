@@ -84,6 +84,11 @@ public class Sub_Hopper extends SubsystemBase implements CAN_Input {
     uptakeMotor.set(speed);
   }
 
+  public void alwaysSpinHopper() {
+    leftMotor.set(0.1);
+    rightMotor.set(0.1);
+  }
+
   public double getVelocity(WPI_TalonFX motor){
     return motor.getSelectedSensorVelocity();
   }

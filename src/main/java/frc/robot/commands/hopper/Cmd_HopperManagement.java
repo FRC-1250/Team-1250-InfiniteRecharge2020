@@ -9,6 +9,7 @@ package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Sub_Hopper;
 
@@ -27,12 +28,20 @@ public class Cmd_HopperManagement extends CommandBase {
 
   @Override
   public void execute() {
-    if (Gamepad0.getRawButton(1)) {
+    if (Gamepad0.getRawButton(Constants.BTN_X)) {
       if (!s_hopper.getSensor()) {
         s_hopper.spinHopperMotors(0.4);
         s_hopper.spinUptakeMotor(0.4);
       } else {
         s_hopper.spinHopperMotors(0.2);
+        s_hopper.spinUptakeMotor(0);
+      }
+    } else {
+      if (!s_hopper.getSensor()) {
+        s_hopper.spinHopperMotors(0.4);
+        s_hopper.spinUptakeMotor(0.4);
+      } else {
+        s_hopper.alwaysSpinHopper();
         s_hopper.spinUptakeMotor(0);
       }
     }

@@ -99,8 +99,10 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     .withPosition(8, 1).getEntry();
   NetworkTableEntry turretSpeed = shooterTab.add("Turrent Percent", -1)
     .withPosition(8, 2).getEntry();
-    NetworkTableEntry wantedDistane = shooterTab.add("WantedDis", 0)
+  NetworkTableEntry wantedDistane = shooterTab.add("WantedDis", 0)
     .withPosition(8, 3).getEntry();
+  NetworkTableEntry turretDirection = shooterTab.add("Turret Direction", "")
+    .withPosition(8, 4).withSize(2,1).getEntry();
   
   public ShuffleboardTab getTab() {
     return shooterTab;
@@ -191,6 +193,7 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   public void spinHoodMotor(double speed) {
     hoodNeo.set(speed);
   }
+
   //Velocity control of flywheel
   public void setFlywheelVelocityControl(double rpm) {
     flywheelFalconLeft.set(ControlMode.Velocity, rpm);
@@ -244,11 +247,14 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     if ((turretCurrentPos > turretHome) && (turretCurrentPos - turretHome > 50)) {
       // If you're to the right of the center, move left until you're within 50 ticks (turret deadband)
       spinTurretMotor(0.3);
+      turretDirection.setString("Going left");
     } else if ((turretCurrentPos < turretHome) && (turretCurrentPos - turretHome < -50)) {
       // If you're to the left of the center, move right until you're within 50 ticks
       spinTurretMotor(-0.3);
+      turretDirection.setString("Going right");
     } else {
       spinTurretMotor(0);
+      turretDirection.setString("At home");
     }
   }
 
@@ -330,6 +336,8 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
     }
   }
 
+  
+
   //Test method to configure rumble
   public void rumble(double intensity) {
     Gamepad0.setRumble(RumbleType.kLeftRumble, intensity);
@@ -346,6 +354,12 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
   //Deprecated
   public void hoodGoToCorrectPos() {
     hoodGoToPos(amazingQuadRegression());
+  }
+
+  public void hoodZoneControl(int zone) {
+   // zone parameter is a number 0-3 indicating which zone robot is in (0 is green, 3 is red)
+    double[] zoneTicks = {0, 0, 0, 0}; // empirically tested hood tick values
+    hoodGoToPos(zoneTicks[zone]);
   }
 
   @Override
@@ -390,6 +404,13 @@ public class Sub_Shooter extends SubsystemBase implements CAN_Input {
       //   hoodGoToPos(-5);
       //   }
       // }
+
+      if (Gamepad0.getRawButton(Constants.BTN_Y)) {
+        spinHoodMotor(-0.3);
+      } else if (Gamepad0.getRawButton(Constants.BTN_A)) {
+        spinHoodMotor(0.3);
+      }
+
     }
   }
 

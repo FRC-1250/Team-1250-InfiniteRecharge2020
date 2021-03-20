@@ -168,7 +168,7 @@ public class RobotContainer {
     // whenTriggerPressed(RobotState.PANEL_MODE, b, new Cmd_StopOnColor(s_panel), false);
     // whenTriggerPressed(RobotState.PANEL_MODE, y, new Cmd_DeployCylinder(s_panel), false);
     whenTriggerPressed(RobotState.COLLECT_MODE, x, new Cmd_Collect(s_intake), true);
-    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), false);
+    whenTriggerPressed(RobotState.COLLECT_MODE, b, new Cmd_StopCollect(s_intake, s_hopper), true);
     // whenTriggerPressed(RobotState.CLIMB_MODE, x, new CmdSG_ExtendPhases(s_climb), true);
     // whenTriggerPressed(RobotState.CLIMB_MODE, b, new CmdSG_RetractPhases(s_drivetrain, s_climb), true);
     // whenTriggerPressed(mode, button, command, interruptible);
@@ -176,7 +176,7 @@ public class RobotContainer {
     // dev7.whenActive(new Cmd_HoodGoToPos(s_shooter, -2), true);
 
     start.whileActiveOnce(new Cmd_SpinFlywheels(s_shooter, 1), true);
-    start.whileActiveOnce(new Cmd_Track(s_shooter), true);
+    //start.whileActiveOnce(new Cmd_Track(s_shooter), true);
     back.whileActiveOnce(new Cmd_ShootCells(s_hopper), true);
     //dev6.whenActive(new Cmd_Collect(s_intake), false);
     dev7.whenActive(new Cmd_ShootNTimes(s_shooter, s_hopper, 3));
